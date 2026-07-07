@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as OfficerIndexRouteImport } from './routes/officer.index'
 import { Route as EmployeeIndexRouteImport } from './routes/employee.index'
 import { Route as OfficerRulesRouteImport } from './routes/officer.rules'
+import { Route as OfficerLogsRouteImport } from './routes/officer.logs'
 import { Route as OfficerKnowledgeRouteImport } from './routes/officer.knowledge'
 import { Route as OfficerDocumentsRouteImport } from './routes/officer.documents'
 import { Route as OfficerCircularsRouteImport } from './routes/officer.circulars'
@@ -54,6 +55,11 @@ const EmployeeIndexRoute = EmployeeIndexRouteImport.update({
 const OfficerRulesRoute = OfficerRulesRouteImport.update({
   id: '/rules',
   path: '/rules',
+  getParentRoute: () => OfficerRoute,
+} as any)
+const OfficerLogsRoute = OfficerLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
   getParentRoute: () => OfficerRoute,
 } as any)
 const OfficerKnowledgeRoute = OfficerKnowledgeRouteImport.update({
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/officer/circulars': typeof OfficerCircularsRoute
   '/officer/documents': typeof OfficerDocumentsRoute
   '/officer/knowledge': typeof OfficerKnowledgeRoute
+  '/officer/logs': typeof OfficerLogsRoute
   '/officer/rules': typeof OfficerRulesRoute
   '/employee/': typeof EmployeeIndexRoute
   '/officer/': typeof OfficerIndexRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/officer/circulars': typeof OfficerCircularsRoute
   '/officer/documents': typeof OfficerDocumentsRoute
   '/officer/knowledge': typeof OfficerKnowledgeRoute
+  '/officer/logs': typeof OfficerLogsRoute
   '/officer/rules': typeof OfficerRulesRoute
   '/employee': typeof EmployeeIndexRoute
   '/officer': typeof OfficerIndexRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/officer/circulars': typeof OfficerCircularsRoute
   '/officer/documents': typeof OfficerDocumentsRoute
   '/officer/knowledge': typeof OfficerKnowledgeRoute
+  '/officer/logs': typeof OfficerLogsRoute
   '/officer/rules': typeof OfficerRulesRoute
   '/employee/': typeof EmployeeIndexRoute
   '/officer/': typeof OfficerIndexRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/officer/circulars'
     | '/officer/documents'
     | '/officer/knowledge'
+    | '/officer/logs'
     | '/officer/rules'
     | '/employee/'
     | '/officer/'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/officer/circulars'
     | '/officer/documents'
     | '/officer/knowledge'
+    | '/officer/logs'
     | '/officer/rules'
     | '/employee'
     | '/officer'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/officer/circulars'
     | '/officer/documents'
     | '/officer/knowledge'
+    | '/officer/logs'
     | '/officer/rules'
     | '/employee/'
     | '/officer/'
@@ -263,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/rules'
       fullPath: '/officer/rules'
       preLoaderRoute: typeof OfficerRulesRouteImport
+      parentRoute: typeof OfficerRoute
+    }
+    '/officer/logs': {
+      id: '/officer/logs'
+      path: '/logs'
+      fullPath: '/officer/logs'
+      preLoaderRoute: typeof OfficerLogsRouteImport
       parentRoute: typeof OfficerRoute
     }
     '/officer/knowledge': {
@@ -367,6 +386,7 @@ interface OfficerRouteChildren {
   OfficerCircularsRoute: typeof OfficerCircularsRoute
   OfficerDocumentsRoute: typeof OfficerDocumentsRoute
   OfficerKnowledgeRoute: typeof OfficerKnowledgeRoute
+  OfficerLogsRoute: typeof OfficerLogsRoute
   OfficerRulesRoute: typeof OfficerRulesRoute
   OfficerIndexRoute: typeof OfficerIndexRoute
 }
@@ -376,6 +396,7 @@ const OfficerRouteChildren: OfficerRouteChildren = {
   OfficerCircularsRoute: OfficerCircularsRoute,
   OfficerDocumentsRoute: OfficerDocumentsRoute,
   OfficerKnowledgeRoute: OfficerKnowledgeRoute,
+  OfficerLogsRoute: OfficerLogsRoute,
   OfficerRulesRoute: OfficerRulesRoute,
   OfficerIndexRoute: OfficerIndexRoute,
 }
