@@ -9,38 +9,246 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OfficerRouteImport } from './routes/officer'
+import { Route as EmployeeRouteImport } from './routes/employee'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OfficerIndexRouteImport } from './routes/officer.index'
+import { Route as EmployeeIndexRouteImport } from './routes/employee.index'
+import { Route as OfficerRulesRouteImport } from './routes/officer.rules'
+import { Route as OfficerLogsRouteImport } from './routes/officer.logs'
+import { Route as OfficerKnowledgeRouteImport } from './routes/officer.knowledge'
+import { Route as OfficerDocumentsRouteImport } from './routes/officer.documents'
+import { Route as OfficerCircularsRouteImport } from './routes/officer.circulars'
+import { Route as OfficerBenefitsRouteImport } from './routes/officer.benefits'
+import { Route as EmployeeSchemesRouteImport } from './routes/employee.schemes'
+import { Route as EmployeeResultRouteImport } from './routes/employee.result'
+import { Route as EmployeeFaqsRouteImport } from './routes/employee.faqs'
+import { Route as EmployeeCircularsRouteImport } from './routes/employee.circulars'
+import { Route as EmployeeBenefitsRouteImport } from './routes/employee.benefits'
+import { Route as EmployeeAssistantRouteImport } from './routes/employee.assistant'
 
+const OfficerRoute = OfficerRouteImport.update({
+  id: '/officer',
+  path: '/officer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployeeRoute = EmployeeRouteImport.update({
+  id: '/employee',
+  path: '/employee',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OfficerIndexRoute = OfficerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OfficerRoute,
+} as any)
+const EmployeeIndexRoute = EmployeeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EmployeeRoute,
+} as any)
+const OfficerRulesRoute = OfficerRulesRouteImport.update({
+  id: '/rules',
+  path: '/rules',
+  getParentRoute: () => OfficerRoute,
+} as any)
+const OfficerLogsRoute = OfficerLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => OfficerRoute,
+} as any)
+const OfficerKnowledgeRoute = OfficerKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => OfficerRoute,
+} as any)
+const OfficerDocumentsRoute = OfficerDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => OfficerRoute,
+} as any)
+const OfficerCircularsRoute = OfficerCircularsRouteImport.update({
+  id: '/circulars',
+  path: '/circulars',
+  getParentRoute: () => OfficerRoute,
+} as any)
+const OfficerBenefitsRoute = OfficerBenefitsRouteImport.update({
+  id: '/benefits',
+  path: '/benefits',
+  getParentRoute: () => OfficerRoute,
+} as any)
+const EmployeeSchemesRoute = EmployeeSchemesRouteImport.update({
+  id: '/schemes',
+  path: '/schemes',
+  getParentRoute: () => EmployeeRoute,
+} as any)
+const EmployeeResultRoute = EmployeeResultRouteImport.update({
+  id: '/result',
+  path: '/result',
+  getParentRoute: () => EmployeeRoute,
+} as any)
+const EmployeeFaqsRoute = EmployeeFaqsRouteImport.update({
+  id: '/faqs',
+  path: '/faqs',
+  getParentRoute: () => EmployeeRoute,
+} as any)
+const EmployeeCircularsRoute = EmployeeCircularsRouteImport.update({
+  id: '/circulars',
+  path: '/circulars',
+  getParentRoute: () => EmployeeRoute,
+} as any)
+const EmployeeBenefitsRoute = EmployeeBenefitsRouteImport.update({
+  id: '/benefits',
+  path: '/benefits',
+  getParentRoute: () => EmployeeRoute,
+} as any)
+const EmployeeAssistantRoute = EmployeeAssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => EmployeeRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/employee': typeof EmployeeRouteWithChildren
+  '/officer': typeof OfficerRouteWithChildren
+  '/employee/assistant': typeof EmployeeAssistantRoute
+  '/employee/benefits': typeof EmployeeBenefitsRoute
+  '/employee/circulars': typeof EmployeeCircularsRoute
+  '/employee/faqs': typeof EmployeeFaqsRoute
+  '/employee/result': typeof EmployeeResultRoute
+  '/employee/schemes': typeof EmployeeSchemesRoute
+  '/officer/benefits': typeof OfficerBenefitsRoute
+  '/officer/circulars': typeof OfficerCircularsRoute
+  '/officer/documents': typeof OfficerDocumentsRoute
+  '/officer/knowledge': typeof OfficerKnowledgeRoute
+  '/officer/logs': typeof OfficerLogsRoute
+  '/officer/rules': typeof OfficerRulesRoute
+  '/employee/': typeof EmployeeIndexRoute
+  '/officer/': typeof OfficerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/employee/assistant': typeof EmployeeAssistantRoute
+  '/employee/benefits': typeof EmployeeBenefitsRoute
+  '/employee/circulars': typeof EmployeeCircularsRoute
+  '/employee/faqs': typeof EmployeeFaqsRoute
+  '/employee/result': typeof EmployeeResultRoute
+  '/employee/schemes': typeof EmployeeSchemesRoute
+  '/officer/benefits': typeof OfficerBenefitsRoute
+  '/officer/circulars': typeof OfficerCircularsRoute
+  '/officer/documents': typeof OfficerDocumentsRoute
+  '/officer/knowledge': typeof OfficerKnowledgeRoute
+  '/officer/logs': typeof OfficerLogsRoute
+  '/officer/rules': typeof OfficerRulesRoute
+  '/employee': typeof EmployeeIndexRoute
+  '/officer': typeof OfficerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/employee': typeof EmployeeRouteWithChildren
+  '/officer': typeof OfficerRouteWithChildren
+  '/employee/assistant': typeof EmployeeAssistantRoute
+  '/employee/benefits': typeof EmployeeBenefitsRoute
+  '/employee/circulars': typeof EmployeeCircularsRoute
+  '/employee/faqs': typeof EmployeeFaqsRoute
+  '/employee/result': typeof EmployeeResultRoute
+  '/employee/schemes': typeof EmployeeSchemesRoute
+  '/officer/benefits': typeof OfficerBenefitsRoute
+  '/officer/circulars': typeof OfficerCircularsRoute
+  '/officer/documents': typeof OfficerDocumentsRoute
+  '/officer/knowledge': typeof OfficerKnowledgeRoute
+  '/officer/logs': typeof OfficerLogsRoute
+  '/officer/rules': typeof OfficerRulesRoute
+  '/employee/': typeof EmployeeIndexRoute
+  '/officer/': typeof OfficerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/employee'
+    | '/officer'
+    | '/employee/assistant'
+    | '/employee/benefits'
+    | '/employee/circulars'
+    | '/employee/faqs'
+    | '/employee/result'
+    | '/employee/schemes'
+    | '/officer/benefits'
+    | '/officer/circulars'
+    | '/officer/documents'
+    | '/officer/knowledge'
+    | '/officer/logs'
+    | '/officer/rules'
+    | '/employee/'
+    | '/officer/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/employee/assistant'
+    | '/employee/benefits'
+    | '/employee/circulars'
+    | '/employee/faqs'
+    | '/employee/result'
+    | '/employee/schemes'
+    | '/officer/benefits'
+    | '/officer/circulars'
+    | '/officer/documents'
+    | '/officer/knowledge'
+    | '/officer/logs'
+    | '/officer/rules'
+    | '/employee'
+    | '/officer'
+  id:
+    | '__root__'
+    | '/'
+    | '/employee'
+    | '/officer'
+    | '/employee/assistant'
+    | '/employee/benefits'
+    | '/employee/circulars'
+    | '/employee/faqs'
+    | '/employee/result'
+    | '/employee/schemes'
+    | '/officer/benefits'
+    | '/officer/circulars'
+    | '/officer/documents'
+    | '/officer/knowledge'
+    | '/officer/logs'
+    | '/officer/rules'
+    | '/employee/'
+    | '/officer/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EmployeeRoute: typeof EmployeeRouteWithChildren
+  OfficerRoute: typeof OfficerRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/officer': {
+      id: '/officer'
+      path: '/officer'
+      fullPath: '/officer'
+      preLoaderRoute: typeof OfficerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employee': {
+      id: '/employee'
+      path: '/employee'
+      fullPath: '/employee'
+      preLoaderRoute: typeof EmployeeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +256,159 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/officer/': {
+      id: '/officer/'
+      path: '/'
+      fullPath: '/officer/'
+      preLoaderRoute: typeof OfficerIndexRouteImport
+      parentRoute: typeof OfficerRoute
+    }
+    '/employee/': {
+      id: '/employee/'
+      path: '/'
+      fullPath: '/employee/'
+      preLoaderRoute: typeof EmployeeIndexRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
+    '/officer/rules': {
+      id: '/officer/rules'
+      path: '/rules'
+      fullPath: '/officer/rules'
+      preLoaderRoute: typeof OfficerRulesRouteImport
+      parentRoute: typeof OfficerRoute
+    }
+    '/officer/logs': {
+      id: '/officer/logs'
+      path: '/logs'
+      fullPath: '/officer/logs'
+      preLoaderRoute: typeof OfficerLogsRouteImport
+      parentRoute: typeof OfficerRoute
+    }
+    '/officer/knowledge': {
+      id: '/officer/knowledge'
+      path: '/knowledge'
+      fullPath: '/officer/knowledge'
+      preLoaderRoute: typeof OfficerKnowledgeRouteImport
+      parentRoute: typeof OfficerRoute
+    }
+    '/officer/documents': {
+      id: '/officer/documents'
+      path: '/documents'
+      fullPath: '/officer/documents'
+      preLoaderRoute: typeof OfficerDocumentsRouteImport
+      parentRoute: typeof OfficerRoute
+    }
+    '/officer/circulars': {
+      id: '/officer/circulars'
+      path: '/circulars'
+      fullPath: '/officer/circulars'
+      preLoaderRoute: typeof OfficerCircularsRouteImport
+      parentRoute: typeof OfficerRoute
+    }
+    '/officer/benefits': {
+      id: '/officer/benefits'
+      path: '/benefits'
+      fullPath: '/officer/benefits'
+      preLoaderRoute: typeof OfficerBenefitsRouteImport
+      parentRoute: typeof OfficerRoute
+    }
+    '/employee/schemes': {
+      id: '/employee/schemes'
+      path: '/schemes'
+      fullPath: '/employee/schemes'
+      preLoaderRoute: typeof EmployeeSchemesRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
+    '/employee/result': {
+      id: '/employee/result'
+      path: '/result'
+      fullPath: '/employee/result'
+      preLoaderRoute: typeof EmployeeResultRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
+    '/employee/faqs': {
+      id: '/employee/faqs'
+      path: '/faqs'
+      fullPath: '/employee/faqs'
+      preLoaderRoute: typeof EmployeeFaqsRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
+    '/employee/circulars': {
+      id: '/employee/circulars'
+      path: '/circulars'
+      fullPath: '/employee/circulars'
+      preLoaderRoute: typeof EmployeeCircularsRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
+    '/employee/benefits': {
+      id: '/employee/benefits'
+      path: '/benefits'
+      fullPath: '/employee/benefits'
+      preLoaderRoute: typeof EmployeeBenefitsRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
+    '/employee/assistant': {
+      id: '/employee/assistant'
+      path: '/assistant'
+      fullPath: '/employee/assistant'
+      preLoaderRoute: typeof EmployeeAssistantRouteImport
+      parentRoute: typeof EmployeeRoute
+    }
   }
 }
 
+interface EmployeeRouteChildren {
+  EmployeeAssistantRoute: typeof EmployeeAssistantRoute
+  EmployeeBenefitsRoute: typeof EmployeeBenefitsRoute
+  EmployeeCircularsRoute: typeof EmployeeCircularsRoute
+  EmployeeFaqsRoute: typeof EmployeeFaqsRoute
+  EmployeeResultRoute: typeof EmployeeResultRoute
+  EmployeeSchemesRoute: typeof EmployeeSchemesRoute
+  EmployeeIndexRoute: typeof EmployeeIndexRoute
+}
+
+const EmployeeRouteChildren: EmployeeRouteChildren = {
+  EmployeeAssistantRoute: EmployeeAssistantRoute,
+  EmployeeBenefitsRoute: EmployeeBenefitsRoute,
+  EmployeeCircularsRoute: EmployeeCircularsRoute,
+  EmployeeFaqsRoute: EmployeeFaqsRoute,
+  EmployeeResultRoute: EmployeeResultRoute,
+  EmployeeSchemesRoute: EmployeeSchemesRoute,
+  EmployeeIndexRoute: EmployeeIndexRoute,
+}
+
+const EmployeeRouteWithChildren = EmployeeRoute._addFileChildren(
+  EmployeeRouteChildren,
+)
+
+interface OfficerRouteChildren {
+  OfficerBenefitsRoute: typeof OfficerBenefitsRoute
+  OfficerCircularsRoute: typeof OfficerCircularsRoute
+  OfficerDocumentsRoute: typeof OfficerDocumentsRoute
+  OfficerKnowledgeRoute: typeof OfficerKnowledgeRoute
+  OfficerLogsRoute: typeof OfficerLogsRoute
+  OfficerRulesRoute: typeof OfficerRulesRoute
+  OfficerIndexRoute: typeof OfficerIndexRoute
+}
+
+const OfficerRouteChildren: OfficerRouteChildren = {
+  OfficerBenefitsRoute: OfficerBenefitsRoute,
+  OfficerCircularsRoute: OfficerCircularsRoute,
+  OfficerDocumentsRoute: OfficerDocumentsRoute,
+  OfficerKnowledgeRoute: OfficerKnowledgeRoute,
+  OfficerLogsRoute: OfficerLogsRoute,
+  OfficerRulesRoute: OfficerRulesRoute,
+  OfficerIndexRoute: OfficerIndexRoute,
+}
+
+const OfficerRouteWithChildren =
+  OfficerRoute._addFileChildren(OfficerRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EmployeeRoute: EmployeeRouteWithChildren,
+  OfficerRoute: OfficerRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

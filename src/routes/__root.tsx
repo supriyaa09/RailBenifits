@@ -77,14 +77,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "RailAssist — Retirement & Benefits Advisory" },
+      { name: "description", content: "Intelligent Railway Retirement & Benefits Advisory System for South Central Railway employees and officers." },
+      { property: "og:title", content: "RailAssist — Retirement & Benefits Advisory" },
+      { property: "og:description", content: "Rule-based decision support for railway retirement, family pension, gratuity and more." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
