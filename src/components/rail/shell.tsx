@@ -35,26 +35,26 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-screen flex w-full bg-[linear-gradient(180deg,rgba(239,246,255,0.95),rgba(255,255,255,1)_24%,rgba(248,251,255,1))]">
         <RailSidebar role={role} />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center gap-3 border-b bg-card/60 backdrop-blur px-3 sticky top-0 z-30">
+          <header className="h-14 flex items-center gap-3 border-b border-primary/10 bg-white/80 backdrop-blur px-3 sticky top-0 z-30 shadow-[0_1px_0_rgba(37,99,235,0.04)]">
             <SidebarTrigger />
             <div className="hidden md:flex items-center gap-2 max-w-sm w-full">
               <div className="relative w-full">
                 <Search className="h-4 w-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
                   placeholder="Search benefits, rules, circulars…"
-                  className="h-9 w-full pl-8 pr-3 rounded-md border bg-background text-sm outline-none focus:ring-2 focus:ring-ring/40"
+                  className="h-9 w-full pl-8 pr-3 rounded-md border border-input bg-white text-sm outline-none focus:ring-2 focus:ring-ring/40"
                 />
               </div>
             </div>
             <div className="ml-auto flex items-center gap-2">
-              <button className="h-9 w-9 rounded-md hover:bg-muted grid place-items-center text-muted-foreground" aria-label="Notifications">
+              <button className="h-9 w-9 rounded-md hover:bg-primary/5 grid place-items-center text-muted-foreground border border-transparent hover:border-primary/10" aria-label="Notifications">
                 <Bell className="h-4 w-4" />
               </button>
-              <div className="h-9 pl-2 pr-3 flex items-center gap-2 rounded-md border bg-background">
-                <div className="h-6 w-6 rounded-full bg-primary text-primary-foreground grid place-items-center">
+              <div className="h-9 pl-2 pr-3 flex items-center gap-2 rounded-md border border-input bg-white shadow-soft">
+                <div className="h-6 w-6 rounded-full bg-primary text-primary-foreground grid place-items-center ring-1 ring-primary/10">
                   <User className="h-3.5 w-3.5" />
                 </div>
                 <div className="text-xs leading-tight">
