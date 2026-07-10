@@ -157,3 +157,219 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-soft);
 }
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body {
+    color: #111827 !important;
+    font-family: "Times New Roman", "Noto Serif", serif !important;
+    font-size: 9.5pt !important;
+    line-height: 1.18 !important;
+  }
+
+  body *:not(.settlement-certificate):not(.settlement-certificate *):not(:has(.settlement-certificate)) {
+    display: none !important;
+  }
+
+  .settlement-certificate {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #111827 !important;
+    background: white !important;
+    page-break-after: auto;
+  }
+
+  .report-controls,
+  .report-controls *,
+  [data-sidebar],
+  [data-sidebar] *,
+  nav,
+  aside,
+  button {
+    display: none !important;
+  }
+
+  .settlement-certificate > div {
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  .settlement-certificate header {
+    padding-bottom: 5px !important;
+    border-bottom: 1.5px solid #111827 !important;
+  }
+
+  .settlement-certificate header .h-16 {
+    height: 38px !important;
+    width: 38px !important;
+    font-size: 6.5pt !important;
+    line-height: 1.05 !important;
+  }
+
+  .settlement-certificate header .grid-cols-\[72px_1fr_72px\] {
+    grid-template-columns: 48px 1fr 48px !important;
+    gap: 6px !important;
+  }
+
+  .settlement-certificate header .text-2xl {
+    font-size: 16pt !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .settlement-certificate header .text-lg {
+    margin-top: 1px !important;
+    font-size: 12pt !important;
+    line-height: 1.05 !important;
+  }
+
+  .settlement-certificate header .text-sm {
+    font-size: 9.5pt !important;
+    line-height: 1.05 !important;
+  }
+
+  .settlement-certificate .mt-4 {
+    margin-top: 6px !important;
+  }
+
+  .settlement-certificate section {
+    margin-top: 8px !important;
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  .settlement-certificate section h3 {
+    margin: 0 0 4px !important;
+    font-size: 10pt !important;
+    line-height: 1.1 !important;
+  }
+
+  .settlement-certificate .grid {
+    gap: 0 !important;
+  }
+
+  .settlement-certificate .px-2,
+  .settlement-certificate .px-3 {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+
+  .settlement-certificate .py-1\.5,
+  .settlement-certificate .py-2,
+  .settlement-certificate .py-3 {
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+  }
+
+  .settlement-certificate .p-2,
+  .settlement-certificate .p-3 {
+    padding: 4px !important;
+  }
+
+  .settlement-certificate .mt-1,
+  .settlement-certificate .mt-2,
+  .settlement-certificate .mt-3,
+  .settlement-certificate .mt-6,
+  .settlement-certificate .mt-8 {
+    margin-top: 4px !important;
+  }
+
+  .settlement-certificate .min-h-20,
+  .settlement-certificate .min-h-28,
+  .settlement-certificate .h-28 {
+    min-height: 42px !important;
+    height: auto !important;
+  }
+
+  .certificate-table {
+    table-layout: fixed !important;
+    width: 100% !important;
+    margin: 0 !important;
+    font-size: 8.8pt !important;
+    line-height: 1.12 !important;
+  }
+
+  .certificate-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .certificate-table td {
+    padding: 2.5px 4px !important;
+    vertical-align: top !important;
+    border-color: #9ca3af !important;
+  }
+
+  .certificate-table td:first-child {
+    width: 34px !important;
+  }
+
+  .certificate-table td:last-child {
+    width: 94px !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+  }
+
+  .print-formula-line {
+    display: block !important;
+    margin-top: 1px !important;
+    color: #374151 !important;
+    font-size: 7.4pt !important;
+    line-height: 1.08 !important;
+  }
+
+  .print-formula-line span + span::before {
+    content: " | ";
+  }
+
+  .calculation-disclosure {
+    display: none !important;
+  }
+
+  .settlement-certificate details > summary {
+    padding: 3px 4px !important;
+    font-size: 8.8pt !important;
+  }
+
+  .settlement-certificate details:not([open]) > :not(summary) {
+    display: none !important;
+  }
+
+  .settlement-certificate footer {
+    margin-top: 8px !important;
+    padding-top: 4px !important;
+    font-size: 7.5pt !important;
+    line-height: 1.15 !important;
+  }
+
+  .settlement-certificate footer p {
+    margin-top: 3px !important;
+  }
+
+  .settlement-certificate .break-inside-avoid,
+  .settlement-certificate .grid.border,
+  .settlement-certificate .border.border-slate-500,
+  .settlement-certificate footer,
+  .settlement-certificate section:has(.grid.sm\:grid-cols-3),
+  .settlement-certificate section:has(.font-bold.sm\:col-span-2) {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

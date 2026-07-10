@@ -1,6 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Train } from "lucide-react";
+import { Search, Train } from "lucide-react";
 import { type ReactNode } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 
 export function Brand({ subtitle }: { subtitle?: string }) {
   return (
@@ -26,7 +29,7 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6 rounded-2xl border border-border bg-white/90 p-5 shadow-soft">
+    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6 rounded-lg border border-border bg-card p-5 shadow-soft">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
         {description && <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{description}</p>}
@@ -35,6 +38,8 @@ export function PageHeader({
     </div>
   );
 }
+
+export const PageTitle = PageHeader;
 
 export function StatCard({
   label,
@@ -59,6 +64,126 @@ export function StatCard({
           <div className="h-9 w-9 rounded-md bg-primary-soft text-primary grid place-items-center ring-1 ring-primary/10">{icon}</div>
         )}
       </div>
+    </div>
+  );
+}
+
+export function DashboardCard({
+  title,
+  description,
+  icon,
+  action,
+}: {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="card-surface p-5 h-full flex flex-col gap-4 hover:border-primary/30 transition-colors">
+      <div className="flex items-start gap-3">
+        {icon && (
+          <div className="h-10 w-10 rounded-md bg-primary-soft text-primary grid place-items-center ring-1 ring-primary/10 shrink-0">
+            {icon}
+          </div>
+        )}
+        <div className="min-w-0">
+          <h3 className="font-medium text-foreground">{title}</h3>
+          <p className="text-sm text-muted-foreground mt-1">{description}</p>
+        </div>
+      </div>
+      {action && <div className="mt-auto">{action}</div>}
+    </div>
+  );
+}
+
+export function SectionCard({
+  title,
+  description,
+  children,
+}: {
+  title?: string;
+  description?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="card-surface p-5">
+      {(title || description) && (
+        <div className="mb-4">
+          {title && <h2 className="font-medium text-foreground">{title}</h2>}
+          {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
+        </div>
+      )}
+      {children}
+    </section>
+  );
+}
+
+export function StatusPlaceholder({
+  title,
+  description,
+  sprint = "Coming in Sprint 2",
+  icon,
+}: {
+  title: string;
+  description: string;
+  sprint?: string;
+  icon?: ReactNode;
+}) {
+  return (
+    <>
+      <PageHeader title={title} description={description} />
+      <SectionCard>
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          {icon && (
+            <div className="h-12 w-12 rounded-md bg-primary-soft text-primary grid place-items-center ring-1 ring-primary/10">
+              {icon}
+            </div>
+          )}
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="font-medium text-foreground">Module Status</h2>
+              <Badge variant="secondary">{sprint}</Badge>
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              This page is part of the application foundation. Business workflows, uploads, calculations,
+              rule processing, database logic, and AI integrations are intentionally not enabled yet.
+            </p>
+          </div>
+        </div>
+      </SectionCard>
+    </>
+  );
+}
+
+export function LoadingState({ label = "Loading module" }: { label?: string }) {
+  return (
+    <div className="card-surface p-5 space-y-3" aria-label={label}>
+      <Skeleton className="h-5 w-48" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-2/3" />
+    </div>
+  );
+}
+
+export function SearchBar({
+  placeholder = "Search",
+  value,
+  onChange,
+}: {
+  placeholder?: string;
+  value?: string;
+  onChange?: (value: string) => void;
+}) {
+  return (
+    <div className="relative w-full">
+      <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        value={value}
+        onChange={(event) => onChange?.(event.target.value)}
+        placeholder={placeholder}
+        className="pl-9"
+      />
     </div>
   );
 }

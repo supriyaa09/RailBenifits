@@ -1,22 +1,24 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard,
-  ClipboardCheck,
-  Bot,
+  Activity,
   BookOpen,
+  Bot,
+  ClipboardCheck,
+  Database,
+  FileCog,
   FileText,
   HelpCircle,
+  LayoutDashboard,
+  LogOut,
+  ScrollText,
+  Settings,
   ShieldCheck,
   Wallet,
-  ScrollText,
-  Files,
-  Database,
-  Activity,
-  LogOut,
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -24,28 +26,31 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Brand } from "./common";
 
 const employeeNav = [
   { title: "Dashboard", to: "/employee", icon: LayoutDashboard, exact: true },
-  { title: "Check Benefits", to: "/employee/benefits", icon: ClipboardCheck },
-  { title: "AI Assistant", to: "/employee/assistant", icon: Bot },
+  { title: "Settlement Assessment", to: "/employee/benefits", icon: ClipboardCheck },
+  { title: "Settlement Results", to: "/employee/result", icon: ShieldCheck },
+  { title: "My Settlement Reports", to: "/employee/reports", icon: FileText },
+  { title: "Railway Pension Assistant", to: "/employee/assistant", icon: Bot },
   { title: "Railway Schemes", to: "/employee/schemes", icon: BookOpen },
-  { title: "Circular Library", to: "/employee/circulars", icon: FileText },
+  { title: "Circular Library", to: "/employee/circulars", icon: ScrollText },
   { title: "FAQs", to: "/employee/faqs", icon: HelpCircle },
 ];
 
 const officerNav = [
   { title: "Dashboard", to: "/officer", icon: LayoutDashboard, exact: true },
-  { title: "Benefits", to: "/officer/benefits", icon: Wallet },
-  { title: "Rules", to: "/officer/rules", icon: ShieldCheck },
-  { title: "Circulars", to: "/officer/circulars", icon: ScrollText },
-  { title: "AI Knowledge Base", to: "/officer/knowledge", icon: Database },
-  { title: "Uploaded Documents", to: "/officer/documents", icon: Files },
-  { title: "System Logs", to: "/officer/logs", icon: Activity },
+  { title: "Rule Management", to: "/officer/rules", icon: ShieldCheck },
+  { title: "Benefit Management", to: "/officer/benefits", icon: Wallet },
+  { title: "Circular Management", to: "/officer/circulars", icon: ScrollText },
+  { title: "Workbook Management", to: "/officer/workbooks", icon: FileCog },
+  { title: "Knowledge Base", to: "/officer/knowledge", icon: Database },
+  { title: "Configuration", to: "/officer/configuration", icon: Settings },
+  { title: "AI Management", to: "/officer/ai", icon: Bot },
+  { title: "Activity Logs", to: "/officer/logs", icon: Activity },
 ];
 
 export function RailSidebar({ role }: { role: "employee" | "officer" }) {
@@ -70,7 +75,7 @@ export function RailSidebar({ role }: { role: "employee" | "officer" }) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{role === "officer" ? "Administration" : "Menu"}</SidebarGroupLabel>
+          <SidebarGroupLabel>{role === "officer" ? "Administration" : "Employee Services"}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -90,10 +95,10 @@ export function RailSidebar({ role }: { role: "employee" | "officer" }) {
       <SidebarFooter className="border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Switch role">
+            <SidebarMenuButton asChild tooltip="Switch portal">
               <Link to="/" className="flex items-center gap-2">
                 <LogOut className="h-4 w-4" />
-                <span>Switch role</span>
+                <span>Switch portal</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -102,3 +107,5 @@ export function RailSidebar({ role }: { role: "employee" | "officer" }) {
     </Sidebar>
   );
 }
+
+export const AppSidebar = RailSidebar;
