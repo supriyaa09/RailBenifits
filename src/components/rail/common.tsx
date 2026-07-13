@@ -1,19 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { Search, Train } from "lucide-react";
+import { Search } from "lucide-react";
 import { type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 
+export const INDIAN_RAILWAYS_LOGO = "/assets/logo/indian-railways.png";
+
 export function Brand({ subtitle }: { subtitle?: string }) {
   return (
-    <Link to="/" className="flex items-center gap-2.5 group">
-      <div className="h-9 w-9 rounded-lg bg-primary text-primary-foreground grid place-items-center shadow-soft ring-1 ring-primary/10 group-hover:scale-105 transition-transform">
-        <Train className="h-5 w-5" />
-      </div>
+    <Link to="/" className="flex items-center gap-3 group">
+      <img
+        src={INDIAN_RAILWAYS_LOGO}
+        alt="Indian Railways"
+        className="h-10 w-10 shrink-0 object-contain md:h-12 md:w-12 lg:h-14 lg:w-14 group-hover:scale-105 transition-transform"
+      />
       <div className="leading-tight">
         <div className="font-semibold tracking-tight text-foreground">RailAssist</div>
-        <div className="text-[11px] text-muted-foreground">{subtitle ?? "South Central Railway"}</div>
+        <div className="text-[11px] text-muted-foreground">{subtitle ?? "South Central Railway HQ"}</div>
       </div>
     </Link>
   );

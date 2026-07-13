@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EmptyState, PageHeader, SectionCard } from "@/components/rail/common";
+import { EmptyState, INDIAN_RAILWAYS_LOGO, PageHeader, SectionCard } from "@/components/rail/common";
 import { formatCurrency, type SettlementAssessment } from "@/lib/settlement-assessment";
 import { saveSettlementReport } from "@/services/ReportManagementService";
 import { processSettlement } from "@/services/SettlementService";
@@ -371,9 +371,11 @@ function OfficialReport({
       <div className="min-h-[297mm] px-5 py-5 text-[12px] leading-snug sm:px-8 print:px-8 print:py-6">
         <header className="border-b-2 border-slate-900 pb-3">
           <div className="grid grid-cols-[72px_1fr_72px] items-center gap-3">
-            <div className="grid h-16 w-16 place-items-center rounded-full border border-slate-500 text-center text-[9px] uppercase leading-tight">
-              Railway<br />Branding
-            </div>
+            <img
+              src={INDIAN_RAILWAYS_LOGO}
+              alt="Indian Railways"
+              className="h-14 w-14 object-contain print:h-12 print:w-12"
+            />
             <div className="text-center">
               <div className="text-2xl font-black uppercase tracking-wide">South Central Railway</div>
               <div className="mt-1 text-lg font-bold uppercase tracking-wide">Settlement Certificate</div>

@@ -28,7 +28,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Brand } from "./common";
+import { Brand, INDIAN_RAILWAYS_LOGO } from "./common";
 
 const employeeNav = [
   { title: "Dashboard", to: "/employee", icon: LayoutDashboard, exact: true },
@@ -68,9 +68,11 @@ export function RailSidebar({ role }: { role: "employee" | "officer" }) {
         {!collapsed ? (
           <Brand subtitle={role === "officer" ? "Officer Portal" : "Employee Portal"} />
         ) : (
-          <div className="h-9 w-9 rounded-lg bg-primary text-primary-foreground grid place-items-center mx-auto">
-            <span className="text-xs font-bold">RA</span>
-          </div>
+          <img
+            src={INDIAN_RAILWAYS_LOGO}
+            alt="Indian Railways"
+            className="mx-auto h-10 w-10 object-contain"
+          />
         )}
       </SidebarHeader>
       <SidebarContent>
