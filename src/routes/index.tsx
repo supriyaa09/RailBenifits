@@ -39,7 +39,7 @@ function Landing() {
           <PortalCard
             to="/officer"
             title="Officer Portal"
-            description="Manage the administrative foundation for rules, benefits, circulars, workbooks, knowledge, and configuration."
+            description="Manage the administrative foundation for rules, benefits, circulars, formulas, knowledge, and configuration."
             icon={<ShieldCheck className="h-6 w-6" />}
           />
         </section>

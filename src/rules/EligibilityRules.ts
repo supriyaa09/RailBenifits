@@ -1,21 +1,12 @@
-import type { OtherRetirementType, PensionScheme, SettlementAssessment } from "@/lib/settlement-assessment";
+import type {
+  OtherRetirementType,
+  PensionScheme,
+  SettlementAssessment,
+} from "@/lib/settlement-assessment";
+import { evaluateRetirementRules } from "./RetirementRuleEngine";
 
 export function getRetirementTypeLabel(assessment: SettlementAssessment): string {
-  if (assessment.serviceDetails.retirementCategory === "normal") return "Normal Retirement";
-
-  const labels: Record<OtherRetirementType, string> = {
-    voluntary: "Voluntary Retirement",
-    medical: "Medical Retirement",
-    compulsory: "Compulsory Retirement",
-    death: "Death Case",
-    removal: "Removal",
-    dismissal: "Dismissal",
-    "self-resignation": "Self Resignation",
-  };
-
-  return assessment.serviceDetails.otherRetirementType
-    ? labels[assessment.serviceDetails.otherRetirementType]
-    : "Other Than Normal Retirement";
+  return evaluateRetirementRules(assessment).label;
 }
 
 export function hasMinimumService(assessment: SettlementAssessment, years: number): boolean {
@@ -27,7 +18,10 @@ export function isDeathCase(assessment: SettlementAssessment): boolean {
 }
 
 export function isRemovalOrDismissal(assessment: SettlementAssessment): boolean {
-  return assessment.serviceDetails.otherRetirementType === "removal" || assessment.serviceDetails.otherRetirementType === "dismissal";
+  return (
+    assessment.serviceDetails.otherRetirementType === "removal" ||
+    assessment.serviceDetails.otherRetirementType === "dismissal"
+  );
 }
 
 export function isSelfResignation(assessment: SettlementAssessment): boolean {

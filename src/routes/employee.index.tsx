@@ -20,28 +20,10 @@ const cards = [
     icon: FileText,
   },
   {
-    title: "Railway Schemes",
-    description: "Browse pension and settlement scheme information prepared for railway employees.",
-    to: "/employee/schemes",
-    icon: BookOpen,
-  },
-  {
-    title: "Circular Library",
-    description: "Find circulars, references, and administrative guidance in a searchable library.",
-    to: "/employee/circulars",
-    icon: ScrollText,
-  },
-  {
-    title: "Railway Pension Assistant",
-    description: "Access the pension assistant area after knowledge and AI integrations are introduced.",
+    title: "Railway Knowledge Assistant",
+    description: "Access the knowledge assistant to ask AI guided pension and settlement questions.",
     to: "/employee/assistant",
     icon: Bot,
-  },
-  {
-    title: "FAQs",
-    description: "Read common questions and answers about settlement and pension advisory workflows.",
-    to: "/employee/faqs",
-    icon: HelpCircle,
   },
 ];
 

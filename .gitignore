@@ -31,3 +31,8 @@ dist-ssr
 *.sln
 *.sw?
 .lovable/
+# Environment files
+.env
+.env.local
+.env.*
+!.env.example

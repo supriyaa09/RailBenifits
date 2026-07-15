@@ -9,10 +9,10 @@ export function workbookFormula(
   explanation: string,
 ): FormulaMetadata {
   return {
-    formulaName: "Will be loaded from Workbook",
+    formulaName: "RailAssist Formula Repository",
     formulaKey,
-    workbookSheet: "Pending official workbook",
-    cellReference: "Pending workbook mapping",
+    workbookSheet: "Rule Engine",
+    cellReference: "Calculated dynamically",
     ruleReference: railwayRuleReference,
     explanation,
   };
@@ -31,7 +31,7 @@ export function pendingCalculation(
     benefitName,
     amount: 0,
     eligible,
-    status: eligible ? "Pending Workbook Formula" : "Not Eligible",
+    status: eligible ? "Pending Rule Evaluation" : "Not Eligible",
     formula,
     reason,
     warnings,
@@ -66,8 +66,8 @@ export function calculatedFormula(
   return {
     formulaName,
     formulaKey,
-    workbookSheet: "Business Formula Engine",
-    cellReference: "Not Excel based",
+    workbookSheet: "Rule Engine",
+    cellReference: "Rule Reference Details",
     ruleReference: railwayRuleReference,
     explanation,
   };

@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  addQualifyingService,
   calculateAgeNextBirthday,
   calculateCurrentAge,
   calculateQualifyingService,
@@ -36,6 +37,7 @@ import {
   formatQualifyingService,
   type EmployeeGroup,
   type MedicalBenefits,
+  type OtherRetirementDetails,
   type PensionScheme,
   type PromotionDetails,
   type QualifyingService,
@@ -78,7 +80,15 @@ const assessmentSchema = z
     employeeCategory: z.enum(["Running", "Non Running"]),
     retirementCategory: z.enum(retirementCategories),
     otherRetirementType: z
-      .enum(["voluntary", "medical", "compulsory", "death", "removal", "dismissal", "self-resignation"])
+      .enum([
+        "voluntary",
+        "medical",
+        "compulsory",
+        "death",
+        "removal",
+        "dismissal",
+        "self-resignation",
+      ])
       .optional(),
     currentBasicPay: moneyField.gt(0, "Basic Pay must be greater than 0"),
     dearnessAllowance: moneyField.min(0, "DA cannot be negative"),
@@ -91,6 +101,15 @@ const assessmentSchema = z
     fixedMedicalAllowance: z.enum(["yes", "no"]),
     commutationOpted: z.enum(["yes", "no"]),
     commutationPercentage: z.coerce.number().min(0).max(40),
+    medicalRetirementApproved: z.enum(["yes", "no"]),
+    notionalServiceYears: z.coerce.number().min(0),
+    notionalServiceMonths: z.coerce.number().min(0).max(11),
+    pensionSanctionPercentage: z.coerce.number().min(0).max(100),
+    dateOfDeath: z.string().optional(),
+    spouseAvailable: z.enum(["yes", "no"]),
+    familyPensionEligible: z.enum(["yes", "no"]),
+    compassionateAllowanceSanctioned: z.enum(["yes", "no"]),
+    technicalResignation: z.enum(["yes", "no"]),
   })
   .superRefine((data, ctx) => {
     const today = new Date();
@@ -116,6 +135,18 @@ const assessmentSchema = z
         code: z.ZodIssueCode.custom,
         path: ["otherRetirementType"],
         message: "Select the retirement type",
+      });
+    }
+
+    if (
+      data.retirementCategory === "other" &&
+      data.otherRetirementType === "death" &&
+      !data.dateOfDeath
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["dateOfDeath"],
+        message: "Date of death is required for death cases",
       });
     }
 
@@ -176,6 +207,15 @@ const defaultValues: AssessmentFormValues = {
   fixedMedicalAllowance: "no",
   commutationOpted: "yes",
   commutationPercentage: 40,
+  medicalRetirementApproved: "no",
+  notionalServiceYears: 0,
+  notionalServiceMonths: 0,
+  pensionSanctionPercentage: 100,
+  dateOfDeath: "",
+  spouseAvailable: "yes",
+  familyPensionEligible: "yes",
+  compassionateAllowanceSanctioned: "no",
+  technicalResignation: "no",
 };
 
 const draftStorageKey = "railassist:settlement-assessment-draft";
@@ -192,9 +232,8 @@ function getInitialValues(): AssessmentFormValues {
     return {
       ...defaultValues,
       ...parsed,
-      monthlyBasicPay: Array.from(
-        { length: 10 },
-        (_, index) => Number(parsed.monthlyBasicPay?.[index] ?? defaultValues.monthlyBasicPay[index]),
+      monthlyBasicPay: Array.from({ length: 10 }, (_, index) =>
+        Number(parsed.monthlyBasicPay?.[index] ?? defaultValues.monthlyBasicPay[index]),
       ),
     };
   } catch {
@@ -234,6 +273,15 @@ function SettlementAssessmentPage() {
     fixedMedicalAllowance,
     commutationOpted,
     commutationPercentage,
+    medicalRetirementApproved,
+    notionalServiceYears,
+    notionalServiceMonths,
+    pensionSanctionPercentage,
+    dateOfDeath,
+    spouseAvailable,
+    familyPensionEligible,
+    compassionateAllowanceSanctioned,
+    technicalResignation,
   ] = useWatch({
     control: form.control,
     name: [
@@ -251,13 +299,33 @@ function SettlementAssessmentPage() {
       "fixedMedicalAllowance",
       "commutationOpted",
       "commutationPercentage",
+      "medicalRetirementApproved",
+      "notionalServiceYears",
+      "notionalServiceMonths",
+      "pensionSanctionPercentage",
+      "dateOfDeath",
+      "spouseAvailable",
+      "familyPensionEligible",
+      "compassionateAllowanceSanctioned",
+      "technicalResignation",
     ],
   });
 
-  const retirementDate = calculateRetirementDate(dateOfBirth);
+  const computedNormalRetirementDate = calculateRetirementDate(dateOfBirth);
+  const retirementDate =
+    retirementCategory === "other" && otherRetirementType === "death" && dateOfDeath
+      ? dateOfDeath
+      : computedNormalRetirementDate;
   const currentAge = calculateCurrentAge(dateOfBirth);
   const ageNextBirthday = calculateAgeNextBirthday(dateOfBirth);
-  const qualifyingService = calculateQualifyingService(dateOfAppointment, retirementDate);
+  const baseQualifyingService = calculateQualifyingService(dateOfAppointment, retirementDate);
+  const qualifyingService =
+    retirementCategory === "other" && otherRetirementType === "medical" && baseQualifyingService
+      ? addQualifyingService(baseQualifyingService, {
+          years: Number(notionalServiceYears || 0),
+          months: Number(notionalServiceMonths || 0),
+        })
+      : baseQualifyingService;
   const promoted = promotedInLastTenMonths === "yes";
   const emolumentsSummary = determineEmoluments(
     Number(currentBasicPay || 0),
@@ -267,9 +335,26 @@ function SettlementAssessmentPage() {
   const fmaSummary = determineFma(fixedMedicalAllowance === "yes");
 
   const buildAssessment = (data: AssessmentFormValues): SettlementAssessment => {
-    const computedRetirementDate = calculateRetirementDate(data.dateOfBirth);
-    const computedService = calculateQualifyingService(data.dateOfAppointment, computedRetirementDate);
-    const service: QualifyingService = computedService ?? { years: 0, months: 0, days: 0 };
+    const computedNormalDate = calculateRetirementDate(data.dateOfBirth);
+    const computedRetirementDate =
+      data.retirementCategory === "other" &&
+      data.otherRetirementType === "death" &&
+      data.dateOfDeath
+        ? data.dateOfDeath
+        : computedNormalDate;
+    const computedService = calculateQualifyingService(
+      data.dateOfAppointment,
+      computedRetirementDate,
+    );
+    const service: QualifyingService =
+      data.retirementCategory === "other" &&
+      data.otherRetirementType === "medical" &&
+      computedService
+        ? addQualifyingService(computedService, {
+            years: data.notionalServiceYears,
+            months: data.notionalServiceMonths,
+          })
+        : (computedService ?? { years: 0, months: 0, days: 0 });
     const wasPromoted = data.promotedInLastTenMonths === "yes";
     const computedEmoluments = determineEmoluments(
       data.currentBasicPay,
@@ -297,6 +382,20 @@ function SettlementAssessmentPage() {
       fixedMedicalAllowance: data.fixedMedicalAllowance === "yes",
       ...computedFma,
     };
+    const otherRetirementDetails: OtherRetirementDetails = {
+      medicalRetirementApproved: data.medicalRetirementApproved === "yes",
+      notionalServiceAddition: {
+        years: data.notionalServiceYears,
+        months: data.notionalServiceMonths,
+        days: 0,
+      },
+      pensionSanctionPercentage: data.pensionSanctionPercentage,
+      dateOfDeath: data.dateOfDeath || undefined,
+      spouseAvailable: data.spouseAvailable === "yes",
+      familyPensionEligible: data.familyPensionEligible === "yes",
+      compassionateAllowanceSanctioned: data.compassionateAllowanceSanctioned === "yes",
+      technicalResignation: data.technicalResignation === "yes",
+    };
 
     return {
       employeeDetails: {
@@ -313,9 +412,12 @@ function SettlementAssessmentPage() {
         pensionScheme: data.pensionScheme as PensionScheme,
         employeeCategory: data.employeeCategory,
         retirementCategory: data.retirementCategory as RetirementCategory,
-        otherRetirementType: data.retirementCategory === "other" ? data.otherRetirementType : undefined,
+        otherRetirementType:
+          data.retirementCategory === "other" ? data.otherRetirementType : undefined,
         retirementDate: computedRetirementDate,
         qualifyingService: service,
+        otherRetirementDetails:
+          data.retirementCategory === "other" ? otherRetirementDetails : undefined,
       },
       salaryDetails,
       promotionDetails,
@@ -349,20 +451,56 @@ function SettlementAssessmentPage() {
           >
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <TextField control={form.control} name="employeeName" label="Employee Name" />
-              <TextField control={form.control} name="employeeId" label="Employee ID" placeholder="Optional" />
-              <TextField control={form.control} name="dateOfBirth" label="Date of Birth" type="date" />
-              <TextField control={form.control} name="dateOfAppointment" label="Date of Appointment" type="date" />
-              <ReadOnlyMetric label="Current Age" value={currentAge === null ? "Enter Date of Birth" : String(currentAge)} />
-              <ReadOnlyMetric label="Age Next Birthday" value={ageNextBirthday === null ? "Enter Date of Birth" : String(ageNextBirthday)} />
+              <TextField
+                control={form.control}
+                name="employeeId"
+                label="Employee ID"
+                placeholder="Optional"
+              />
+              <TextField
+                control={form.control}
+                name="dateOfBirth"
+                label="Date of Birth"
+                type="date"
+              />
+              <TextField
+                control={form.control}
+                name="dateOfAppointment"
+                label="Date of Appointment"
+                type="date"
+              />
+              <ReadOnlyMetric
+                label="Current Age"
+                value={currentAge === null ? "Enter Date of Birth" : String(currentAge)}
+              />
+              <ReadOnlyMetric
+                label="Age Next Birthday"
+                value={ageNextBirthday === null ? "Enter Date of Birth" : String(ageNextBirthday)}
+              />
               <SelectField
                 control={form.control}
                 name="employeeGroup"
                 label="Employee Group"
                 options={employeeGroups.map((group) => ({ value: group, label: group }))}
               />
-              <TextField control={form.control} name="payMatrixLevel" label="Pay Matrix Level" placeholder="Example: Level 7" />
-              <TextField control={form.control} name="designation" label="Designation" placeholder="Optional" />
-              <TextField control={form.control} name="department" label="Department" placeholder="Optional" />
+              <TextField
+                control={form.control}
+                name="payMatrixLevel"
+                label="Pay Matrix Level"
+                placeholder="Example: Level 7"
+              />
+              <TextField
+                control={form.control}
+                name="designation"
+                label="Designation"
+                placeholder="Optional"
+              />
+              <TextField
+                control={form.control}
+                name="department"
+                label="Department"
+                placeholder="Optional"
+              />
             </div>
           </SectionCard>
 
@@ -417,12 +555,123 @@ function SettlementAssessmentPage() {
                 />
               )}
             </div>
+
+            {retirementCategory === "other" && otherRetirementType === "medical" && (
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                <RadioField
+                  control={form.control}
+                  name="medicalRetirementApproved"
+                  label="Medical Retirement Approved?"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+                <TextField
+                  control={form.control}
+                  name="notionalServiceYears"
+                  label="Notional Service Addition (Years)"
+                  type="number"
+                />
+                <TextField
+                  control={form.control}
+                  name="notionalServiceMonths"
+                  label="Notional Service Addition (Months)"
+                  type="number"
+                />
+              </div>
+            )}
+
+            {retirementCategory === "other" && otherRetirementType === "compulsory" && (
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <TextField
+                  control={form.control}
+                  name="pensionSanctionPercentage"
+                  label="Pension Sanction Percentage"
+                  type="number"
+                />
+                <ReadOnlyMetric
+                  label="Pension Rule"
+                  value={`${pensionSanctionPercentage}% of calculated pension will be admitted.`}
+                />
+              </div>
+            )}
+
+            {retirementCategory === "other" && otherRetirementType === "death" && (
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                <TextField
+                  control={form.control}
+                  name="dateOfDeath"
+                  label="Date of Death"
+                  type="date"
+                />
+                <RadioField
+                  control={form.control}
+                  name="spouseAvailable"
+                  label="Spouse Available?"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+                <RadioField
+                  control={form.control}
+                  name="familyPensionEligible"
+                  label="Family Pension Eligible?"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+              </div>
+            )}
+
+            {retirementCategory === "other" && otherRetirementType === "removal" && (
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <RadioField
+                  control={form.control}
+                  name="compassionateAllowanceSanctioned"
+                  label="Compassionate Allowance Sanctioned?"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+              </div>
+            )}
+
+            {retirementCategory === "other" && otherRetirementType === "self-resignation" && (
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <RadioField
+                  control={form.control}
+                  name="technicalResignation"
+                  label="Technical Resignation?"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+              </div>
+            )}
           </SectionCard>
 
-          <SectionCard title="Salary Details" description="Enter salary and leave balance details for the calculation engine.">
+          <SectionCard
+            title="Salary Details"
+            description="Enter salary and leave balance details for the calculation engine."
+          >
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <TextField control={form.control} name="currentBasicPay" label="Current Basic Pay" type="number" />
-              <TextField control={form.control} name="dearnessAllowance" label="Dearness Allowance (DA %)" type="number" />
+              <TextField
+                control={form.control}
+                name="currentBasicPay"
+                label="Current Basic Pay"
+                type="number"
+              />
+              <TextField
+                control={form.control}
+                name="dearnessAllowance"
+                label="Dearness Allowance (DA %)"
+                type="number"
+              />
               <TextField control={form.control} name="lapDays" label="LAP Days" type="number" />
               <TextField control={form.control} name="lhapDays" label="LHAP Days" type="number" />
             </div>
@@ -482,7 +731,10 @@ function SettlementAssessmentPage() {
                 label="Average Last 10 Months Basic Pay"
                 value={formatCurrency(emolumentsSummary.averageLastTenMonthsBasicPay)}
               />
-              <ReadOnlyMetric label="Calculation Basis" value={emolumentsSummary.calculationBasis} />
+              <ReadOnlyMetric
+                label="Calculation Basis"
+                value={emolumentsSummary.calculationBasis}
+              />
               <ReadOnlyMetric
                 label="Pension Emoluments"
                 value={formatCurrency(emolumentsSummary.emoluments)}
@@ -490,7 +742,10 @@ function SettlementAssessmentPage() {
             </div>
           </SectionCard>
 
-          <SectionCard title="Medical Benefits" description="Capture the employee option for Fixed Medical Allowance.">
+          <SectionCard
+            title="Medical Benefits"
+            description="Capture the employee option for Fixed Medical Allowance."
+          >
             <RadioField
               control={form.control}
               name="fixedMedicalAllowance"
@@ -502,12 +757,18 @@ function SettlementAssessmentPage() {
             />
             <div className="grid gap-4 md:grid-cols-3 mt-5">
               <ReadOnlyMetric label="FMA Status" value={fmaSummary.fmaEligibility} />
-              <ReadOnlyMetric label="Monthly Amount" value={formatCurrency(fmaSummary.fmaMonthlyAmount)} />
+              <ReadOnlyMetric
+                label="Monthly Amount"
+                value={formatCurrency(fmaSummary.fmaMonthlyAmount)}
+              />
               <ReadOnlyMetric label="Reason" value={fmaSummary.fmaReason} />
             </div>
           </SectionCard>
 
-          <SectionCard title="Commutation" description="Capture commutation option and percentage. Factor is fetched by Age Next Birthday.">
+          <SectionCard
+            title="Commutation"
+            description="Capture commutation option and percentage. Factor is fetched by Age Next Birthday."
+          >
             <div className="grid gap-4 md:grid-cols-2">
               <RadioField
                 control={form.control}
@@ -523,7 +784,9 @@ function SettlementAssessmentPage() {
                 name="commutationPercentage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Percentage of Pension to Commute: {commutationPercentage}%</FormLabel>
+                    <FormLabel>
+                      Percentage of Pension to Commute: {commutationPercentage}%
+                    </FormLabel>
                     <FormControl>
                       <Slider
                         min={0}
@@ -542,15 +805,26 @@ function SettlementAssessmentPage() {
           </SectionCard>
 
           {pensionScheme === "OPS" && (
-            <SectionCard title="Additional Inputs" description="Manual OPS values entered by the employee for settlement processing.">
+            <SectionCard
+              title="Additional Inputs"
+              description="Manual OPS values entered by the employee for settlement processing."
+            >
               <div className="grid gap-4 md:grid-cols-2">
-                <TextField control={form.control} name="providentFund" label="Provident Fund (PF)" type="number" />
+                <TextField
+                  control={form.control}
+                  name="providentFund"
+                  label="Provident Fund (PF)"
+                  type="number"
+                />
                 <TextField control={form.control} name="cgis" label="CGIS" type="number" />
               </div>
             </SectionCard>
           )}
 
-          <SectionCard title="Review" description="Verify the collected inputs before preparing the SettlementAssessment object.">
+          <SectionCard
+            title="Review"
+            description="Verify the collected inputs before preparing the SettlementAssessment object."
+          >
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               <ReviewItem label="Employee Name" value={employeeName || "Not entered"} />
               <ReviewItem label="Pension Scheme" value={pensionScheme} />
@@ -559,21 +833,91 @@ function SettlementAssessmentPage() {
                 value={
                   retirementCategory === "normal"
                     ? "Normal Retirement"
-                    : otherRetirementTypes.find((item) => item.value === otherRetirementType)?.label ?? "Not selected"
+                    : (otherRetirementTypes.find((item) => item.value === otherRetirementType)
+                        ?.label ?? "Not selected")
                 }
               />
-              <ReviewItem label="Retirement Date" value={retirementDate ? formatDisplayDate(retirementDate) : "Not available"} />
-              <ReviewItem label="Current Age" value={currentAge === null ? "Not available" : String(currentAge)} />
-              <ReviewItem label="Age Next Birthday" value={ageNextBirthday === null ? "Not available" : String(ageNextBirthday)} />
-              <ReviewItem label="Qualifying Service" value={formatQualifyingService(qualifyingService)} />
+              <ReviewItem
+                label="Retirement Date"
+                value={retirementDate ? formatDisplayDate(retirementDate) : "Not available"}
+              />
+              <ReviewItem
+                label="Current Age"
+                value={currentAge === null ? "Not available" : String(currentAge)}
+              />
+              <ReviewItem
+                label="Age Next Birthday"
+                value={ageNextBirthday === null ? "Not available" : String(ageNextBirthday)}
+              />
+              <ReviewItem
+                label="Qualifying Service"
+                value={formatQualifyingService(qualifyingService)}
+              />
               <ReviewItem label="Basic Pay" value={formatCurrency(Number(currentBasicPay || 0))} />
-              <ReviewItem label="Pension Emoluments" value={formatCurrency(emolumentsSummary.emoluments)} />
+              <ReviewItem
+                label="Pension Emoluments"
+                value={formatCurrency(emolumentsSummary.emoluments)}
+              />
               <ReviewItem label="PF" value={formatCurrency(Number(providentFund || 0))} />
               <ReviewItem label="CGIS" value={formatCurrency(Number(cgis || 0))} />
-              <ReviewItem label="FMA Option" value={fixedMedicalAllowance === "yes" ? "Yes" : "No"} />
+              <ReviewItem
+                label="FMA Option"
+                value={fixedMedicalAllowance === "yes" ? "Yes" : "No"}
+              />
               <ReviewItem label="FMA Status" value={fmaSummary.fmaEligibility} />
-              <ReviewItem label="Commutation" value={commutationOpted === "yes" ? `${commutationPercentage}%` : "No"} />
-              <ReviewItem label="Promotion Status" value={promotedInLastTenMonths === "yes" ? "Promoted" : "Not promoted"} />
+              <ReviewItem
+                label="Commutation"
+                value={commutationOpted === "yes" ? `${commutationPercentage}%` : "No"}
+              />
+              <ReviewItem
+                label="Promotion Status"
+                value={promotedInLastTenMonths === "yes" ? "Promoted" : "Not promoted"}
+              />
+              {retirementCategory === "other" && otherRetirementType === "medical" && (
+                <>
+                  <ReviewItem
+                    label="Medical Approval"
+                    value={medicalRetirementApproved === "yes" ? "Approved" : "Not approved"}
+                  />
+                  <ReviewItem
+                    label="Notional Service"
+                    value={`${notionalServiceYears || 0} years, ${notionalServiceMonths || 0} months`}
+                  />
+                </>
+              )}
+              {retirementCategory === "other" && otherRetirementType === "death" && (
+                <>
+                  <ReviewItem
+                    label="Date of Death"
+                    value={dateOfDeath ? formatDisplayDate(dateOfDeath) : "Not entered"}
+                  />
+                  <ReviewItem
+                    label="Spouse Available"
+                    value={spouseAvailable === "yes" ? "Yes" : "No"}
+                  />
+                  <ReviewItem
+                    label="Family Pension Eligible"
+                    value={familyPensionEligible === "yes" ? "Yes" : "No"}
+                  />
+                </>
+              )}
+              {retirementCategory === "other" && otherRetirementType === "compulsory" && (
+                <ReviewItem label="Pension Sanction" value={`${pensionSanctionPercentage}%`} />
+              )}
+              {retirementCategory === "other" && otherRetirementType === "removal" && (
+                <ReviewItem
+                  label="Compassionate Allowance"
+                  value={
+                    compassionateAllowanceSanctioned === "yes" ? "Sanctioned" : "Not sanctioned"
+                  }
+                />
+              )}
+              {retirementCategory === "other" && otherRetirementType === "self-resignation" && (
+                <ReviewItem
+                  label="Technical Resignation"
+                  value={technicalResignation === "yes" ? "Yes" : "No"}
+                />
+              )}
             </div>
           </SectionCard>
 
@@ -647,7 +991,10 @@ function SelectField({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} value={typeof field.value === "string" ? field.value : undefined}>
+          <Select
+            onValueChange={field.onChange}
+            value={typeof field.value === "string" ? field.value : undefined}
+          >
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select" />
@@ -710,7 +1057,15 @@ function RadioField({
   );
 }
 
-function ReadOnlyMetric({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+function ReadOnlyMetric({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+}) {
   return (
     <div className="rounded-md border border-border bg-muted/30 p-4">
       <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -725,7 +1080,9 @@ function ReadOnlyMetric({ label, value, icon }: { label: string; value: string; 
 function ReviewItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md border border-border bg-background p-3">
-      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
       <div className="mt-1 text-sm font-medium text-foreground">{value}</div>
     </div>
   );

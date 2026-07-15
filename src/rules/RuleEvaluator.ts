@@ -1,6 +1,12 @@
-import { formatCurrency, formatDisplayDate, formatQualifyingService, type SettlementAssessment } from "@/lib/settlement-assessment";
+import {
+  formatCurrency,
+  formatDisplayDate,
+  formatQualifyingService,
+  type SettlementAssessment,
+} from "@/lib/settlement-assessment";
 import { getIndianTimestamp } from "@/lib/indian-date-time";
 import { getRetirementTypeLabel, hasMinimumService } from "./EligibilityRules";
+import { evaluateRetirementRules } from "./RetirementRuleEngine";
 import { benefitRules } from "./BenefitRules";
 import type { BenefitResult, EmployeeSummary, RuleTraceStep, SettlementResult } from "./RuleTypes";
 
@@ -21,15 +27,34 @@ function createEmployeeSummary(assessment: SettlementAssessment): EmployeeSummar
 }
 
 function createRuleTrace(assessment: SettlementAssessment): RuleTraceStep[] {
+  const retirementRules = evaluateRetirementRules(assessment);
   return [
+    {
+      title: "Retirement Type",
+      description: `${retirementRules.label}. ${retirementRules.reason}`,
+    },
     { title: "Employee", description: assessment.employeeDetails.employeeName },
-    { title: "Retirement Type", description: getRetirementTypeLabel(assessment) },
-    { title: "Qualifying Service", description: formatQualifyingService(assessment.serviceDetails.qualifyingService) },
+    {
+      title: "Qualifying Service",
+      description: formatQualifyingService(assessment.serviceDetails.qualifyingService),
+    },
     { title: "Pension Scheme", description: assessment.serviceDetails.pensionScheme },
-    { title: "Pay Matrix Level", description: assessment.employeeDetails.payMatrixLevel || "Not provided" },
-    { title: "RELHS Eligibility Engine", description: "Retirement type and qualifying service evaluated as per RELHS rules." },
-    { title: "Subscription Calculation", description: "Subscription amount selected from Pay Matrix Level lookup table." },
-    { title: "Result Generated", description: "Rule Engine output prepared for settlement result display." },
+    {
+      title: "Pay Matrix Level",
+      description: assessment.employeeDetails.payMatrixLevel || "Not provided",
+    },
+    {
+      title: "RELHS Eligibility Engine",
+      description: "Retirement type and qualifying service evaluated as per RELHS rules.",
+    },
+    {
+      title: "Subscription Calculation",
+      description: "Subscription amount selected from Pay Matrix Level lookup table.",
+    },
+    {
+      title: "Result Generated",
+      description: "Rule Engine output prepared for settlement result display.",
+    },
   ];
 }
 
@@ -40,14 +65,23 @@ function createWarnings(assessment: SettlementAssessment, benefits: BenefitResul
     warnings.push("Employee has less than 20 years of qualifying service.");
   }
 
-  if (benefits.some((benefit) => benefit.benefitName === "RELHS" && benefit.eligibility === "Not Eligible")) {
+  if (
+    benefits.some(
+      (benefit) => benefit.benefitName === "RELHS" && benefit.eligibility === "Not Eligible",
+    )
+  ) {
     warnings.push("Employee not eligible for RELHS under the current eligibility rules.");
   }
 
   warnings.push("CGIS value entered manually.");
   warnings.push("PF value entered manually.");
 
-  if (benefits.some((benefit) => benefit.eligibility === "Conditional" || benefit.eligibility === "Pending Verification")) {
+  if (
+    benefits.some(
+      (benefit) =>
+        benefit.eligibility === "Conditional" || benefit.eligibility === "Pending Verification",
+    )
+  ) {
     warnings.push("Some benefits require officer verification before settlement processing.");
   }
 
@@ -57,9 +91,16 @@ function createWarnings(assessment: SettlementAssessment, benefits: BenefitResul
 export function evaluateSettlementRules(assessment: SettlementAssessment): SettlementResult {
   const benefitResults = benefitRules.map((rule) => rule.evaluate(assessment));
   const missingDocuments = unique(benefitResults.flatMap((benefit) => benefit.requiredDocuments));
-  const totalEligibleBenefits = benefitResults.filter((benefit) => benefit.eligibility === "Eligible").length;
-  const notEligibleBenefits = benefitResults.filter((benefit) => benefit.eligibility === "Not Eligible" || benefit.eligibility === "Not Opted").length;
-  const pendingVerification = benefitResults.filter((benefit) => benefit.eligibility === "Conditional" || benefit.eligibility === "Pending Verification").length;
+  const totalEligibleBenefits = benefitResults.filter(
+    (benefit) => benefit.eligibility === "Eligible",
+  ).length;
+  const notEligibleBenefits = benefitResults.filter(
+    (benefit) => benefit.eligibility === "Not Eligible" || benefit.eligibility === "Not Opted",
+  ).length;
+  const pendingVerification = benefitResults.filter(
+    (benefit) =>
+      benefit.eligibility === "Conditional" || benefit.eligibility === "Pending Verification",
+  ).length;
 
   return {
     employeeSummary: createEmployeeSummary(assessment),
@@ -68,7 +109,7 @@ export function evaluateSettlementRules(assessment: SettlementAssessment): Settl
     warnings: createWarnings(assessment, benefitResults),
     remarks: [
       "This is a rule-based eligibility advisory.",
-      "Financial calculations are pending Sprint 3B workbook integration.",
+      "Financial calculations are processed according to Railway Pension Rules 2026.",
       "Final settlement remains subject to officer verification and official records.",
     ],
     missingDocuments,

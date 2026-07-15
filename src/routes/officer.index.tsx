@@ -24,8 +24,8 @@ const cards = [
     icon: ScrollText,
   },
   {
-    title: "Workbook Management",
-    description: "Prepare the workspace for settlement workbook governance in a future sprint.",
+    title: "Formula Management",
+    description: "Configure and govern formula parameters and rule logic rules dynamically.",
     to: "/officer/workbooks",
     icon: FileCog,
   },

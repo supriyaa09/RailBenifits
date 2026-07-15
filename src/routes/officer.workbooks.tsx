@@ -9,8 +9,8 @@ export const Route = createFileRoute("/officer/workbooks")({
 function WorkbookManagementPage() {
   return (
     <StatusPlaceholder
-      title="Workbook Management"
-      description="This module will allow officers to govern Excel workbooks after workbook reading is approved."
+      title="Formula Management"
+      description="This module will allow officers to govern formula parameters and rule logic rules dynamically."
       icon={<FileCog className="h-5 w-5" />}
     />
   );

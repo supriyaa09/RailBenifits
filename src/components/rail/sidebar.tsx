@@ -35,10 +35,7 @@ const employeeNav = [
   { title: "Settlement Assessment", to: "/employee/benefits", icon: ClipboardCheck },
   { title: "Settlement Results", to: "/employee/result", icon: ShieldCheck },
   { title: "My Settlement Reports", to: "/employee/reports", icon: FileText },
-  { title: "Railway Pension Assistant", to: "/employee/assistant", icon: Bot },
-  { title: "Railway Schemes", to: "/employee/schemes", icon: BookOpen },
-  { title: "Circular Library", to: "/employee/circulars", icon: ScrollText },
-  { title: "FAQs", to: "/employee/faqs", icon: HelpCircle },
+  { title: "Railway Knowledge Assistant", to: "/employee/assistant", icon: Bot },
 ];
 
 const officerNav = [
@@ -46,7 +43,7 @@ const officerNav = [
   { title: "Rule Management", to: "/officer/rules", icon: ShieldCheck },
   { title: "Benefit Management", to: "/officer/benefits", icon: Wallet },
   { title: "Circular Management", to: "/officer/circulars", icon: ScrollText },
-  { title: "Workbook Management", to: "/officer/workbooks", icon: FileCog },
+  { title: "Formula Management", to: "/officer/workbooks", icon: FileCog },
   { title: "Knowledge Base", to: "/officer/knowledge", icon: Database },
   { title: "Configuration", to: "/officer/configuration", icon: Settings },
   { title: "AI Management", to: "/officer/ai", icon: Bot },

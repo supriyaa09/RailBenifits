@@ -1,15 +1,11 @@
+import { formatIndianDate } from "./indian-date-time";
+
 export type EmployeeGroup = "A" | "B" | "C" | "D";
 export type PensionScheme = "OPS" | "UPS" | "NPS";
 export type EmployeeCategory = "Running" | "Non Running";
 export type RetirementCategory = "normal" | "other";
 export type OtherRetirementType =
-  | "voluntary"
-  | "medical"
-  | "compulsory"
-  | "death"
-  | "removal"
-  | "dismissal"
-  | "self-resignation";
+  "voluntary" | "medical" | "compulsory" | "death" | "removal" | "dismissal" | "self-resignation";
 
 export interface EmployeeDetails {
   employeeName: string;
@@ -29,6 +25,18 @@ export interface ServiceDetails {
   otherRetirementType?: OtherRetirementType;
   retirementDate: string;
   qualifyingService: QualifyingService;
+  otherRetirementDetails?: OtherRetirementDetails;
+}
+
+export interface OtherRetirementDetails {
+  medicalRetirementApproved?: boolean;
+  notionalServiceAddition?: QualifyingService;
+  pensionSanctionPercentage?: number;
+  dateOfDeath?: string;
+  spouseAvailable?: boolean;
+  familyPensionEligible?: boolean;
+  compassionateAllowanceSanctioned?: boolean;
+  technicalResignation?: boolean;
 }
 
 export interface CommutationDetails {
@@ -115,11 +123,7 @@ export function formatDateInput(date: Date | null): string {
 export function formatDisplayDate(value: string): string {
   const date = parseDateInput(value);
   if (!date) return "Not available";
-  return date.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  return formatIndianDate(date);
 }
 
 export function calculateRetirementDate(dateOfBirth: string): string {
@@ -148,7 +152,10 @@ export function calculateCurrentAge(dateOfBirth: string, asOf: Date = new Date()
   return age;
 }
 
-export function calculateAgeNextBirthday(dateOfBirth: string, asOf: Date = new Date()): number | null {
+export function calculateAgeNextBirthday(
+  dateOfBirth: string,
+  asOf: Date = new Date(),
+): number | null {
   const currentAge = calculateCurrentAge(dateOfBirth, asOf);
   return currentAge === null ? null : currentAge + 1;
 }
@@ -186,6 +193,18 @@ export function calculateQualifyingService(
 export function formatQualifyingService(service: QualifyingService | null): string {
   if (!service) return "Not available";
   return `${service.years} years, ${service.months} months, ${service.days} days`;
+}
+
+export function addQualifyingService(
+  service: QualifyingService,
+  addition: Partial<QualifyingService> = {},
+): QualifyingService {
+  const totalMonths = service.months + Number(addition.months ?? 0);
+  return {
+    years: service.years + Number(addition.years ?? 0) + Math.floor(totalMonths / 12),
+    months: totalMonths % 12,
+    days: service.days + Number(addition.days ?? 0),
+  };
 }
 
 export function formatCurrency(value: number): string {

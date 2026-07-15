@@ -150,7 +150,7 @@ function ReportsPage() {
                 <TableHead>Employee</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Scheme</TableHead>
-                <TableHead>Status</TableHead>
+
                 <TableHead className="text-right">One-Time</TableHead>
                 <TableHead className="text-right">Monthly</TableHead>
                 <TableHead>Date</TableHead>
@@ -180,7 +180,7 @@ function ReportsPage() {
                   </TableCell>
                   <TableCell>{report.report_type}</TableCell>
                   <TableCell>{report.pension_scheme}</TableCell>
-                  <TableCell><Badge variant="secondary">{report.status}</Badge></TableCell>
+
                   <TableCell className="text-right">{formatCurrency(report.total_one_time_settlement)}</TableCell>
                   <TableCell className="text-right">{formatCurrency(report.monthly_benefits)}</TableCell>
                   <TableCell>{formatReportDate(report.generated_date)}</TableCell>

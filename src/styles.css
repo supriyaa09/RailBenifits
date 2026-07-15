@@ -133,6 +133,33 @@
   --sidebar-foreground: oklch(0.98 0.002 245);
   --sidebar-primary: oklch(0.72 0.14 255);
   --sidebar-primary-foreground: oklch(0.15 0.02 245);
+  --foreground: oklch(0.98 0.002 245);
+  --card: oklch(0.19 0.03 245);
+  --card-foreground: oklch(0.98 0.002 245);
+  --popover: oklch(0.19 0.03 245);
+  --popover-foreground: oklch(0.98 0.002 245);
+  --primary: oklch(0.72 0.14 255);
+  --primary-foreground: oklch(0.15 0.02 245);
+  --primary-soft: oklch(0.3 0.06 255);
+  --secondary: oklch(0.24 0.03 245);
+  --secondary-foreground: oklch(0.98 0.002 245);
+  --muted: oklch(0.24 0.03 245);
+  --muted-foreground: oklch(0.72 0.02 245);
+  --accent: oklch(0.3 0.06 255);
+  --accent-foreground: oklch(0.98 0.002 245);
+  --destructive: oklch(0.65 0.2 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.68 0.14 155);
+  --success-foreground: oklch(0.15 0.02 255);
+  --warning: oklch(0.78 0.15 75);
+  --warning-foreground: oklch(0.2 0.04 60);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.62 0.12 255);
+  --sidebar: oklch(0.18 0.025 245);
+  --sidebar-foreground: oklch(0.98 0.002 245);
+  --sidebar-primary: oklch(0.72 0.14 255);
+  --sidebar-primary-foreground: oklch(0.15 0.02 245);
   --sidebar-accent: oklch(0.24 0.05 255);
   --sidebar-accent-foreground: oklch(0.98 0.002 245);
   --sidebar-border: oklch(1 0 0 / 10%);
@@ -147,11 +174,24 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: 'Noto Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   html {
     scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700 !important;
+  }
+
+  .section-title {
+    font-weight: 600 !important;
+  }
+
+  label, .font-medium {
+    font-weight: 500 !important;
   }
 }
 
@@ -375,5 +415,295 @@
   .settlement-certificate section:has(.font-bold.sm\:col-span-2) {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+}
+
+/* Accessibility Spacing */
+.accessibility-spacing-medium p,
+.accessibility-spacing-medium span,
+.accessibility-spacing-medium div,
+.accessibility-spacing-medium h1,
+.accessibility-spacing-medium h2,
+.accessibility-spacing-medium h3,
+.accessibility-spacing-medium button,
+.accessibility-spacing-medium input,
+.accessibility-spacing-medium label,
+.accessibility-spacing-medium td,
+.accessibility-spacing-medium li {
+  letter-spacing: 0.08em !important;
+  word-spacing: 0.12em !important;
+}
+
+.accessibility-spacing-large p,
+.accessibility-spacing-large span,
+.accessibility-spacing-large div,
+.accessibility-spacing-large h1,
+.accessibility-spacing-large h2,
+.accessibility-spacing-large h3,
+.accessibility-spacing-large button,
+.accessibility-spacing-large input,
+.accessibility-spacing-large label,
+.accessibility-spacing-large td,
+.accessibility-spacing-large li {
+  letter-spacing: 0.16em !important;
+  word-spacing: 0.24em !important;
+}
+
+/* Accessibility Line Height */
+.accessibility-line-height-medium p,
+.accessibility-line-height-medium span,
+.accessibility-line-height-medium div,
+.accessibility-line-height-medium h1,
+.accessibility-line-height-medium h2,
+.accessibility-line-height-medium h3,
+.accessibility-line-height-medium li {
+  line-height: 1.625 !important;
+}
+
+.accessibility-line-height-large p,
+.accessibility-line-height-large span,
+.accessibility-line-height-large div,
+.accessibility-line-height-large h1,
+.accessibility-line-height-large h2,
+.accessibility-line-height-large h3,
+.accessibility-line-height-large li {
+  line-height: 2.0 !important;
+}
+
+/* High Contrast Settings */
+.accessibility-high-contrast {
+  --background: #000000 !important;
+  --foreground: #ffffff !important;
+  --card: #000000 !important;
+  --card-foreground: #ffffff !important;
+  --popover: #000000 !important;
+  --popover-foreground: #ffffff !important;
+  --primary: #ffd700 !important; /* Gold */
+  --primary-foreground: #000000 !important;
+  --secondary: #1a1a1a !important;
+  --secondary-foreground: #ffffff !important;
+  --muted: #121212 !important;
+  --muted-foreground: #e0e0e0 !important;
+  --border: #ffffff !important;
+  --ring: #ffd700 !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+.accessibility-high-contrast * {
+  border-color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+/* Invert colors media fixes */
+html[style*="invert"] img,
+html[style*="invert"] svg:not(.lucide),
+html[style*="invert"] video,
+html.accessibility-invert img,
+html.accessibility-invert svg:not(.lucide),
+html.accessibility-invert video {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* Highlight Links */
+.accessibility-highlight-links a,
+.accessibility-highlight-links [role="link"] {
+  text-decoration: underline !important;
+  text-decoration-color: var(--primary, #ffd700) !important;
+  text-decoration-thickness: 2.5px !important;
+  text-underline-offset: 4px !important;
+  background-color: rgba(255, 235, 59, 0.2) !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.dark .accessibility-highlight-links a,
+.dark .accessibility-highlight-links [role="link"] {
+  color: #ffd700 !important;
+  background-color: rgba(255, 235, 59, 0.15) !important;
+}
+
+/* Accessibility Cursors */
+.accessibility-cursor-medium,
+.accessibility-cursor-medium * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="black" stroke="white" stroke-width="2" d="M0,0 L0,22 L6,16 L12,28 L15,26.5 L9,15.5 L16,15.5 Z"/></svg>'), auto !important;
+}
+
+.accessibility-cursor-large,
+.accessibility-cursor-large * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path fill="black" stroke="white" stroke-width="2" d="M0,0 L0,33 L9,24 L18,42 L22.5,39.75 L13.5,23.25 L24,23.25 Z"/></svg>'), auto !important;
+}
+
+.accessibility-cursor-xl,
+.accessibility-cursor-xl * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path fill="black" stroke="white" stroke-width="2" d="M0,0 L0,44 L12,32 L24,56 L30,53 L18,31 L32,31 Z"/></svg>'), auto !important;
+}
+
+/* Pause Animations */
+.accessibility-pause-animations *,
+.accessibility-pause-animations *::before,
+.accessibility-pause-animations *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}
+
+/* Dyslexia Friendly */
+.accessibility-dyslexia,
+.accessibility-dyslexia * {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', cursive, sans-serif !important;
+}
+
+/* Hide Images */
+.accessibility-hide-images img:not([src*="logo"]),
+.accessibility-hide-images svg:not(.lucide),
+.accessibility-hide-images [style*="background-image"] {
+  opacity: 0.05 !important;
+  pointer-events: none !important;
+}
+
+/* ADHD Focus Mode Enhancements */
+.accessibility-adhd-active {
+  --primary: oklch(0.38 0.08 250) !important; /* desaturated brand blue */
+  --primary-soft: oklch(0.95 0.01 250) !important;
+}
+
+/* Reduce distraction: shadows, animations, glows */
+.accessibility-adhd-active * {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition-duration: 0.5ms !important;
+  animation-duration: 0.5ms !important;
+}
+
+/* Improve readability: spacing, line height, max width */
+.accessibility-adhd-active p,
+.accessibility-adhd-active .paragraph {
+  max-width: 75ch !important;
+  line-height: 1.75 !important;
+  letter-spacing: 0.03em !important;
+  word-spacing: 0.06em !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Highlight current paragraph under mouse hover */
+.accessibility-adhd-highlight-p p:hover,
+.accessibility-adhd-highlight-p .paragraph:hover {
+  background-color: rgba(255, 235, 59, 0.12) !important;
+  font-weight: 500 !important;
+  border-radius: 4.5px;
+}
+
+.dark.accessibility-adhd-highlight-p p:hover,
+.dark.accessibility-adhd-highlight-p .paragraph:hover {
+  background-color: rgba(255, 235, 59, 0.06) !important;
+  color: #ffd700 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Settlement Tabs — Enterprise Navigation
+   Professional underline-style tab navigation with animated indicator.
+   Inspired by Azure Portal, GitHub Settings, Microsoft Admin Center.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.settlement-tabs-nav {
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+
+.settlement-tabs-list {
+  display: flex;
+  position: relative;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.settlement-tabs-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual Tab Trigger */
+.settlement-tab-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--muted-foreground);
+  background: transparent;
+  border: none;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: color 200ms ease, background-color 200ms ease;
+  user-select: none;
+  outline: none;
+}
+
+.settlement-tab-trigger:hover {
+  color: var(--primary);
+  background-color: var(--primary-soft);
+}
+
+.settlement-tab-trigger:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+/* Active state */
+.settlement-tab-trigger[data-state="active"] {
+  color: var(--primary);
+  font-weight: 600;
+  background: transparent;
+}
+
+.settlement-tab-trigger[data-state="active"]:hover {
+  background: transparent;
+}
+
+/* Tab Icon */
+.settlement-tab-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Animated Underline Indicator */
+.settlement-tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: var(--primary);
+  border-radius: 3px 3px 0 0;
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1),
+              width 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Responsive: smaller padding on mobile ─── */
+@media (max-width: 640px) {
+  .settlement-tab-trigger {
+    padding: 10px 14px;
+    font-size: 0.8125rem;
+    gap: 6px;
+  }
+
+  .settlement-tab-icon {
+    width: 16px;
+    height: 16px;
   }
 }

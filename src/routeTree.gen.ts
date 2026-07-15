@@ -30,6 +30,7 @@ import { Route as EmployeeFaqsRouteImport } from './routes/employee.faqs'
 import { Route as EmployeeCircularsRouteImport } from './routes/employee.circulars'
 import { Route as EmployeeBenefitsRouteImport } from './routes/employee.benefits'
 import { Route as EmployeeAssistantRouteImport } from './routes/employee.assistant'
+import { Route as ApiAssistantRouteImport } from './routes/api.assistant'
 
 const OfficerRoute = OfficerRouteImport.update({
   id: '/officer',
@@ -136,11 +137,17 @@ const EmployeeAssistantRoute = EmployeeAssistantRouteImport.update({
   path: '/assistant',
   getParentRoute: () => EmployeeRoute,
 } as any)
+const ApiAssistantRoute = ApiAssistantRouteImport.update({
+  id: '/api/assistant',
+  path: '/api/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/employee': typeof EmployeeRouteWithChildren
   '/officer': typeof OfficerRouteWithChildren
+  '/api/assistant': typeof ApiAssistantRoute
   '/employee/assistant': typeof EmployeeAssistantRoute
   '/employee/benefits': typeof EmployeeBenefitsRoute
   '/employee/circulars': typeof EmployeeCircularsRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/assistant': typeof ApiAssistantRoute
   '/employee/assistant': typeof EmployeeAssistantRoute
   '/employee/benefits': typeof EmployeeBenefitsRoute
   '/employee/circulars': typeof EmployeeCircularsRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/employee': typeof EmployeeRouteWithChildren
   '/officer': typeof OfficerRouteWithChildren
+  '/api/assistant': typeof ApiAssistantRoute
   '/employee/assistant': typeof EmployeeAssistantRoute
   '/employee/benefits': typeof EmployeeBenefitsRoute
   '/employee/circulars': typeof EmployeeCircularsRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/'
     | '/employee'
     | '/officer'
+    | '/api/assistant'
     | '/employee/assistant'
     | '/employee/benefits'
     | '/employee/circulars'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/api/assistant'
     | '/employee/assistant'
     | '/employee/benefits'
     | '/employee/circulars'
@@ -255,6 +266,7 @@ export interface FileRouteTypes {
     | '/'
     | '/employee'
     | '/officer'
+    | '/api/assistant'
     | '/employee/assistant'
     | '/employee/benefits'
     | '/employee/circulars'
@@ -279,6 +291,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EmployeeRoute: typeof EmployeeRouteWithChildren
   OfficerRoute: typeof OfficerRouteWithChildren
+  ApiAssistantRoute: typeof ApiAssistantRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -430,6 +443,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmployeeAssistantRouteImport
       parentRoute: typeof EmployeeRoute
     }
+    '/api/assistant': {
+      id: '/api/assistant'
+      path: '/api/assistant'
+      fullPath: '/api/assistant'
+      preLoaderRoute: typeof ApiAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -492,6 +512,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EmployeeRoute: EmployeeRouteWithChildren,
   OfficerRoute: OfficerRouteWithChildren,
+  ApiAssistantRoute: ApiAssistantRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

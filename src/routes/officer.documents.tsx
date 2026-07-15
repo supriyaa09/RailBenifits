@@ -10,7 +10,7 @@ function DocumentsPage() {
   return (
     <StatusPlaceholder
       title="Document Library"
-      description="This legacy route is preserved as a placeholder while the officer portal uses Circular and Workbook Management."
+      description="This legacy route is preserved as a placeholder while the officer portal uses Circular and Formula Management."
       icon={<FileText className="h-5 w-5" />}
     />
   );

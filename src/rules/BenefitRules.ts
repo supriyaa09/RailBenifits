@@ -1,16 +1,10 @@
 import type { SettlementAssessment } from "@/lib/settlement-assessment";
 import { evaluateFMAWithRELHS, evaluateRELHS } from "@/calculations/relhs/RELHSService";
-import {
-  hasMinimumService,
-  isDeathCase,
-  isNormalRetirement,
-  isRemovalOrDismissal,
-  isSelfResignation,
-  pensionSchemeIsSupported,
-} from "./EligibilityRules";
+import { hasMinimumService, pensionSchemeIsSupported } from "./EligibilityRules";
+import { evaluateRetirementRules, isBenefitAdmissible } from "./RetirementRuleEngine";
 import type { BenefitResult, BenefitRule, EligibilityStatus } from "./RuleTypes";
 
-const calculationPending = "Will be calculated in Sprint 3B";
+const calculationPending = "Formula Repository Calculation";
 const railwayRules = "Railway Pension Rules 2026";
 
 function benefit(
@@ -18,7 +12,7 @@ function benefit(
   eligibility: EligibilityStatus,
   reason: string,
   requiredDocuments: string[],
-  remarks = "Financial calculation pending official workbook integration.",
+  remarks = "Financial calculation processed by RailAssist Rule Engine.",
 ): BenefitResult {
   return {
     benefitName,
@@ -43,21 +37,28 @@ function benefit(
 export const benefitRules: BenefitRule[] = [
   {
     benefitName: "Pension",
-    evaluate: (assessment: SettlementAssessment) =>
-      benefit(
+    evaluate: (assessment: SettlementAssessment) => {
+      const retirementRules = evaluateRetirementRules(assessment);
+      const eligible =
+        pensionSchemeIsSupported(assessment.serviceDetails.pensionScheme) &&
+        retirementRules.benefits.pension;
+      return benefit(
         "Pension",
-        pensionSchemeIsSupported(assessment.serviceDetails.pensionScheme) ? "Eligible" : "Not Eligible",
-        `${assessment.serviceDetails.pensionScheme} pension scheme is supported for rule evaluation.`,
+        eligible ? "Eligible" : "Not Eligible",
+        eligible
+          ? `${assessment.serviceDetails.pensionScheme} pension scheme is supported for ${retirementRules.label}.`
+          : retirementRules.reason,
         ["Service Register", "Retirement Order", "PPO"],
-      ),
+      );
+    },
   },
   {
     benefitName: "Family Pension",
     evaluate: (assessment: SettlementAssessment) =>
       benefit(
         "Family Pension",
-        isDeathCase(assessment) ? "Eligible" : "Conditional",
-        isDeathCase(assessment)
+        isBenefitAdmissible(assessment, "familyPension") ? "Eligible" : "Conditional",
+        isBenefitAdmissible(assessment, "familyPension")
           ? "Employee case is marked as Death Case."
           : "Family Pension applies only on death cases and requires family/nominee verification.",
         ["Death Certificate", "Nominee Details", "Family Composition Certificate"],
@@ -67,12 +68,13 @@ export const benefitRules: BenefitRule[] = [
   {
     benefitName: "Retirement Gratuity",
     evaluate: (assessment: SettlementAssessment) => {
-      const blocked = isRemovalOrDismissal(assessment);
+      const retirementRules = evaluateRetirementRules(assessment);
+      const blocked = !retirementRules.benefits.retirementGratuity;
       return benefit(
         "Retirement Gratuity",
         blocked ? "Not Eligible" : "Eligible",
         blocked
-          ? "Removal or dismissal cases are not eligible under the current rule set."
+          ? retirementRules.reason
           : "Employee separation type is eligible for gratuity rule evaluation.",
         ["Service Register", "Retirement Order", "PPO"],
       );
@@ -81,33 +83,43 @@ export const benefitRules: BenefitRule[] = [
   {
     benefitName: "Leave Encashment",
     evaluate: (assessment: SettlementAssessment) => {
-      const hasLeave = assessment.salaryDetails.lapDays > 0 || assessment.salaryDetails.lhapDays > 0;
+      const hasLeave =
+        assessment.salaryDetails.lapDays > 0 || assessment.salaryDetails.lhapDays > 0;
+      const admissible = isBenefitAdmissible(assessment, "leaveEncashment");
       return benefit(
         "Leave Encashment",
-        hasLeave ? "Eligible" : "Not Eligible",
-        hasLeave ? "LAP or LHAP balance is greater than zero." : "No LAP or LHAP balance entered.",
+        hasLeave && admissible ? "Eligible" : "Not Eligible",
+        admissible
+          ? hasLeave
+            ? "LAP or LHAP balance is greater than zero."
+            : "No LAP or LHAP balance entered."
+          : evaluateRetirementRules(assessment).reason,
         ["Leave Account", "Service Register"],
       );
     },
   },
   {
     benefitName: "Provident Fund",
-    evaluate: () =>
+    evaluate: (assessment: SettlementAssessment) =>
       benefit(
         "Provident Fund",
-        "Eligible",
-        "Provident Fund value is manually entered for future settlement processing.",
+        isBenefitAdmissible(assessment, "providentFund") ? "Eligible" : "Not Eligible",
+        isBenefitAdmissible(assessment, "providentFund")
+          ? "Provident Fund value is manually entered for future settlement processing."
+          : evaluateRetirementRules(assessment).reason,
         ["PF Statement", "Bank Details"],
         "Manual PF input captured. Amount validation and settlement calculation remain pending.",
       ),
   },
   {
     benefitName: "CGIS",
-    evaluate: () =>
+    evaluate: (assessment: SettlementAssessment) =>
       benefit(
         "CGIS",
-        "Eligible",
-        "CGIS value is manually entered for future settlement processing.",
+        isBenefitAdmissible(assessment, "cgis") ? "Eligible" : "Not Eligible",
+        isBenefitAdmissible(assessment, "cgis")
+          ? "CGIS value is manually entered for future settlement processing."
+          : evaluateRetirementRules(assessment).reason,
         ["CGIS Statement", "Service Register"],
         "Manual CGIS input captured. Amount validation and settlement calculation remain pending.",
       ),
@@ -116,10 +128,11 @@ export const benefitRules: BenefitRule[] = [
     benefitName: "RELHS",
     evaluate: (assessment: SettlementAssessment) => {
       const relhs = evaluateRELHS(assessment);
+      const admissible = isBenefitAdmissible(assessment, "relhs");
       return benefit(
         "RELHS",
-        relhs.eligible ? "Eligible" : "Not Eligible",
-        relhs.reason,
+        relhs.eligible && admissible ? "Eligible" : "Not Eligible",
+        admissible ? relhs.reason : evaluateRetirementRules(assessment).reason,
         relhs.requiredDocuments,
         relhs.remarks,
       );
@@ -130,10 +143,11 @@ export const benefitRules: BenefitRule[] = [
     evaluate: (assessment: SettlementAssessment) => {
       const relhs = evaluateRELHS(assessment);
       const fma = evaluateFMAWithRELHS(assessment, relhs);
+      const admissible = isBenefitAdmissible(assessment, "fma");
       return benefit(
         "Fixed Medical Allowance",
-        fma.status,
-        fma.reason,
+        admissible ? fma.status : "Not Eligible",
+        admissible ? fma.reason : evaluateRetirementRules(assessment).reason,
         ["FMA Option Form"],
         "Recurring monthly benefit. Not included in total settlement.",
       );
@@ -142,7 +156,8 @@ export const benefitRules: BenefitRule[] = [
   {
     benefitName: "Complimentary Pass",
     evaluate: (assessment: SettlementAssessment) => {
-      const eligible = !isRemovalOrDismissal(assessment) && !isSelfResignation(assessment) && hasMinimumService(assessment, 20);
+      const eligible =
+        isBenefitAdmissible(assessment, "complimentaryPass") && hasMinimumService(assessment, 20);
       return benefit(
         "Complimentary Pass",
         eligible ? "Eligible" : "Conditional",
@@ -155,26 +170,30 @@ export const benefitRules: BenefitRule[] = [
   },
   {
     benefitName: "Composite Transfer Grant",
-    evaluate: (assessment: SettlementAssessment) =>
-      benefit(
+    evaluate: (assessment: SettlementAssessment) => {
+      const retirementRules = evaluateRetirementRules(assessment);
+      return benefit(
         "Composite Transfer Grant",
-        isRemovalOrDismissal(assessment) ? "Not Eligible" : "Conditional",
-        isRemovalOrDismissal(assessment)
-          ? "Removal or dismissal cases are not eligible in the current rule set."
-          : "Eligibility depends on movement/settlement conditions and officer verification.",
+        retirementRules.benefits.ctg ? "Conditional" : "Not Eligible",
+        retirementRules.benefits.ctg
+          ? "Eligibility depends on movement/settlement conditions and officer verification."
+          : retirementRules.reason,
         ["Transfer Details", "Settlement Order"],
-      ),
+      );
+    },
   },
   {
     benefitName: "Medical Facilities",
-    evaluate: (assessment: SettlementAssessment) =>
-      benefit(
+    evaluate: (assessment: SettlementAssessment) => {
+      const retirementRules = evaluateRetirementRules(assessment);
+      return benefit(
         "Medical Facilities",
-        isRemovalOrDismissal(assessment) || isSelfResignation(assessment) ? "Not Eligible" : "Eligible",
-        isRemovalOrDismissal(assessment) || isSelfResignation(assessment)
-          ? "Separation type is not eligible for medical facilities in the current rule set."
-          : "Employee separation type is eligible for medical facility evaluation.",
+        retirementRules.benefits.medicalFacilities ? "Eligible" : "Not Eligible",
+        retirementRules.benefits.medicalFacilities
+          ? "Employee separation type is eligible for medical facility evaluation."
+          : retirementRules.reason,
         ["Medical Option Form", "Service Register"],
-      ),
+      );
+    },
   },
 ];
