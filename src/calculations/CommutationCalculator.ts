@@ -7,7 +7,7 @@ import type { BenefitCalculation, CalculationContext } from "./CalculationTypes"
 export class CommutationCalculator extends BaseBenefitCalculator {
   formulaReference() {
     return calculatedFormula(
-      "Lump Sum Commutation = Commuted Pension x Factor x 12",
+      "Commuted Value = Commuted Pension x 12 x Commutation Factor",
       "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
       "Commutation factor is fetched by Age Next Birthday from the commutation_factors table or default JSON fallback.",
     );
@@ -23,10 +23,10 @@ export class CommutationCalculator extends BaseBenefitCalculator {
     const hasFactor = factorResult.factor !== null;
     const opted = context.assessment.commutationDetails.commutationOpted;
     const percentage = opted ? context.assessment.commutationDetails.commutationPercentage : 0;
-    const basicPension = context.assessment.promotionDetails.emoluments * 0.5;
+    const basicPension = context.assessment.salaryDetails.currentBasicPay * 0.5;
     const commutedPension = (basicPension * percentage) / 100;
     const amount = hasFactor ? commutedPension * factorResult.factor! * 12 : 0;
-    const eligible = context.assessment.serviceDetails.pensionScheme !== "NPS" && opted && hasFactor;
+    const eligible = context.assessment.serviceDetails.pensionScheme === "OPS" && opted && hasFactor;
 
     return {
       key: "commutation",
@@ -49,8 +49,10 @@ export class CommutationCalculator extends BaseBenefitCalculator {
         circularNumber: factorResult.circularNumber,
         commutationOpted: opted,
         commutationPercentage: percentage,
+        lastBasicPay: context.assessment.salaryDetails.currentBasicPay,
         basicPension: Math.round(basicPension),
         commutedPension: Math.round(commutedPension),
+        formula: "Commuted Pension = Pension x Commutation Percentage; Commuted Value = Commuted Pension x 12 x Factor",
         residualPension: Math.round(basicPension - commutedPension),
       },
     };

@@ -77,17 +77,28 @@ export class CalculationEngine {
 
   private calculateCtg(context: CalculationContext): BenefitCalculation {
     const eligible = context.ruleResult.benefitResults.find((benefit) => benefit.benefitName === "Composite Transfer Grant")?.eligibility !== "Not Eligible";
-    return pendingCalculation(
-      "ctg",
-      "Composite Transfer Grant",
+    const lastDrawnBasicPay = context.assessment.salaryDetails.currentBasicPay;
+    const amount = eligible ? lastDrawnBasicPay * 0.8 : 0;
+    return {
+      key: "ctg",
+      benefitName: "Composite Transfer Grant",
+      amount: Math.round(amount),
       eligible,
-      "Composite Transfer Grant will be calculated after official workbook mapping.",
-      workbookFormula(
-        "Composite Transfer Grant",
-        "CTG",
-        "Calculated using transfer grant rules after workbook integration.",
+      status: eligible ? "Calculated" : "Not Eligible",
+      reason: eligible
+        ? "Composite Transfer Grant is calculated as 80% of Last Drawn Basic Pay."
+        : "Composite Transfer Grant is not eligible under Rule Engine.",
+      warnings: [],
+      details: {
+        lastDrawnBasicPay,
+        percentage: "80%",
+      },
+      formula: calculatedFormula(
+        "CTG = 80% x Last Drawn Basic Pay",
+        "OPS_CTG",
+        "Composite Transfer Grant formula from Railway Pension Formula Sheet.",
       ),
-    );
+    };
   }
 
   private calculateResidualPension(

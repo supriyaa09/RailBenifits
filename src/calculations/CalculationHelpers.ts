@@ -80,6 +80,7 @@ export function calculatedAmount(
   reason: string,
   formula: FormulaMetadata,
   details?: Record<string, string | number | boolean | string[] | null>,
+  warnings: string[] = [],
 ): BenefitCalculation {
   return {
     key,
@@ -89,7 +90,7 @@ export function calculatedAmount(
     status: "Calculated",
     formula,
     reason,
-    warnings: [],
+    warnings,
     details,
   };
 }

@@ -1,5 +1,6 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { Bell, Search, User } from "lucide-react";
+import { Bell, Moon, Search, Sun, User } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,6 +11,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { RailSidebar } from "./sidebar";
+
+type ThemeMode = "light" | "dark";
+
+const themeStorageKeyPrefix = "railassist:theme";
 
 function crumbLabel(seg: string) {
   const map: Record<string, string> = {
@@ -36,10 +41,31 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const segs = pathname.split("/").filter(Boolean);
   const isOfficer = role === "officer";
+  const roleThemeStorageKey = `${themeStorageKeyPrefix}:${role}`;
+  const defaultTheme: ThemeMode = isOfficer ? "dark" : "light";
+  const [theme, setTheme] = useState<ThemeMode>(defaultTheme);
+  const [themeLoaded, setThemeLoaded] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem(roleThemeStorageKey);
+    setTheme(savedTheme === "dark" || savedTheme === "light" ? savedTheme : defaultTheme);
+    setThemeLoaded(true);
+  }, [defaultTheme, roleThemeStorageKey]);
+
+  useEffect(() => {
+    if (!themeLoaded) return;
+    window.localStorage.setItem(roleThemeStorageKey, theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.classList.toggle("theme-dark", theme === "dark");
+    document.documentElement.classList.toggle("theme-light", theme === "light");
+    document.documentElement.dataset.theme = theme;
+  }, [roleThemeStorageKey, theme, themeLoaded]);
+
+  const isDarkMode = theme === "dark";
 
   return (
     <SidebarProvider>
-      <div className={`${isOfficer ? "dark" : ""} min-h-screen flex w-full bg-background text-foreground`}>
+      <div className={`${isDarkMode ? "dark theme-dark" : "theme-light"} min-h-screen flex w-full bg-background text-foreground`}>
         <RailSidebar role={role} />
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 flex items-center gap-3 border-b border-border bg-card/90 backdrop-blur px-3 sticky top-0 z-30 shadow-soft">
@@ -54,6 +80,16 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
               </div>
             </div>
             <div className="ml-auto flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setTheme(isDarkMode ? "light" : "dark")}
+                className="h-9 rounded-md hover:bg-primary/5 inline-flex items-center gap-2 px-2.5 text-muted-foreground border border-transparent hover:border-primary/10"
+                aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+                title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+              >
+                {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                <span className="hidden text-xs font-medium sm:inline">{isDarkMode ? "Light" : "Dark"}</span>
+              </button>
               <button
                 className="h-9 w-9 rounded-md hover:bg-primary/5 grid place-items-center text-muted-foreground border border-transparent hover:border-primary/10"
                 aria-label="Notifications"

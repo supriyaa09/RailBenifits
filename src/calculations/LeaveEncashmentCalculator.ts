@@ -4,7 +4,7 @@ import type { CalculationContext } from "./CalculationTypes";
 
 export class LeaveEncashmentCalculator extends BaseBenefitCalculator {
   formulaReference() {
-    return calculatedFormula("Leave Encashment = (Basic + DA) x LAP Days / 30", "LEAVE_ENCASHMENT", "Half-pay leave uses configurable half-pay salary basis.");
+    return calculatedFormula("LAP Encashment = (Basic Pay + DA) x LAP Days / 30", "OPS_LAP_ENCASHMENT", "OPS LAP encashment follows the Railway formula sheet.");
   }
 
   explain() {
@@ -14,22 +14,37 @@ export class LeaveEncashmentCalculator extends BaseBenefitCalculator {
   calculate(context: CalculationContext) {
     const basic = context.assessment.salaryDetails.currentBasicPay;
     const da = calculateDearnessAllowanceAmount(basic, context.assessment.salaryDetails.dearnessAllowance);
-    const amount = ((basic + da) * context.assessment.salaryDetails.lapDays) / 30;
+    const requestedLapDays = context.assessment.salaryDetails.lapDays;
+    const effectiveLapDays = Math.min(requestedLapDays, 300);
+    const amount = ((basic + da) * effectiveLapDays) / 30;
+    const warnings = requestedLapDays > effectiveLapDays ? ["Combined LAP/LHAP encashment is capped at 300 days."] : [];
     return calculatedAmount("leaveEncashment", "Leave Encashment", amount, this.explain(), this.formulaReference(), {
       basicPay: basic,
       dearnessAllowanceAmount: da,
-      lapDays: context.assessment.salaryDetails.lapDays,
-    });
+      requestedLapDays,
+      effectiveLapDays,
+      formula: "(Basic Pay + DA) x LAP Days / 30",
+    }, warnings);
   }
 
   calculateHalfPay(context: CalculationContext) {
     const basic = context.assessment.salaryDetails.currentBasicPay;
     const da = calculateDearnessAllowanceAmount(basic, context.assessment.salaryDetails.dearnessAllowance);
-    const halfPaySalary = basic / 2 + da;
-    const amount = (halfPaySalary * context.assessment.salaryDetails.lhapDays) / 30;
-    return calculatedAmount("halfLeaveEncashment", "Half Leave Encashment", amount, "Half Leave Encashment is calculated using half-pay leave salary.", calculatedFormula("Half Leave Encashment = Applicable Half Leave Salary x LHAP Days / 30", "HALF_LEAVE_ENCASHMENT", "Architecture allows this rule to change later."), {
-      halfPaySalary,
-      lhapDays: context.assessment.salaryDetails.lhapDays,
-    });
+    const requestedLapDays = context.assessment.salaryDetails.lapDays;
+    const requestedLhapDays = context.assessment.salaryDetails.lhapDays;
+    const effectiveLapDays = Math.min(requestedLapDays, 300);
+    const effectiveLhapDays = Math.min(requestedLhapDays, Math.max(0, 300 - effectiveLapDays));
+    const amount = ((basic + da) * effectiveLhapDays) / 60;
+    const warnings =
+      requestedLapDays + requestedLhapDays > 300
+        ? ["Combined LAP/LHAP encashment is capped at 300 days. LHAP days were reduced after applying LAP days first."]
+        : [];
+    return calculatedAmount("halfLeaveEncashment", "Half Leave Encashment", amount, "LHAP Encashment is calculated using (Basic Pay + DA) x LHAP Days / 60.", calculatedFormula("LHAP Encashment = (Basic Pay + DA) x LHAP Days / 60", "OPS_LHAP_ENCASHMENT", "OPS LHAP encashment follows the Railway formula sheet."), {
+      basicPay: basic,
+      dearnessAllowanceAmount: da,
+      requestedLhapDays,
+      effectiveLhapDays,
+      formula: "(Basic Pay + DA) x LHAP Days / 60",
+    }, warnings);
   }
 }

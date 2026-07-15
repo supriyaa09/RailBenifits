@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmptyState, INDIAN_RAILWAYS_LOGO, PageHeader, SectionCard } from "@/components/rail/common";
+import { formatIndianDateTime } from "@/lib/indian-date-time";
 import { formatCurrency, type SettlementAssessment } from "@/lib/settlement-assessment";
 import { saveSettlementReport } from "@/services/ReportManagementService";
 import { processSettlement } from "@/services/SettlementService";
@@ -282,14 +283,21 @@ function OfficialReport({
   result: SettlementResult;
   calculation: SettlementCalculation;
 }) {
-  const generatedAt = new Date(result.generatedOn);
-  const generatedDate = Number.isNaN(generatedAt.getTime())
-    ? result.generatedOn
-    : generatedAt.toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric" });
-  const generatedTime = Number.isNaN(generatedAt.getTime())
-    ? "Not available"
-    : generatedAt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
-  const reportNumber = `SCR-STL-${generatedAt.getFullYear?.() || new Date().getFullYear()}-${String(
+  const reportGeneratedAt = useMemo(() => new Date(), []);
+  const generatedTimestamp = useMemo(() => {
+    if (result.generatedOn.includes("IST") && /\d{1,2}:\d{2}:\d{2}/.test(result.generatedOn)) {
+      return result.generatedOn;
+    }
+
+    const parsedGeneratedOn = new Date(result.generatedOn);
+    const hasTimeComponent = /\d{1,2}:\d{2}/.test(result.generatedOn);
+    const timestampSource = Number.isNaN(parsedGeneratedOn.getTime()) || !hasTimeComponent
+      ? reportGeneratedAt
+      : parsedGeneratedOn;
+
+    return formatIndianDateTime(timestampSource);
+  }, [reportGeneratedAt, result.generatedOn]);
+  const reportNumber = `SCR-STL-${reportGeneratedAt.getFullYear()}-${String(
     assessment.employeeDetails.employeeId || assessment.employeeDetails.employeeName || "DRAFT",
   ).replace(/[^a-zA-Z0-9]/g, "").slice(0, 12)}`;
   const isDeathCase = assessment.serviceDetails.otherRetirementType === "death";
@@ -302,7 +310,7 @@ function OfficialReport({
   const pensionEmoluments = assessment.promotionDetails.emoluments;
   const deathRows: CertificateRow[] = [
     certificateRow("1.", "Family Pension", calculation.familyPension.monthlyAmount ?? calculation.familyPension.amount, calculation.familyPension),
-    certificateRow("2.", "Enhanced Family Pension", Number(calculation.familyPension.details?.enhancedFamilyPension ?? 0), calculation.familyPension),
+    certificateRow("2.", "Enhanced Family Pension", isDeathCase ? Number(calculation.familyPension.details?.enhancedFamilyPension ?? 0) : 0, calculation.familyPension),
     certificateRow("3.", "Death Gratuity", isDeathCase ? calculation.retirementGratuity.amount : 0, calculation.retirementGratuity),
     certificateRow("4(i).", "Amount under Insurance Fund of CGEGIS", 0, calculation.cgis),
     certificateRow("4(ii).", "Amount under Savings Fund of CGEGIS", calculation.cgis.amount, calculation.cgis),
@@ -343,7 +351,7 @@ function OfficialReport({
           <div>
             <div className="text-sm font-semibold text-foreground">Official Railway Settlement Certificate</div>
             <div className="text-xs text-muted-foreground">
-              A4 portrait structured HTML, print-ready for PDF generation and future server-side rendering.
+              Preview, print, and save the South Central Railway settlement certificate.
             </div>
             {lastSavedReport && <div className="mt-1 text-xs font-medium text-primary">{lastSavedReport}</div>}
           </div>
@@ -382,7 +390,7 @@ function OfficialReport({
               <div className="text-sm font-semibold uppercase tracking-wide">Details of Settlement Benefits</div>
             </div>
             <div className="grid h-16 w-16 place-items-center border border-dashed border-slate-400 text-center text-[9px] uppercase leading-tight">
-              Seal<br />Placeholder
+              Office<br />Seal
             </div>
           </div>
         </header>
@@ -397,7 +405,7 @@ function OfficialReport({
           <CertificateMeta label="Employee ID" value={assessment.employeeDetails.employeeId || "Not provided"} />
           <CertificateMeta label="Department" value={assessment.employeeDetails.department || "Not provided"} />
           <CertificateMeta label="Division" value="South Central Railway" />
-          <CertificateMeta label="Generated Date" value={generatedDate} />
+          <CertificateMeta label="Generated Date" value={generatedTimestamp} />
           <CertificateMeta label="Report Number" value={reportNumber} />
           <CertificateMeta label="Status" value="Draft" />
           <CertificateMeta label="Retirement Type" value={result.employeeSummary.retirementType} />
@@ -483,20 +491,9 @@ function OfficialReport({
           </div>
         </CertificateSection>
 
-        <CertificateSection title="Section C - Formula Trace">
+        <CertificateSection title="(B) In case of Death">
           <div className="border border-slate-500">
-            <CertificateTable
-              rows={[
-                certificateRow("1.", "Basic Pension", calculation.basicPension.amount, calculation.basicPension),
-                certificateRow("2.", "Commutation", calculation.commutation.amount, calculation.commutation),
-                certificateRow("3.", "Residual Pension", calculation.residualPension.amount, calculation.residualPension),
-                certificateRow("4.", "Retirement Gratuity", calculation.retirementGratuity.amount, calculation.retirementGratuity),
-                certificateRow("5.", "Leave Encashment", calculation.leaveEncashment.amount, calculation.leaveEncashment),
-                certificateRow("6.", "Half Leave Encashment", calculation.halfLeaveEncashment.amount, calculation.halfLeaveEncashment),
-                certificateRow("7.", "PF", calculation.providentFund.amount, calculation.providentFund),
-                certificateRow("8.", "CGIS", calculation.cgis.amount, calculation.cgis),
-              ]}
-            />
+            <CertificateTable rows={deathRows} />
           </div>
         </CertificateSection>
 
@@ -515,30 +512,11 @@ function OfficialReport({
               "Medical Option Form",
               "Settlement Order",
             ].map((document) => (
-              <div key={document} className="border-b border-slate-300 px-3 py-2 text-[12px] sm:odd:border-r">
-                [ ] {document}
+              <div key={document} className="flex items-center gap-2 border-b border-slate-300 px-3 py-2 text-[12px] sm:odd:border-r">
+                <span aria-hidden="true" className="text-[14px] leading-none">☐</span>
+                <span>{document}</span>
               </div>
             ))}
-          </div>
-        </CertificateSection>
-
-        <CertificateSection title="Death Benefits">
-          <details open={isDeathCase} className="border border-slate-500">
-            <summary className="cursor-pointer bg-slate-100 px-3 py-2 font-semibold print:list-none">
-              {isDeathCase ? "Death benefit calculations" : "Death benefits not applicable for retirement case"}
-            </summary>
-            <CertificateTable rows={deathRows} />
-          </details>
-        </CertificateSection>
-
-        <CertificateSection title="QR Verification">
-          <div className="grid border border-slate-500 sm:grid-cols-[120px_1fr]">
-            <div className="grid h-28 place-items-center border-b border-slate-300 text-center text-[10px] uppercase tracking-wide sm:border-b-0 sm:border-r">
-              QR Code<br />Placeholder
-            </div>
-            <div className="px-3 py-3 text-[12px] text-slate-700">
-              Reserved for future report verification, digital signature validation, officer stamp, and railway logo integration.
-            </div>
           </div>
         </CertificateSection>
 
@@ -566,14 +544,11 @@ function OfficialReport({
             <div className="grid border-t border-slate-500 sm:grid-cols-[1fr_180px]">
               <div className="min-h-20 border-b border-slate-300 px-3 py-2 sm:border-b-0 sm:border-r">
                 <div className="text-[10px] font-bold uppercase tracking-wide">Remarks</div>
-                <div className="mt-2 text-slate-600">Pending officer verification.</div>
+                <div className="mt-10 border-t border-slate-300" aria-hidden="true" />
               </div>
               <div className="px-3 py-2">
                 <div className="text-[10px] font-bold uppercase tracking-wide">Approval Date</div>
-                <div className="mt-2">Pending</div>
-                <div className="mt-6 border border-dashed border-slate-400 px-2 py-5 text-center text-[11px] uppercase text-slate-600">
-                  Digital Signature Placeholder
-                </div>
+                <div className="mt-8 border-t border-slate-500 pt-1 text-center text-[11px]">Date</div>
               </div>
             </div>
           </div>
@@ -584,10 +559,10 @@ function OfficialReport({
             <div>Prepared by: RailAssist Settlement Engine</div>
             <div>Report Version: Sprint 5 Reporting System</div>
             <div>Rule Version: Railway Pension Rules 2026</div>
-            <div>Generated: {generatedDate} {generatedTime}</div>
+            <div>Generated: {generatedTimestamp}</div>
           </div>
           <p className="mt-3">
-            Disclaimer: This report is system generated based on Railway rules. Final approval is subject to verification by the competent Railway authority.
+            Disclaimer: This report is generated based on Railway pension and settlement rules. Final settlement is subject to verification and approval by the competent Railway authority.
           </p>
         </footer>
       </div>
@@ -691,7 +666,7 @@ function CertificateTable({ rows }: { rows: CertificateRow[] }) {
 function CalculationDisclosure({ calculation }: { calculation: BenefitCalculation }) {
   return (
     <details className="calculation-disclosure mt-1 text-[11px] text-slate-700">
-      <summary className="cursor-pointer font-medium text-slate-900 print:list-none">View Calculation</summary>
+      <summary className="cursor-pointer font-medium text-slate-900 print:list-none">Formula Reference</summary>
       <div className="mt-2 grid gap-2 border border-slate-300 bg-slate-50 p-2 sm:grid-cols-2">
         <CalculationItem label="Formula" value={calculation.formula.formulaName} />
         <CalculationItem label="Final Amount" value={formatCurrency(calculation.monthlyAmount ?? calculation.amount)} />

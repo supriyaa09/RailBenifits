@@ -1,4 +1,5 @@
 import { formatCurrency, formatDisplayDate, formatQualifyingService, type SettlementAssessment } from "@/lib/settlement-assessment";
+import { getIndianTimestamp } from "@/lib/indian-date-time";
 import { getRetirementTypeLabel, hasMinimumService } from "./EligibilityRules";
 import { benefitRules } from "./BenefitRules";
 import type { BenefitResult, EmployeeSummary, RuleTraceStep, SettlementResult } from "./RuleTypes";
@@ -76,10 +77,6 @@ export function evaluateSettlementRules(assessment: SettlementAssessment): Settl
     pendingVerification,
     estimatedSettlement: "Calculation Pending",
     generatedBy: "RailAssist Rule Engine",
-    generatedOn: new Date().toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }),
+    generatedOn: getIndianTimestamp(),
   };
 }

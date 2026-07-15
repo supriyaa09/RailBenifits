@@ -77,6 +77,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "darkreader-lock" },
       { title: "RailAssist — Retirement & Benefits Advisory" },
       { name: "description", content: "Intelligent Railway Retirement & Benefits Advisory System for South Central Railway employees and officers." },
       { property: "og:title", content: "RailAssist — Retirement & Benefits Advisory" },
