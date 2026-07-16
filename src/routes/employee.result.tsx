@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { toCanvas } from "html-to-image";
 import {
   AlertTriangle,
   BadgeIndianRupee,
@@ -598,13 +598,13 @@ function OfficialReport({
     return formatIndianDateTime(timestampSource);
   }, [reportGeneratedAt, result.generatedOn]);
   const generatedDate = generatedTimestamp.split(" ")[0] || formatIndianDate(reportGeneratedAt);
-  
+
   const reportNumber = `SCR-STL-${reportGeneratedAt.getFullYear()}-${String(
     assessment.employeeDetails.employeeId || assessment.employeeDetails.employeeName || "DRAFT",
   )
     .replace(/[^a-zA-Z0-9]/g, "")
     .slice(0, 12).toUpperCase()}`;
-    
+
   const retirementRules = evaluateRetirementRules(assessment);
   const isDeathCase = retirementRules.reportMode === "death";
   const netQualifyingService = result.employeeSummary.qualifyingService;
@@ -676,6 +676,16 @@ function OfficialReport({
     certificateTextRow("7.", "PPO Number", "Pending officer verification"),
   ];
   const [lastSavedReport, setLastSavedReport] = useState<string | null>(null);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+
+  const describePdfError = (error: unknown) => {
+    if (error instanceof Error) {
+      const cause = error.cause instanceof Error ? `\nCause: ${error.cause.message}` : "";
+      return `${error.name}: ${error.message}${cause}${error.stack ? `\n${error.stack}` : ""}`;
+    }
+    return String(error);
+  };
 
   const saveReport = (status: "Draft" | "Submitted" = "Draft") => {
     const saved = saveSettlementReport(assessment, result, calculation, {
@@ -686,80 +696,129 @@ function OfficialReport({
   };
 
   const handlePrint = () => {
-    window.print();
+    printStructuredCertificate();
   };
 
   const handleDownloadPdf = async () => {
-    if (!certificateRef.current) return;
-    
+    const el = certificateRef.current;
+    if (!el) {
+      setPdfError("Report element not found. Switch to the 'Official Report' tab and try again.");
+      return;
+    }
+
+    setIsPdfGenerating(true);
+    setPdfError(null);
+
+    const { fileName } = prepareSettlementPdfRequest({
+      assessment,
+      result,
+      calculation,
+      reportVersion: savedSnapshot?.version ?? savedSnapshot?.report_version ?? 1,
+      status: savedSnapshot?.status ?? "Draft",
+    });
+
+    let container: HTMLDivElement | null = null;
+
     try {
-      const element = certificateRef.current;
-      
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
+      container = document.createElement("div");
+      container.style.position = "fixed";
+      container.style.top = "-9999px";
+      container.style.left = "-9999px";
+      container.style.width = "794px"; // A4 at 96 dpi
+      container.style.zIndex = "-1";
+      container.style.pointerEvents = "none";
+      document.body.appendChild(container);
+
+      const clone = el.cloneNode(true) as HTMLElement;
+      clone.style.maxWidth = "794px";
+      clone.style.width = "794px";
+      clone.style.boxShadow = "none";
+      clone.style.outline = "none";
+      clone.style.backgroundColor = "#ffffff";
+      container.appendChild(clone);
+
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+
+      const canvas = await toCanvas(clone, {
+        pixelRatio: 2,
+        cacheBust: true,
         backgroundColor: "#ffffff",
       });
-      
-      const imgData = canvas.toDataURL("image/png");
+
+      const A4_W = 210; // mm
+      const A4_H = 297; // mm
+
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
+        compress: true,
       });
-      
-      const imgWidth = 210;
-      const pageHeight = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
-      
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-      
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+
+      const canvasW = canvas.width;
+      const canvasH = canvas.height;
+      const pxPerMm = canvasW / A4_W;          // canvas px that equals 1 mm
+      const pageHpx = A4_H * pxPerMm;          // canvas px that fit one A4 page
+
+      const totalPages = Math.ceil(canvasH / pageHpx);
+
+      for (let page = 0; page < totalPages; page++) {
+        if (page > 0) pdf.addPage();
+
+        const srcY = Math.round(page * pageHpx);
+        const srcH = Math.min(pageHpx, canvasH - srcY);
+
+        // Draw just this page's slice into a temporary canvas
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = canvasW;
+        pageCanvas.height = Math.round(srcH);
+        const ctx = pageCanvas.getContext("2d");
+        if (ctx) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+          ctx.drawImage(
+            canvas,
+            0, srcY, canvasW, srcH,   // source rect
+            0, 0, canvasW, Math.round(srcH) // dest rect
+          );
+        }
+
+        // addImage accepts an HTMLCanvasElement directly (no toDataURL needed)
+        const heightMm = srcH / pxPerMm;
+        pdf.addImage(pageCanvas, "JPEG", 0, 0, A4_W, heightMm, undefined, "FAST");
       }
-      
-      const employeeId = assessment.employeeDetails.employeeId || "Employee";
-      const dateObj = new Date(savedSnapshot?.generated_date || new Date());
-      const dateStamp = Number.isNaN(dateObj.getTime())
-        ? "undated"
-        : `${dateObj.getFullYear()}${String(dateObj.getMonth() + 1).padStart(2, "0")}${String(dateObj.getDate()).padStart(2, "0")}`;
-      const fileName = `Settlement_Report_${employeeId}_${dateStamp}.pdf`;
-      
+
       pdf.save(fileName);
-    } catch (error) {
-      console.error("PDF generation failed:", error);
-      alert("Failed to generate PDF. Please try again or use Print Report.");
+
+    } catch (err: unknown) {
+      console.error("Download PDF failed in src/routes/employee.result.tsx", err);
+      console.error(describePdfError(err));
+      setPdfError(`Download PDF failed: ${describePdfError(err).split("\n")[0]}`);
+    } finally {
+      container?.remove();
+      setIsPdfGenerating(false);
     }
   };
 
+  // Handle ?print=true / ?download=true params (triggered from reports page)
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("print") === "true") {
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.delete("print");
-        window.history.replaceState({}, "", newUrl.toString());
-        
-        setTimeout(() => {
-          window.print();
-        }, 800);
-      } else if (params.get("download") === "true") {
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.delete("download");
-        window.history.replaceState({}, "", newUrl.toString());
-        
-        setTimeout(() => {
-          handleDownloadPdf();
-        }, 800);
-      }
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const action = params.get("print") === "true" ? "print" : params.get("download") === "true" ? "download" : null;
+    if (!action) return;
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.delete("print");
+    newUrl.searchParams.delete("download");
+    window.history.replaceState({}, "", newUrl.toString());
+    if (action === "print") {
+      const t = setTimeout(() => window.print(), 1200);
+      return () => clearTimeout(t);
     }
+    const t = setTimeout(() => { void handleDownloadPdf(); }, 1500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -776,11 +835,32 @@ function OfficialReport({
             {lastSavedReport && (
               <div className="mt-1 text-xs font-medium text-primary">{lastSavedReport}</div>
             )}
+            {pdfError && (
+              <div className="mt-1 text-xs font-medium text-destructive">{pdfError}</div>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={handleDownloadPdf}>
-              <Download className="mr-2 h-4 w-4" />
-              Download PDF
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadPdf}
+              disabled={isPdfGenerating}
+            >
+              {isPdfGenerating ? (
+                <>
+                  <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                  Generating…
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download PDF
+                </>
+              )}
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
               <Printer className="mr-2 h-4 w-4" />
@@ -1049,7 +1129,7 @@ function OfficialReport({
                     `Family Pension (${calculation.familyPension.formula.formulaName})`,
                     formatCurrency(
                       calculation.familyPension.monthlyAmount ??
-                        calculation.familyPension.amount,
+                      calculation.familyPension.amount,
                     ),
                     calculation.familyPension,
                   ),
@@ -1135,7 +1215,7 @@ function OfficialReport({
 
           {(() => {
             const oneTimeRows: { label: string; value: string }[] = [];
-            
+
             if (isDeathCase) {
               if (calculation.retirementGratuity.amount > 0) {
                 oneTimeRows.push({ label: "Death Gratuity", value: formatCurrency(calculation.retirementGratuity.amount) });
