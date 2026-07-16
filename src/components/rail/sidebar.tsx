@@ -40,14 +40,12 @@ const employeeNav = [
 
 const officerNav = [
   { title: "Dashboard", to: "/officer", icon: LayoutDashboard, exact: true },
-  { title: "Rule Management", to: "/officer/rules", icon: ShieldCheck },
-  { title: "Benefit Management", to: "/officer/benefits", icon: Wallet },
-  { title: "Circular Management", to: "/officer/circulars", icon: ScrollText },
-  { title: "Formula Management", to: "/officer/workbooks", icon: FileCog },
-  { title: "Knowledge Base", to: "/officer/knowledge", icon: Database },
-  { title: "Configuration", to: "/officer/configuration", icon: Settings },
-  { title: "AI Management", to: "/officer/ai", icon: Bot },
-  { title: "Activity Logs", to: "/officer/logs", icon: Activity },
+  { title: "Pension Rules", to: "/officer/rules", icon: ShieldCheck },
+  { title: "Formula Library", to: "/officer/formulas", icon: FileCog },
+  { title: "Settlement Benefits", to: "/officer/benefits", icon: Wallet },
+  { title: "Document Repository", to: "/officer/documents", icon: ScrollText },
+  { title: "Railway Knowledge Base", to: "/officer/knowledge", icon: Database },
+  { title: "System Configuration", to: "/officer/configuration", icon: Settings },
 ];
 
 export function RailSidebar({ role }: { role: "employee" | "officer" }) {

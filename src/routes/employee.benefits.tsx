@@ -258,6 +258,12 @@ function SettlementAssessmentPage() {
     return () => subscription.unsubscribe();
   }, [form]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("railassist:active-report-snapshot");
+    }
+  }, []);
+
   const [
     employeeName,
     dateOfBirth,

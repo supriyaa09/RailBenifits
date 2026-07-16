@@ -1,6 +1,7 @@
 import type { SettlementCalculation } from "@/calculations/CalculationTypes";
 import type { SettlementAssessment } from "@/lib/settlement-assessment";
 import type { SettlementResult } from "@/rules/RuleTypes";
+import { getSystemConfig } from "@/database/adminDb";
 
 export type SettlementReportStatus =
   | "Draft"
@@ -13,20 +14,34 @@ export type SettlementReportStatus =
 export interface SettlementReportRecord {
   report_id: string;
   employee_id: string;
-  assessment_id: string;
+  report_number: string;
+  version: number;
   generated_date: string;
-  report_version: number;
+  generated_time: string;
+  retirement_type: "Retirement" | "Death" | "VRS" | "Other";
+  scheme: string;
+  rule_version: string;
+  formula_version: string;
+  report_snapshot: {
+    assessment: SettlementAssessment;
+    result: SettlementResult;
+    calculation: SettlementCalculation;
+  };
   pdf_path: string;
   status: SettlementReportStatus;
+
+  // Keep these for backward compatibility
+  assessment_id: string;
+  report_version: number;
+  employee_name: string;
+  total_one_time_settlement: number;
+  monthly_benefits: number;
   remarks: string;
   generated_by: string;
   verified_by: string;
   approved_by: string;
   report_type: "Retirement" | "Death" | "VRS" | "Other";
   pension_scheme: string;
-  employee_name: string;
-  total_one_time_settlement: number;
-  monthly_benefits: number;
   assessment: SettlementAssessment;
   result: SettlementResult;
   calculation: SettlementCalculation;
@@ -61,20 +76,54 @@ export function saveSettlementReport(
   const existingReports = listSettlementReports();
   const employeeId = assessment.employeeDetails.employeeId || "unassigned";
   const reportType = getReportType(assessment);
+  
   const nextVersion =
     existingReports
       .filter((report) => report.employee_id === employeeId)
-      .reduce((latest, report) => Math.max(latest, report.report_version), 0) + 1;
+      .reduce((latest, report) => Math.max(latest, report.version || report.report_version || 0), 0) + 1;
+      
   const generatedDate = new Date().toISOString();
+  
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Kolkata"
+  };
+  const timeStr = new Intl.DateTimeFormat("en-IN", timeOptions).format(new Date()) + " IST";
+  
   const reportId = buildReportId(employeeId, nextVersion, generatedDate);
+  const config = getSystemConfig();
+  
+  const reportNumber = `SCR-STL-${new Date().getFullYear()}-${String(
+    assessment.employeeDetails.employeeId || assessment.employeeDetails.employeeName || "DRAFT",
+  )
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .slice(0, 12).toUpperCase()}`;
+
   const record: SettlementReportRecord = {
     report_id: reportId,
     employee_id: employeeId,
-    assessment_id: `ASM-${employeeId}-${nextVersion}`,
+    report_number: reportNumber,
+    version: nextVersion,
     generated_date: generatedDate,
-    report_version: nextVersion,
+    generated_time: timeStr,
+    retirement_type: reportType,
+    scheme: assessment.serviceDetails.pensionScheme,
+    rule_version: config.ruleVersion,
+    formula_version: config.formulaVersion,
+    report_snapshot: {
+      assessment,
+      result,
+      calculation,
+    },
     pdf_path: options.pdfPath ?? buildPdfFileName(employeeId, generatedDate),
     status: options.status ?? "Draft",
+    
+    // Backward compatibility fields
+    assessment_id: `ASM-${employeeId}-${nextVersion}`,
+    report_version: nextVersion,
     remarks: options.remarks ?? "",
     generated_by: options.generatedBy ?? "RailAssist Settlement Engine",
     verified_by: "",
@@ -107,7 +156,8 @@ export function buildPdfFileName(employeeId: string, generatedDate = new Date().
 
 export function restoreReportToSession(report: SettlementReportRecord) {
   if (typeof window === "undefined") return;
-  window.sessionStorage.setItem("railassist:settlement-assessment", JSON.stringify(report.assessment));
+  window.sessionStorage.setItem("railassist:settlement-assessment", JSON.stringify(report.assessment || report.report_snapshot?.assessment));
+  window.sessionStorage.setItem("railassist:active-report-snapshot", JSON.stringify(report));
 }
 
 function writeReports(reports: SettlementReportRecord[]) {

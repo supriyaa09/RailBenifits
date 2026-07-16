@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import {
   AlertTriangle,
   BadgeIndianRupee,
@@ -27,7 +29,7 @@ import {
 } from "@/components/rail/common";
 import { formatIndianDate, formatIndianDateTime } from "@/lib/indian-date-time";
 import { formatCurrency, type SettlementAssessment } from "@/lib/settlement-assessment";
-import { saveSettlementReport } from "@/services/ReportManagementService";
+import { saveSettlementReport, type SettlementReportRecord } from "@/services/ReportManagementService";
 import { processSettlement } from "@/services/SettlementService";
 import {
   prepareSettlementPdfRequest,
@@ -43,8 +45,22 @@ export const Route = createFileRoute("/employee/result")({
 
 function SettlementResultsPage() {
   const [assessment, setAssessment] = useState<SettlementAssessment | null>(null);
+  const [savedSnapshot, setSavedSnapshot] = useState<SettlementReportRecord | null>(null);
 
   useEffect(() => {
+    // Check if there is an active historic report snapshot we should view instead of current calculations
+    const rawSnapshot = sessionStorage.getItem("railassist:active-report-snapshot");
+    if (rawSnapshot) {
+      try {
+        const parsed = JSON.parse(rawSnapshot) as SettlementReportRecord;
+        setSavedSnapshot(parsed);
+        setAssessment(parsed.report_snapshot?.assessment || parsed.assessment);
+        return;
+      } catch (e) {
+        console.error("Failed to parse active report snapshot", e);
+      }
+    }
+
     const raw = sessionStorage.getItem("railassist:settlement-assessment");
     if (!raw) return;
     try {
@@ -54,10 +70,15 @@ function SettlementResultsPage() {
     }
   }, []);
 
-  const processed = useMemo(
-    () => (assessment ? processSettlement(assessment) : null),
-    [assessment],
-  );
+  const processed = useMemo(() => {
+    if (savedSnapshot && savedSnapshot.report_snapshot) {
+      return {
+        ruleResult: savedSnapshot.report_snapshot.result || savedSnapshot.result,
+        calculation: savedSnapshot.report_snapshot.calculation || savedSnapshot.calculation,
+      };
+    }
+    return assessment ? processSettlement(assessment) : null;
+  }, [assessment, savedSnapshot]);
 
   if (!assessment || !processed) {
     return (
@@ -118,6 +139,7 @@ function SettlementResultsPage() {
                 assessment={assessment}
                 result={processed.ruleResult}
                 calculation={processed.calculation}
+                savedSnapshot={savedSnapshot}
               />
             </TabsContent>
           </>
@@ -144,7 +166,15 @@ function SettlementTabs({
 }: {
   children: (activeTab: string) => React.ReactNode;
 }) {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("print") === "true" || params.get("download") === "true") {
+        return "report";
+      }
+    }
+    return "overview";
+  });
   const tabsListRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
 
@@ -544,11 +574,14 @@ function OfficialReport({
   assessment,
   result,
   calculation,
+  savedSnapshot,
 }: {
   assessment: SettlementAssessment;
   result: SettlementResult;
   calculation: SettlementCalculation;
+  savedSnapshot?: SettlementReportRecord | null;
 }) {
+  const certificateRef = useRef<HTMLElement>(null);
   const reportGeneratedAt = useMemo(() => new Date(), []);
   const generatedTimestamp = useMemo(() => {
     if (result.generatedOn.includes("IST") && /\d{1,2}:\d{2}:\d{2}/.test(result.generatedOn)) {
@@ -565,11 +598,13 @@ function OfficialReport({
     return formatIndianDateTime(timestampSource);
   }, [reportGeneratedAt, result.generatedOn]);
   const generatedDate = generatedTimestamp.split(" ")[0] || formatIndianDate(reportGeneratedAt);
+  
   const reportNumber = `SCR-STL-${reportGeneratedAt.getFullYear()}-${String(
     assessment.employeeDetails.employeeId || assessment.employeeDetails.employeeName || "DRAFT",
   )
     .replace(/[^a-zA-Z0-9]/g, "")
-    .slice(0, 12)}`;
+    .slice(0, 12).toUpperCase()}`;
+    
   const retirementRules = evaluateRetirementRules(assessment);
   const isDeathCase = retirementRules.reportMode === "death";
   const netQualifyingService = result.employeeSummary.qualifyingService;
@@ -577,7 +612,9 @@ function OfficialReport({
   const commutationFactor = calculation.commutation.details?.commutationFactor ?? "Not available";
   const commutationPercent = Number(calculation.commutation.details?.commutationPercentage ?? 0);
   const lastDrawnSalary = assessment.salaryDetails.currentBasicPay;
-  const totalMonthlyBenefits = calculation.monthlyPension + calculation.monthlyFma;
+  const totalMonthlyBenefits = isDeathCase
+    ? (calculation.familyPension.monthlyAmount ?? calculation.familyPension.amount) + calculation.monthlyFma
+    : calculation.monthlyPension + calculation.monthlyFma;
   const pensionEmoluments = assessment.promotionDetails.emoluments;
   const deathRows: CertificateRow[] = [
     certificateRow(
@@ -645,24 +682,85 @@ function OfficialReport({
       status,
       remarks: status === "Submitted" ? "Submitted for officer verification." : "Saved as draft.",
     });
-    setLastSavedReport(`Version ${saved.report_version} saved as ${saved.status}.`);
+    setLastSavedReport(`Version ${saved.version || saved.report_version} saved as ${saved.status}.`);
   };
 
   const handlePrint = () => {
-    printStructuredCertificate();
+    window.print();
   };
 
-  const handleDownloadPdf = () => {
-    const pdf = prepareSettlementPdfRequest({
-      assessment,
-      result,
-      calculation,
-      reportVersion: 1,
-      status: "Draft",
-    });
-    document.title = pdf.fileName.replace(/\.pdf$/i, "");
-    printStructuredCertificate();
+  const handleDownloadPdf = async () => {
+    if (!certificateRef.current) return;
+    
+    try {
+      const element = certificateRef.current;
+      
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+      
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+      
+      const imgWidth = 210;
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+      
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+      
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      const employeeId = assessment.employeeDetails.employeeId || "Employee";
+      const dateObj = new Date(savedSnapshot?.generated_date || new Date());
+      const dateStamp = Number.isNaN(dateObj.getTime())
+        ? "undated"
+        : `${dateObj.getFullYear()}${String(dateObj.getMonth() + 1).padStart(2, "0")}${String(dateObj.getDate()).padStart(2, "0")}`;
+      const fileName = `Settlement_Report_${employeeId}_${dateStamp}.pdf`;
+      
+      pdf.save(fileName);
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      alert("Failed to generate PDF. Please try again or use Print Report.");
+    }
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("print") === "true") {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("print");
+        window.history.replaceState({}, "", newUrl.toString());
+        
+        setTimeout(() => {
+          window.print();
+        }, 800);
+      } else if (params.get("download") === "true") {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("download");
+        window.history.replaceState({}, "", newUrl.toString());
+        
+        setTimeout(() => {
+          handleDownloadPdf();
+        }, 800);
+      }
+    }
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -699,7 +797,7 @@ function OfficialReport({
         </div>
       </div>
 
-      <section className="settlement-certificate mx-auto max-w-[210mm] bg-white text-slate-950 shadow-sm ring-1 ring-slate-300 print:max-w-none print:shadow-none print:ring-0">
+      <section ref={certificateRef} className="settlement-certificate mx-auto max-w-[210mm] bg-white text-slate-950 shadow-sm ring-1 ring-slate-300 print:max-w-none print:shadow-none print:ring-0">
         <div className="min-h-[297mm] px-5 py-5 text-[12px] leading-snug sm:px-8 print:px-8 print:py-6">
           <header className="border-b-2 border-slate-900 pb-3">
             <div className="grid grid-cols-[72px_1fr_72px] items-center gap-3">
@@ -1035,32 +1133,137 @@ function OfficialReport({
             </div>
           </CertificateSection>
 
-          <CertificateSection title="Settlement Summary">
-            <div className="grid border border-slate-500 sm:grid-cols-2">
-              <SummaryLine
-                label="One-Time Benefits"
-                value={formatCurrency(calculation.totalOneTimeBenefits)}
-              />
-              <SummaryLine label="Monthly Benefits" value={formatCurrency(totalMonthlyBenefits)} />
-              <SummaryLine
-                label="Total Lump Sum"
-                value={formatCurrency(calculation.totalOneTimeBenefits)}
-              />
-              <SummaryLine
-                label="Monthly Pension"
-                value={formatCurrency(calculation.monthlyPension)}
-              />
-              <SummaryLine label="Monthly FMA" value={formatCurrency(calculation.monthlyFma)} />
-              <SummaryLine
-                label="Residual Pension"
-                value={formatCurrency(calculation.residualPension.amount)}
-              />
-              <div className="border-t border-slate-500 bg-slate-100 px-3 py-2 font-bold sm:col-span-2">
-                Grand Settlement Summary: {formatCurrency(calculation.totalOneTimeBenefits)}{" "}
-                one-time and {formatCurrency(totalMonthlyBenefits)} monthly.
-              </div>
-            </div>
-          </CertificateSection>
+          {(() => {
+            const oneTimeRows: { label: string; value: string }[] = [];
+            
+            if (isDeathCase) {
+              if (calculation.retirementGratuity.amount > 0) {
+                oneTimeRows.push({ label: "Death Gratuity", value: formatCurrency(calculation.retirementGratuity.amount) });
+              }
+            } else {
+              if (calculation.retirementGratuity.amount > 0) {
+                oneTimeRows.push({ label: "Retirement Gratuity", value: formatCurrency(calculation.retirementGratuity.amount) });
+              }
+            }
+
+            if (calculation.leaveEncashment.amount > 0) {
+              oneTimeRows.push({ label: "Leave Encashment", value: formatCurrency(calculation.leaveEncashment.amount) });
+            }
+
+            if (calculation.providentFund.amount > 0) {
+              oneTimeRows.push({
+                label: `Provident Fund${assessment.employeeDetails.employeeId ? ` (AC No. ${assessment.employeeDetails.employeeId})` : ""}`,
+                value: formatCurrency(calculation.providentFund.amount),
+              });
+            }
+
+            if (calculation.cgis.amount > 0) {
+              oneTimeRows.push({ label: "CGEGIS Savings Fund", value: formatCurrency(calculation.cgis.amount) });
+            }
+
+            if (isDeathCase) {
+              const insFund = Number(calculation.cgis.details?.insuranceFundAmount ?? 0);
+              if (insFund > 0) {
+                oneTimeRows.push({ label: "CGEGIS Insurance Fund", value: formatCurrency(insFund) });
+              }
+            }
+
+            if (calculation.relhs.amount > 0) {
+              oneTimeRows.push({ label: "RELHS Medical Contribution", value: formatCurrency(calculation.relhs.amount) });
+            }
+
+            if (!isDeathCase && calculation.commutation.amount > 0) {
+              oneTimeRows.push({ label: "Commutation Lump Sum", value: formatCurrency(calculation.commutation.amount) });
+            }
+
+            if (calculation.ctg.amount > 0) {
+              oneTimeRows.push({ label: "Composite Transfer Grant (CTG)", value: formatCurrency(calculation.ctg.amount) });
+            }
+
+            const monthlyRows: { label: string; value: string }[] = [];
+
+            if (isDeathCase) {
+              const fpAmt = calculation.familyPension.monthlyAmount ?? calculation.familyPension.amount;
+              if (fpAmt > 0) {
+                monthlyRows.push({ label: "Family Pension", value: formatCurrency(fpAmt) });
+              }
+              const efpAmt = Number(calculation.familyPension.details?.enhancedFamilyPension ?? 0);
+              if (efpAmt > 0) {
+                monthlyRows.push({ label: "Enhanced Family Pension", value: formatCurrency(efpAmt) });
+              }
+              if (calculation.monthlyFma > 0) {
+                monthlyRows.push({ label: "Fixed Medical Allowance (FMA)", value: formatCurrency(calculation.monthlyFma) });
+              }
+            } else {
+              if (calculation.basicPension.amount > 0) {
+                monthlyRows.push({ label: "Basic Pension", value: formatCurrency(calculation.basicPension.amount) });
+              }
+              if (calculation.commutation.amount > 0 && calculation.residualPension.amount > 0) {
+                monthlyRows.push({ label: "Residual Pension (After Commutation)", value: formatCurrency(calculation.residualPension.amount) });
+              }
+              if (calculation.monthlyFma > 0) {
+                monthlyRows.push({ label: "Fixed Medical Allowance (FMA)", value: formatCurrency(calculation.monthlyFma) });
+              }
+            }
+
+            return (
+              <CertificateSection title="Settlement Summary">
+                <div className="border border-slate-400 bg-slate-50/50 p-4 select-none print:border-slate-500 print:bg-slate-50">
+                  {/* One-Time Benefits Section */}
+                  <div className="mb-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-400 pb-1 mb-2">
+                      One-Time Settlement Benefits
+                    </h4>
+                    <table className="w-full text-xs">
+                      <tbody>
+                        {oneTimeRows.map((row) => (
+                          <tr key={row.label} className="border-b border-slate-200/60 last:border-b-0">
+                            <td className="py-1.5 text-left text-slate-700 font-medium">{row.label}</td>
+                            <td className="py-1.5 text-right font-bold text-slate-900">{row.value}</td>
+                          </tr>
+                        ))}
+                        {oneTimeRows.length === 0 && (
+                          <tr>
+                            <td colSpan={2} className="py-1.5 text-left text-slate-500 italic">No one-time benefits applicable</td>
+                          </tr>
+                        )}
+                        <tr className="border-t-2 border-slate-400 font-bold text-slate-950">
+                          <td className="py-2 text-left uppercase tracking-wide">Total One-Time Settlement</td>
+                          <td className="py-2 text-right">{formatCurrency(calculation.totalOneTimeBenefits)}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Monthly Benefits Section */}
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-400 pb-1 mb-2">
+                      Monthly Benefits
+                    </h4>
+                    <table className="w-full text-xs">
+                      <tbody>
+                        {monthlyRows.map((row) => (
+                          <tr key={row.label} className="border-b border-slate-200/60 last:border-b-0">
+                            <td className="py-1.5 text-left text-slate-700 font-medium">{row.label}</td>
+                            <td className="py-1.5 text-right font-bold text-slate-900">{row.value}</td>
+                          </tr>
+                        ))}
+                        {monthlyRows.length === 0 && (
+                          <tr>
+                            <td colSpan={2} className="py-1.5 text-left text-slate-500 italic font-medium">Not Applicable</td>
+                          </tr>
+                        )}
+                        <tr className="border-t-2 border-slate-400 font-bold text-slate-950">
+                          <td className="py-2 text-left uppercase tracking-wide">Total Monthly Benefits</td>
+                          <td className="py-2 text-right">{formatCurrency(totalMonthlyBenefits)} <span className="text-[10px] font-normal lowercase">per month</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </CertificateSection>
+            );
+          })()}
 
           <CertificateSection title="Section E - Officer Remarks">
             <div className="border border-slate-500">
@@ -1087,8 +1290,10 @@ function OfficialReport({
           <footer className="mt-8 border-t border-slate-500 pt-3 text-[11px] text-slate-700">
             <div className="grid gap-1 sm:grid-cols-2">
               <div>Prepared by: RailAssist Settlement Engine</div>
-              <div>Rule Version: Railway Pension Rules 2026</div>
-              <div>Generated: {generatedTimestamp}</div>
+              <div>Rule Version: {savedSnapshot?.rule_version || "Railway Pension Rules 2026"}</div>
+              <div>Formula Version: {savedSnapshot?.formula_version || "v2.4.1"}</div>
+              <div>Report Number: {savedSnapshot?.report_number || reportNumber} (Ver: {savedSnapshot?.version || "Draft"})</div>
+              <div>Generated: {savedSnapshot?.generated_time ? `${savedSnapshot.generated_date.split("T")[0]} ${savedSnapshot.generated_time}` : generatedTimestamp}</div>
             </div>
             <p className="mt-3">
               Disclaimer: This report is generated based on Railway pension and settlement rules.

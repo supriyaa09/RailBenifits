@@ -68,9 +68,15 @@ function ReportsPage() {
     .map((reportId) => reports.find((report) => report.report_id === reportId))
     .filter((report): report is SettlementReportRecord => Boolean(report));
 
-  const openReport = (report: SettlementReportRecord) => {
+  const openReport = (report: SettlementReportRecord, action: "view" | "print" | "download" = "view") => {
     restoreReportToSession(report);
-    navigate({ to: "/employee/result" });
+    if (action === "print") {
+      navigate({ to: "/employee/result", search: { print: "true" } as any });
+    } else if (action === "download") {
+      navigate({ to: "/employee/result", search: { download: "true" } as any });
+    } else {
+      navigate({ to: "/employee/result" });
+    }
   };
 
   const toggleComparison = (reportId: string) => {
@@ -146,14 +152,12 @@ function ReportsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Report</TableHead>
-                <TableHead>Employee</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Scheme</TableHead>
-
-                <TableHead className="text-right">One-Time</TableHead>
-                <TableHead className="text-right">Monthly</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Report & Version</TableHead>
+                <TableHead>Employee Details</TableHead>
+                <TableHead>Retirement Details</TableHead>
+                <TableHead className="text-right">One-Time Settlement</TableHead>
+                <TableHead className="text-right">Monthly Benefits</TableHead>
+                <TableHead>Generated Timestamp</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -169,31 +173,39 @@ function ReportsPage() {
                         className="mt-1"
                       />
                       <span>
-                        <span className="block font-medium">Version {report.report_version}</span>
-                        <span className="block text-xs text-muted-foreground">{report.report_id}</span>
+                        <span className="block font-bold text-foreground">Version {report.version || report.report_version}</span>
+                        <span className="block text-xs font-mono text-muted-foreground">{report.report_number || "Draft Report"}</span>
+                        <span className="block text-[11px] text-muted-foreground mt-0.5">
+                          Rules: {report.rule_version || "Railway Pension Rules 2026"} | Formula: {report.formula_version || "v2.4.1"}
+                        </span>
                       </span>
                     </label>
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium">{report.employee_name || "Not available"}</div>
-                    <div className="text-xs text-muted-foreground">{report.employee_id}</div>
+                    <div className="font-semibold text-foreground">{report.employee_name || "Not available"}</div>
+                    <div className="text-xs text-muted-foreground">ID: {report.employee_id}</div>
                   </TableCell>
-                  <TableCell>{report.report_type}</TableCell>
-                  <TableCell>{report.pension_scheme}</TableCell>
+                  <TableCell>
+                    <div className="font-medium text-foreground">{report.retirement_type || report.report_type}</div>
+                    <div className="text-xs text-muted-foreground">Scheme: {report.scheme || report.pension_scheme}</div>
+                  </TableCell>
 
-                  <TableCell className="text-right">{formatCurrency(report.total_one_time_settlement)}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(report.monthly_benefits)}</TableCell>
-                  <TableCell>{formatReportDate(report.generated_date)}</TableCell>
+                  <TableCell className="text-right font-bold text-foreground">{formatCurrency(report.total_one_time_settlement)}</TableCell>
+                  <TableCell className="text-right font-bold text-foreground">{formatCurrency(report.monthly_benefits)}</TableCell>
+                  <TableCell>
+                    <div className="font-medium text-foreground">{formatReportDate(report.generated_date)}</div>
+                    <div className="text-xs text-muted-foreground">{report.generated_time || "10:30 IST"}</div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openReport(report)} title="View report">
-                        <Eye className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" onClick={() => openReport(report, "view")} title="View report">
+                        <Eye className="h-4 w-4 text-primary" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={printStructuredCertificate} title="Print report">
-                        <Printer className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" onClick={() => openReport(report, "print")} title="Print report">
+                        <Printer className="h-4 w-4 text-primary" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={printStructuredCertificate} title="Download PDF">
-                        <Download className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" onClick={() => openReport(report, "download")} title="Download PDF">
+                        <Download className="h-4 w-4 text-primary" />
                       </Button>
                     </div>
                   </TableCell>

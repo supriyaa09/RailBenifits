@@ -1,4 +1,4 @@
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { Link, Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   Bell,
   Moon,
@@ -41,24 +41,34 @@ const employeeNav = [
 
 const officerNav = [
   { title: "Dashboard", to: "/officer", icon: LayoutDashboard, exact: true },
-  { title: "Rule Management", to: "/officer/rules", icon: ShieldCheck },
-  { title: "Benefit Management", to: "/officer/benefits", icon: Wallet },
-  { title: "Circular Management", to: "/officer/circulars", icon: ScrollText },
-  { title: "Formula Management", to: "/officer/workbooks", icon: FileCog },
-  { title: "Knowledge Base", to: "/officer/knowledge", icon: Database },
-  { title: "Configuration", to: "/officer/configuration", icon: Settings },
-  { title: "AI Management", to: "/officer/ai", icon: Bot },
-  { title: "Activity Logs", to: "/officer/logs", icon: Activity },
+  { title: "Pension Rules", to: "/officer/rules", icon: ShieldCheck },
+  { title: "Formula Library", to: "/officer/formulas", icon: FileCog },
+  { title: "Settlement Benefits", to: "/officer/benefits", icon: Wallet },
+  { title: "Document Repository", to: "/officer/documents", icon: ScrollText },
+  { title: "Railway Knowledge Base", to: "/officer/knowledge", icon: Database },
+  { title: "System Configuration", to: "/officer/configuration", icon: Settings },
 ];
 
 export function RailShell({ role }: { role: "employee" | "officer" }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
   const isOfficer = role === "officer";
   const roleThemeStorageKey = `${themeStorageKeyPrefix}:${role}`;
   const defaultTheme: ThemeMode = isOfficer ? "dark" : "light";
   const [theme, setTheme] = useState<ThemeMode>(defaultTheme);
   const [themeLoaded, setThemeLoaded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    if (isOfficer) {
+      navigate({ to: "/officer/knowledge", search: { q: searchQuery } as any });
+    } else {
+      navigate({ to: "/employee/assistant", search: { q: searchQuery } as any });
+    }
+  };
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem(roleThemeStorageKey);
@@ -115,15 +125,17 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
             </div>
 
             {/* Desktop Search Bar */}
-            <div className="hidden md:flex items-center gap-2 max-w-xs w-full">
+            <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center gap-2 max-w-xs w-full">
               <div className="relative w-full">
                 <Search className="h-4 w-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
-                  placeholder="Search rules, circulars..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={isOfficer ? "Search rules, formulas, benefits..." : "Search rules, circulars..."}
                   className="h-9 w-full pl-8 pr-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring/40 transition-shadow"
                 />
               </div>
-            </div>
+            </form>
 
             {/* Header Right Actions */}
             <div className="flex items-center gap-2">
@@ -210,15 +222,17 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 top-16 z-20 flex flex-col md:hidden bg-card/95 backdrop-blur border-b border-border shadow-elevated">
           {/* Mobile Search input */}
-          <div className="p-4 border-b">
+          <form onSubmit={handleSearchSubmit} className="p-4 border-b">
             <div className="relative w-full">
               <Search className="h-4 w-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
-                placeholder="Search rules, circulars..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={isOfficer ? "Search rules, formulas..." : "Search rules, circulars..."}
                 className="h-9 w-full pl-8 pr-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
-          </div>
+          </form>
           {/* List of Mobile Nav Links */}
           <nav className="flex-1 overflow-y-auto p-4 space-y-1" aria-label="Mobile Navigation">
             {items.map((item) => {
