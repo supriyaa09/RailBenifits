@@ -1,0 +1,3517 @@
+Scenario: Normal Retirement - 20 years service
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "John Doe",
+    "dateOfBirth": "1965-01-01",
+    "dateOfAppointment": "1995-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "normal",
+    "qualifyingService": {
+      "years": 20,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2025-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 50000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 35000,
+    "dearnessAllowance": 12000,
+    "lapDays": 30,
+    "lhapDays": 15,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": false,
+    "commutationPercentage": 0
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 25000,
+    "monthlyAmount": 25000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Basic Pension = Emoluments × 50% × Sanction Percentage"
+    },
+    "reason": "Basic Pension = 50% of emoluments × 100% sanction.",
+    "warnings": [],
+    "details": {
+      "emoluments": 50000,
+      "pensionRate": 0.5,
+      "pensionSanctionPercentage": 100,
+      "pensionScheme": "OPS"
+    }
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Normal retirement selected. Common retirement benefits are admissible subject to service verification."
+    },
+    "reason": "Normal retirement selected. Common retirement benefits are admissible subject to service verification.",
+    "warnings": [],
+    "details": {}
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Retirement Gratuity",
+    "amount": 620000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RETIREMENT_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000"
+    },
+    "reason": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000",
+    "warnings": [],
+    "details": {
+      "emoluments": 50000,
+      "dearnessAllowance": 12000,
+      "qualifyingServiceYears": 20,
+      "qualifyingServiceMonths": 0,
+      "maximumLimit": 2000000,
+      "isDeath": false
+    }
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 57967,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 37 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 35000,
+      "dearnessAllowanceAmount": 12000,
+      "lapDays": 30,
+      "effectiveLapDays": 30,
+      "lhapDays": 15,
+      "effectiveLhapDays": 7,
+      "totalEncashableDays": 37
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 15,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 30000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Employee retired under Superannuation. No minimum qualifying service is required.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Eligible",
+      "familyEligible": true,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": "Level 1 - Level 5",
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS subscription selected from lookup table: Level 1 - Level 5."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "monthlyAmount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "FMA monthly amount is driven by RELHS eligibility and the employee's FMA option."
+    },
+    "reason": "Employee chose not to receive Fixed Medical Allowance.",
+    "warnings": [],
+    "details": {
+      "relhsEligible": true,
+      "fmaStatus": "Not Opted",
+      "reference": "Railway Pension Rules 2026"
+    }
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 40000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Composite Transfer Grant = Emoluments × 0.8"
+    },
+    "reason": "CTG = 80% of Emoluments",
+    "warnings": [],
+    "details": {
+      "emoluments": 50000,
+      "ctgRate": 0.8
+    }
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Employee did not opt for commutation."
+    },
+    "reason": "Employee did not opt for commutation.",
+    "warnings": [],
+    "details": {}
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "monthlyAmount": 25000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Residual Pension = Basic Pension − Commuted Pension"
+    },
+    "reason": "Residual Pension = Basic Pension − Commuted Pension (0%)",
+    "warnings": [],
+    "details": {
+      "basicPension": 25000,
+      "commutationPercentage": 0,
+      "commutedPension": 0,
+      "residualPension": 25000
+    }
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Eligible for 2 set(s) of First Class 'A' passes per year.",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 2,
+      "passClass": "First Class 'A'",
+      "familyEligibility": "Admissible for self, spouse, children, and dependent widowed mother, subject to dependency criteria.",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Minimum 20 years of qualifying service (or 19 years 9 months and above rounded off to 20 years).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 747967,
+  "monthlyPension": 25000,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 3747967
+}
+---
+Scenario: Voluntary Retirement - 5 years exactly
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "Jane Smith",
+    "dateOfBirth": "1969-01-01",
+    "dateOfAppointment": "1999-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "other",
+    "otherRetirementType": "voluntary",
+    "qualifyingService": {
+      "years": 5,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2024-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 42000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 30000,
+    "dearnessAllowance": 9000,
+    "lapDays": 20,
+    "lhapDays": 10,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": false,
+    "commutationPercentage": 0
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 21000,
+    "monthlyAmount": 21000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Basic Pension = Emoluments × 50% × Sanction Percentage"
+    },
+    "reason": "Basic Pension = 50% of emoluments × 100% sanction.",
+    "warnings": [],
+    "details": {
+      "emoluments": 42000,
+      "pensionRate": 0.5,
+      "pensionSanctionPercentage": 100,
+      "pensionScheme": "OPS"
+    }
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Voluntary retirement selected. Common retirement formulas apply where qualifying service permits."
+    },
+    "reason": "Voluntary retirement selected. Common retirement formulas apply where qualifying service permits.",
+    "warnings": [],
+    "details": {}
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Retirement Gratuity",
+    "amount": 127500,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RETIREMENT_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000"
+    },
+    "reason": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000",
+    "warnings": [],
+    "details": {
+      "emoluments": 42000,
+      "dearnessAllowance": 9000,
+      "qualifyingServiceYears": 5,
+      "qualifyingServiceMonths": 0,
+      "maximumLimit": 2000000,
+      "isDeath": false
+    }
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 32500,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 25 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 30000,
+      "dearnessAllowanceAmount": 9000,
+      "lapDays": 20,
+      "effectiveLapDays": 20,
+      "lhapDays": 10,
+      "effectiveLhapDays": 5,
+      "totalEncashableDays": 25
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 10,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Voluntary Retirement has qualifying service below 20 years. RELHS requires at least 20 years for other than normal retirement.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Not Eligible",
+      "familyEligible": false,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": null,
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS is not admissible for this case under the current Railway rules."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "monthlyAmount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "FMA monthly amount is driven by RELHS eligibility and the employee's FMA option."
+    },
+    "reason": "RELHS eligibility is mandatory before FMA can be granted.",
+    "warnings": [],
+    "details": {
+      "relhsEligible": false,
+      "fmaStatus": "Not Eligible",
+      "reference": "Railway Pension Rules 2026"
+    }
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 33600,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Composite Transfer Grant = Emoluments × 0.8"
+    },
+    "reason": "CTG = 80% of Emoluments",
+    "warnings": [],
+    "details": {
+      "emoluments": 42000,
+      "ctgRate": 0.8
+    }
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Employee did not opt for commutation."
+    },
+    "reason": "Employee did not opt for commutation.",
+    "warnings": [],
+    "details": {}
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "monthlyAmount": 21000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Residual Pension = Basic Pension − Commuted Pension"
+    },
+    "reason": "Residual Pension = Basic Pension − Commuted Pension (0%)",
+    "warnings": [],
+    "details": {
+      "basicPension": 21000,
+      "commutationPercentage": 0,
+      "commutedPension": 0,
+      "residualPension": 21000
+    }
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Not eligible for Post-Retirement Complimentary Passes: Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 0,
+      "passClass": "Not Applicable",
+      "familyEligibility": "Not Applicable",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 193600,
+  "monthlyPension": 21000,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 2713600
+}
+---
+Scenario: Medical Invalidation - 4y11m service
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "Mike Lee",
+    "dateOfBirth": "1968-01-01",
+    "dateOfAppointment": "1998-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "other",
+    "otherRetirementType": "medical",
+    "qualifyingService": {
+      "years": 4.92,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2022-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 38000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 26000,
+    "dearnessAllowance": 8000,
+    "lapDays": 15,
+    "lhapDays": 5,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": false,
+    "commutationPercentage": 0
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted."
+    },
+    "reason": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted.",
+    "warnings": [],
+    "details": {}
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted."
+    },
+    "reason": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted.",
+    "warnings": [],
+    "details": {}
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Retirement Gratuity",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RETIREMENT_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted."
+    },
+    "reason": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted.",
+    "warnings": [],
+    "details": {}
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 19267,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 17 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 26000,
+      "dearnessAllowanceAmount": 8000,
+      "lapDays": 15,
+      "effectiveLapDays": 15,
+      "lhapDays": 5,
+      "effectiveLhapDays": 2,
+      "totalEncashableDays": 17
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 5,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Medical Retirement has qualifying service below 20 years. RELHS requires at least 20 years for other than normal retirement.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Not Eligible",
+      "familyEligible": false,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": null,
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS is not admissible for this case under the current Railway rules."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "monthlyAmount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "FMA monthly amount is driven by RELHS eligibility and the employee's FMA option."
+    },
+    "reason": "RELHS eligibility is mandatory before FMA can be granted.",
+    "warnings": [],
+    "details": {
+      "relhsEligible": false,
+      "fmaStatus": "Not Eligible",
+      "reference": "Railway Pension Rules 2026"
+    }
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 30400,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Composite Transfer Grant = Emoluments × 0.8"
+    },
+    "reason": "CTG = 80% of Emoluments",
+    "warnings": [],
+    "details": {
+      "emoluments": 38000,
+      "ctgRate": 0.8
+    }
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted."
+    },
+    "reason": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted.",
+    "warnings": [],
+    "details": {}
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted."
+    },
+    "reason": "Medical retirement approval is required before pension, gratuity, and commutation can be admitted.",
+    "warnings": [],
+    "details": {}
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Not eligible for Post-Retirement Complimentary Passes: Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 0,
+      "passClass": "Not Applicable",
+      "familyEligibility": "Not Applicable",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 49667,
+  "monthlyPension": 0,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 49667
+}
+---
+Scenario: Death in Service - 12 years
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "Anna Brown",
+    "dateOfBirth": "1970-01-01",
+    "dateOfAppointment": "2000-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "other",
+    "otherRetirementType": "death",
+    "qualifyingService": {
+      "years": 12,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2020-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 60000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 40000,
+    "dearnessAllowance": 15000,
+    "lapDays": 30,
+    "lhapDays": 20,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": false,
+    "commutationPercentage": 0
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 30000,
+    "monthlyAmount": 30000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced, first 7 years)"
+    },
+    "reason": "Family Pension = 50% of emoluments (enhanced rate).",
+    "warnings": [],
+    "details": {
+      "emoluments": 60000,
+      "rate": 0.5,
+      "enhancedFamilyPension": 30000
+    }
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Death Gratuity",
+    "amount": 1500000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "DEATH_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death Gratuity = (Emoluments + DA) × 20 (slab for 12–20 yrs), capped at ₹20,00,000"
+    },
+    "reason": "Death Gratuity = (Emoluments + DA) × 20 (slab for 12–20 yrs), capped at ₹20,00,000",
+    "warnings": [],
+    "details": {
+      "emoluments": 60000,
+      "dearnessAllowance": 15000,
+      "qualifyingServiceYears": 12,
+      "qualifyingServiceMonths": 0,
+      "maximumLimit": 2000000,
+      "isDeath": true
+    }
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 73333,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 40 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 40000,
+      "dearnessAllowanceAmount": 15000,
+      "lapDays": 30,
+      "effectiveLapDays": 30,
+      "lhapDays": 20,
+      "effectiveLhapDays": 10,
+      "totalEncashableDays": 40
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 20,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 30000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Death Case. Family / nominee becomes eligible for RELHS.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Eligible",
+      "familyEligible": true,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": "Level 1 - Level 5",
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS subscription selected from lookup table: Level 1 - Level 5."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Not eligible for Post-Retirement Complimentary Passes: Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 0,
+      "passClass": "Not Applicable",
+      "familyEligibility": "Not Applicable",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 1603333,
+  "monthlyPension": 0,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 1603333
+}
+---
+Scenario: Death after Retirement - 20 years service
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "Peter White",
+    "dateOfBirth": "1955-01-01",
+    "dateOfAppointment": "1985-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "other",
+    "otherRetirementType": "death",
+    "qualifyingService": {
+      "years": 20,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2025-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 65000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 42000,
+    "dearnessAllowance": 18000,
+    "lapDays": 30,
+    "lhapDays": 20,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": false,
+    "commutationPercentage": 0
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 32500,
+    "monthlyAmount": 32500,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced, first 7 years)"
+    },
+    "reason": "Family Pension = 50% of emoluments (enhanced rate).",
+    "warnings": [],
+    "details": {
+      "emoluments": 65000,
+      "rate": 0.5,
+      "enhancedFamilyPension": 32500
+    }
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Death Gratuity",
+    "amount": 1660000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "DEATH_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death Gratuity (long service) = (Emoluments + DA) × 0.5 × completed 6-month periods, capped at 33×Emoluments and ₹20,00,000"
+    },
+    "reason": "Death Gratuity (long service) = (Emoluments + DA) × 0.5 × completed 6-month periods, capped at 33×Emoluments and ₹20,00,000",
+    "warnings": [],
+    "details": {
+      "emoluments": 65000,
+      "dearnessAllowance": 18000,
+      "qualifyingServiceYears": 20,
+      "qualifyingServiceMonths": 0,
+      "maximumLimit": 2000000,
+      "isDeath": true
+    }
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 80000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 40 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 42000,
+      "dearnessAllowanceAmount": 18000,
+      "lapDays": 30,
+      "effectiveLapDays": 30,
+      "lhapDays": 20,
+      "effectiveLhapDays": 10,
+      "totalEncashableDays": 40
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 20,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 30000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Death Case. Family / nominee becomes eligible for RELHS.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Eligible",
+      "familyEligible": true,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": "Level 1 - Level 5",
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS subscription selected from lookup table: Level 1 - Level 5."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Not eligible for Post-Retirement Complimentary Passes: Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 0,
+      "passClass": "Not Applicable",
+      "familyEligibility": "Not Applicable",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 1770000,
+  "monthlyPension": 0,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 1770000
+}
+---
+Scenario: Maximum Gratuity – Service > 30 years, high emoluments
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "Senior Executive",
+    "dateOfBirth": "1960-01-01",
+    "dateOfAppointment": "1990-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "normal",
+    "qualifyingService": {
+      "years": 35,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2025-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 200000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 130000,
+    "dearnessAllowance": 50000,
+    "lapDays": 30,
+    "lhapDays": 15,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": false,
+    "commutationPercentage": 0
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 100000,
+    "monthlyAmount": 100000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Basic Pension = Emoluments × 50% × Sanction Percentage"
+    },
+    "reason": "Basic Pension = 50% of emoluments × 100% sanction.",
+    "warnings": [],
+    "details": {
+      "emoluments": 200000,
+      "pensionRate": 0.5,
+      "pensionSanctionPercentage": 100,
+      "pensionScheme": "OPS"
+    }
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Normal retirement selected. Common retirement benefits are admissible subject to service verification."
+    },
+    "reason": "Normal retirement selected. Common retirement benefits are admissible subject to service verification.",
+    "warnings": [],
+    "details": {}
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Retirement Gratuity",
+    "amount": 2000000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RETIREMENT_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000"
+    },
+    "reason": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000",
+    "warnings": [
+      "Gratuity capped at the maximum limit of ₹20,00,000."
+    ],
+    "details": {
+      "emoluments": 200000,
+      "dearnessAllowance": 50000,
+      "qualifyingServiceYears": 35,
+      "qualifyingServiceMonths": 0,
+      "maximumLimit": 2000000,
+      "isDeath": false
+    }
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 222000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 37 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 130000,
+      "dearnessAllowanceAmount": 50000,
+      "lapDays": 30,
+      "effectiveLapDays": 30,
+      "lhapDays": 15,
+      "effectiveLhapDays": 7,
+      "totalEncashableDays": 37
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 15,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 30000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Employee retired under Superannuation. No minimum qualifying service is required.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Eligible",
+      "familyEligible": true,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": "Level 1 - Level 5",
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS subscription selected from lookup table: Level 1 - Level 5."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "monthlyAmount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "FMA monthly amount is driven by RELHS eligibility and the employee's FMA option."
+    },
+    "reason": "Employee chose not to receive Fixed Medical Allowance.",
+    "warnings": [],
+    "details": {
+      "relhsEligible": true,
+      "fmaStatus": "Not Opted",
+      "reference": "Railway Pension Rules 2026"
+    }
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 160000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Composite Transfer Grant = Emoluments × 0.8"
+    },
+    "reason": "CTG = 80% of Emoluments",
+    "warnings": [],
+    "details": {
+      "emoluments": 200000,
+      "ctgRate": 0.8
+    }
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Employee did not opt for commutation."
+    },
+    "reason": "Employee did not opt for commutation.",
+    "warnings": [],
+    "details": {}
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "monthlyAmount": 100000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Residual Pension = Basic Pension − Commuted Pension"
+    },
+    "reason": "Residual Pension = Basic Pension − Commuted Pension (0%)",
+    "warnings": [],
+    "details": {
+      "basicPension": 100000,
+      "commutationPercentage": 0,
+      "commutedPension": 0,
+      "residualPension": 100000
+    }
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Eligible for 3 set(s) of First Class 'A' passes per year.",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 3,
+      "passClass": "First Class 'A'",
+      "familyEligibility": "Admissible for self, spouse, children, and dependent widowed mother, subject to dependency criteria.",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Minimum 20 years of qualifying service (or 19 years 9 months and above rounded off to 20 years).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 2412000,
+  "monthlyPension": 100000,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 14412000
+}
+---
+Scenario: Maximum Leave Encashment – high leave balance
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "Long Service",
+    "dateOfBirth": "1965-01-01",
+    "dateOfAppointment": "1990-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "normal",
+    "qualifyingService": {
+      "years": 25,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2025-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 70000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 45000,
+    "dearnessAllowance": 15000,
+    "lapDays": 60,
+    "lhapDays": 40,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": false,
+    "commutationPercentage": 0
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 35000,
+    "monthlyAmount": 35000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Basic Pension = Emoluments × 50% × Sanction Percentage"
+    },
+    "reason": "Basic Pension = 50% of emoluments × 100% sanction.",
+    "warnings": [],
+    "details": {
+      "emoluments": 70000,
+      "pensionRate": 0.5,
+      "pensionSanctionPercentage": 100,
+      "pensionScheme": "OPS"
+    }
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Normal retirement selected. Common retirement benefits are admissible subject to service verification."
+    },
+    "reason": "Normal retirement selected. Common retirement benefits are admissible subject to service verification.",
+    "warnings": [],
+    "details": {}
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Retirement Gratuity",
+    "amount": 1062500,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RETIREMENT_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000"
+    },
+    "reason": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000",
+    "warnings": [],
+    "details": {
+      "emoluments": 70000,
+      "dearnessAllowance": 15000,
+      "qualifyingServiceYears": 25,
+      "qualifyingServiceMonths": 0,
+      "maximumLimit": 2000000,
+      "isDeath": false
+    }
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 160000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 80 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 45000,
+      "dearnessAllowanceAmount": 15000,
+      "lapDays": 60,
+      "effectiveLapDays": 60,
+      "lhapDays": 40,
+      "effectiveLhapDays": 20,
+      "totalEncashableDays": 80
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 40,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 30000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Employee retired under Superannuation. No minimum qualifying service is required.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Eligible",
+      "familyEligible": true,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": "Level 1 - Level 5",
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS subscription selected from lookup table: Level 1 - Level 5."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "monthlyAmount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "FMA monthly amount is driven by RELHS eligibility and the employee's FMA option."
+    },
+    "reason": "Employee chose not to receive Fixed Medical Allowance.",
+    "warnings": [],
+    "details": {
+      "relhsEligible": true,
+      "fmaStatus": "Not Opted",
+      "reference": "Railway Pension Rules 2026"
+    }
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 56000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Composite Transfer Grant = Emoluments × 0.8"
+    },
+    "reason": "CTG = 80% of Emoluments",
+    "warnings": [],
+    "details": {
+      "emoluments": 70000,
+      "ctgRate": 0.8
+    }
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Employee did not opt for commutation."
+    },
+    "reason": "Employee did not opt for commutation.",
+    "warnings": [],
+    "details": {}
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "monthlyAmount": 35000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Residual Pension = Basic Pension − Commuted Pension"
+    },
+    "reason": "Residual Pension = Basic Pension − Commuted Pension (0%)",
+    "warnings": [],
+    "details": {
+      "basicPension": 35000,
+      "commutationPercentage": 0,
+      "commutedPension": 0,
+      "residualPension": 35000
+    }
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Eligible for 3 set(s) of First Class 'A' passes per year.",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 3,
+      "passClass": "First Class 'A'",
+      "familyEligibility": "Admissible for self, spouse, children, and dependent widowed mother, subject to dependency criteria.",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Minimum 20 years of qualifying service (or 19 years 9 months and above rounded off to 20 years).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 1308500,
+  "monthlyPension": 35000,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 5508500
+}
+---
+Scenario: Commutation – Age 45
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "Young Retiree",
+    "dateOfBirth": "1975-01-01",
+    "dateOfAppointment": "1995-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "normal",
+    "qualifyingService": {
+      "years": 22,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2027-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 55000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 35000,
+    "dearnessAllowance": 13000,
+    "lapDays": 30,
+    "lhapDays": 15,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": true,
+    "commutationPercentage": 40
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 27500,
+    "monthlyAmount": 27500,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Basic Pension = Emoluments × 50% × Sanction Percentage"
+    },
+    "reason": "Basic Pension = 50% of emoluments × 100% sanction.",
+    "warnings": [],
+    "details": {
+      "emoluments": 55000,
+      "pensionRate": 0.5,
+      "pensionSanctionPercentage": 100,
+      "pensionScheme": "OPS"
+    }
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Normal retirement selected. Common retirement benefits are admissible subject to service verification."
+    },
+    "reason": "Normal retirement selected. Common retirement benefits are admissible subject to service verification.",
+    "warnings": [],
+    "details": {}
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Retirement Gratuity",
+    "amount": 748000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RETIREMENT_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000"
+    },
+    "reason": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000",
+    "warnings": [],
+    "details": {
+      "emoluments": 55000,
+      "dearnessAllowance": 13000,
+      "qualifyingServiceYears": 22,
+      "qualifyingServiceMonths": 0,
+      "maximumLimit": 2000000,
+      "isDeath": false
+    }
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 59200,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 37 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 35000,
+      "dearnessAllowanceAmount": 13000,
+      "lapDays": 30,
+      "effectiveLapDays": 30,
+      "lhapDays": 15,
+      "effectiveLhapDays": 7,
+      "totalEncashableDays": 37
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 15,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 30000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Employee retired under Superannuation. No minimum qualifying service is required.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Eligible",
+      "familyEligible": true,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": "Level 1 - Level 5",
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS subscription selected from lookup table: Level 1 - Level 5."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "monthlyAmount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "FMA monthly amount is driven by RELHS eligibility and the employee's FMA option."
+    },
+    "reason": "Employee chose not to receive Fixed Medical Allowance.",
+    "warnings": [],
+    "details": {
+      "relhsEligible": true,
+      "fmaStatus": "Not Opted",
+      "reference": "Railway Pension Rules 2026"
+    }
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 44000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Composite Transfer Grant = Emoluments × 0.8"
+    },
+    "reason": "CTG = 80% of Emoluments",
+    "warnings": [],
+    "details": {
+      "emoluments": 55000,
+      "ctgRate": 0.8
+    }
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 1151568,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Commuted Value = Commuted Pension × 12 × Commutation Factor (by Age Next Birthday)"
+    },
+    "reason": "Commuted Value = Commuted Pension (40% of ₹27500) × 12 × Factor 8.724",
+    "warnings": [],
+    "details": {
+      "ageNextBirthday": 53,
+      "commutationFactor": 8.724,
+      "factorSource": "formulas/generated/referenceData.ts",
+      "effectiveFrom": "2026-01-01",
+      "circularNumber": "OFFICIAL-RAILWAY-COMMUTATION-TABLE",
+      "commutationOpted": true,
+      "commutationPercentage": 40,
+      "basicPension": 27500,
+      "commutedPension": 11000,
+      "residualPension": 16500,
+      "formula": "Commuted Pension = Pension × Commutation%; Commuted Value = Commuted Pension × 12 × Factor"
+    }
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "monthlyAmount": 16500,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Residual Pension = Basic Pension − Commuted Pension"
+    },
+    "reason": "Residual Pension = Basic Pension − Commuted Pension (40%)",
+    "warnings": [],
+    "details": {
+      "basicPension": 27500,
+      "commutationPercentage": 40,
+      "commutedPension": 11000,
+      "residualPension": 16500
+    }
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Eligible for 2 set(s) of First Class 'A' passes per year.",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 2,
+      "passClass": "First Class 'A'",
+      "familyEligibility": "Admissible for self, spouse, children, and dependent widowed mother, subject to dependency criteria.",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Minimum 20 years of qualifying service (or 19 years 9 months and above rounded off to 20 years).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 2032768,
+  "monthlyPension": 16500,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 4012768
+}
+---
+Scenario: Commutation – Age 60
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "Senior Retiree",
+    "dateOfBirth": "1960-01-01",
+    "dateOfAppointment": "1980-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "normal",
+    "qualifyingService": {
+      "years": 28,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2028-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 80000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 50000,
+    "dearnessAllowance": 20000,
+    "lapDays": 30,
+    "lhapDays": 15,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": true,
+    "commutationPercentage": 30
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 40000,
+    "monthlyAmount": 40000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Basic Pension = Emoluments × 50% × Sanction Percentage"
+    },
+    "reason": "Basic Pension = 50% of emoluments × 100% sanction.",
+    "warnings": [],
+    "details": {
+      "emoluments": 80000,
+      "pensionRate": 0.5,
+      "pensionSanctionPercentage": 100,
+      "pensionScheme": "OPS"
+    }
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Normal retirement selected. Common retirement benefits are admissible subject to service verification."
+    },
+    "reason": "Normal retirement selected. Common retirement benefits are admissible subject to service verification.",
+    "warnings": [],
+    "details": {}
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Retirement Gratuity",
+    "amount": 1400000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RETIREMENT_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000"
+    },
+    "reason": "Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹20,00,000",
+    "warnings": [],
+    "details": {
+      "emoluments": 80000,
+      "dearnessAllowance": 20000,
+      "qualifyingServiceYears": 28,
+      "qualifyingServiceMonths": 0,
+      "maximumLimit": 2000000,
+      "isDeath": false
+    }
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 86333,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 37 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 50000,
+      "dearnessAllowanceAmount": 20000,
+      "lapDays": 30,
+      "effectiveLapDays": 30,
+      "lhapDays": 15,
+      "effectiveLhapDays": 7,
+      "totalEncashableDays": 37
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 15,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 30000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Employee retired under Superannuation. No minimum qualifying service is required.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Eligible",
+      "familyEligible": true,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": "Level 1 - Level 5",
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS subscription selected from lookup table: Level 1 - Level 5."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "monthlyAmount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "FMA monthly amount is driven by RELHS eligibility and the employee's FMA option."
+    },
+    "reason": "Employee chose not to receive Fixed Medical Allowance.",
+    "warnings": [],
+    "details": {
+      "relhsEligible": true,
+      "fmaStatus": "Not Opted",
+      "reference": "Railway Pension Rules 2026"
+    }
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 64000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Composite Transfer Grant = Emoluments × 0.8"
+    },
+    "reason": "CTG = 80% of Emoluments",
+    "warnings": [],
+    "details": {
+      "emoluments": 80000,
+      "ctgRate": 0.8
+    }
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 1019952,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Commuted Value = Commuted Pension × 12 × Commutation Factor (by Age Next Birthday)"
+    },
+    "reason": "Commuted Value = Commuted Pension (30% of ₹40000) × 12 × Factor 7.083",
+    "warnings": [],
+    "details": {
+      "ageNextBirthday": 69,
+      "commutationFactor": 7.083,
+      "factorSource": "formulas/generated/referenceData.ts",
+      "effectiveFrom": "2026-01-01",
+      "circularNumber": "OFFICIAL-RAILWAY-COMMUTATION-TABLE",
+      "commutationOpted": true,
+      "commutationPercentage": 30,
+      "basicPension": 40000,
+      "commutedPension": 12000,
+      "residualPension": 28000,
+      "formula": "Commuted Pension = Pension × Commutation%; Commuted Value = Commuted Pension × 12 × Factor"
+    }
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "monthlyAmount": 28000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Residual Pension = Basic Pension − Commuted Pension"
+    },
+    "reason": "Residual Pension = Basic Pension − Commuted Pension (30%)",
+    "warnings": [],
+    "details": {
+      "basicPension": 40000,
+      "commutationPercentage": 30,
+      "commutedPension": 12000,
+      "residualPension": 28000
+    }
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Eligible for 3 set(s) of First Class 'A' passes per year.",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 3,
+      "passClass": "First Class 'A'",
+      "familyEligibility": "Admissible for self, spouse, children, and dependent widowed mother, subject to dependency criteria.",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Minimum 20 years of qualifying service (or 19 years 9 months and above rounded off to 20 years).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 2600285,
+  "monthlyPension": 28000,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 5960285
+}
+---
+Scenario: RELHS – Death case
+Inputs:
+{
+  "employeeDetails": {
+    "employeeName": "RELHS Test",
+    "dateOfBirth": "1960-01-01",
+    "dateOfAppointment": "1990-01-01",
+    "employeeGroup": "A",
+    "payMatrixLevel": "Level1"
+  },
+  "serviceDetails": {
+    "pensionScheme": "OPS",
+    "employeeCategory": "Running",
+    "retirementCategory": "other",
+    "otherRetirementType": "death",
+    "qualifyingService": {
+      "years": 3,
+      "months": 0,
+      "days": 0
+    },
+    "retirementDate": "2023-01-01"
+  },
+  "promotionDetails": {
+    "promotedInLastTenMonths": false,
+    "monthlyBasicPay": [],
+    "averageLastTenMonthsBasicPay": 0,
+    "calculationBasis": "Current Basic Pay",
+    "emoluments": 30000
+  },
+  "salaryDetails": {
+    "currentBasicPay": 20000,
+    "dearnessAllowance": 5000,
+    "lapDays": 10,
+    "lhapDays": 5,
+    "providentFund": 0,
+    "cgis": 0
+  },
+  "medicalBenefits": {
+    "fixedMedicalAllowance": false,
+    "fmaOpted": false,
+    "fmaEligibility": "Not Opted",
+    "fmaMonthlyAmount": 0,
+    "fmaReason": ""
+  },
+  "commutationDetails": {
+    "commutationOpted": false,
+    "commutationPercentage": 0
+  }
+}
+Engine Output:
+{
+  "basicPension": {
+    "key": "basicPension",
+    "benefitName": "Basic Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_BASIC_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "familyPension": {
+    "key": "familyPension",
+    "benefitName": "Family Pension",
+    "amount": 15000,
+    "monthlyAmount": 15000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FAMILY_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced, first 7 years)"
+    },
+    "reason": "Family Pension = 50% of emoluments (enhanced rate).",
+    "warnings": [],
+    "details": {
+      "emoluments": 30000,
+      "rate": 0.5,
+      "enhancedFamilyPension": 15000
+    }
+  },
+  "retirementGratuity": {
+    "key": "retirementGratuity",
+    "benefitName": "Death Gratuity",
+    "amount": 210000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "DEATH_GRATUITY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death Gratuity = (Emoluments + DA) × 6 (slab for 1–5 yrs), capped at ₹20,00,000"
+    },
+    "reason": "Death Gratuity = (Emoluments + DA) × 6 (slab for 1–5 yrs), capped at ₹20,00,000",
+    "warnings": [],
+    "details": {
+      "emoluments": 30000,
+      "dearnessAllowance": 5000,
+      "qualifyingServiceYears": 3,
+      "qualifyingServiceMonths": 0,
+      "maximumLimit": 2000000,
+      "isDeath": true
+    }
+  },
+  "leaveEncashment": {
+    "key": "leaveEncashment",
+    "benefitName": "Leave Encashment",
+    "amount": 10000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LEAVE_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
+    },
+    "reason": "Leave Encashment = (Basic + DA) × 12 days / 30",
+    "warnings": [],
+    "details": {
+      "basicPay": 20000,
+      "dearnessAllowanceAmount": 5000,
+      "lapDays": 10,
+      "effectiveLapDays": 10,
+      "lhapDays": 5,
+      "effectiveLhapDays": 2,
+      "totalEncashableDays": 12
+    }
+  },
+  "halfLeaveEncashment": {
+    "key": "halfLeaveEncashment",
+    "benefitName": "Half Leave Encashment",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "reason": "LHAP is converted and included in the main Leave Encashment calculation.",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "OPS_LHAP_ENCASHMENT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "LHAP days are converted at 2:1 and combined with LAP days."
+    },
+    "warnings": [],
+    "details": {
+      "lhapDays": 5,
+      "conversionRatio": "2 LHAP Days = 1 Encashable Day"
+    }
+  },
+  "providentFund": {
+    "key": "providentFund",
+    "benefitName": "Provident Fund",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "PROVIDENTFUND_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "PF amount is taken from the manually entered assessment value."
+    },
+    "reason": "PF amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "cgis": {
+    "key": "cgis",
+    "benefitName": "CGIS",
+    "amount": 0,
+    "eligible": false,
+    "status": "Manual Input",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CGIS_MANUAL_INPUT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "CGIS amount is taken from the manually entered assessment value."
+    },
+    "reason": "CGIS amount is taken from the manually entered assessment value.",
+    "warnings": [],
+    "details": {}
+  },
+  "relhs": {
+    "key": "relhs",
+    "benefitName": "RELHS",
+    "amount": 30000,
+    "eligible": true,
+    "status": "Calculated",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RELHS_SUBSCRIPTION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "RELHS subscription is calculated from Pay Matrix Level using the RELHS subscription lookup table."
+    },
+    "reason": "Death Case. Family / nominee becomes eligible for RELHS.",
+    "warnings": [],
+    "details": {
+      "medicalCard": "Eligible",
+      "familyEligible": true,
+      "verificationStatus": "Automatic",
+      "subscriptionBand": "Level 1 - Level 5",
+      "payMatrixLevel": 1,
+      "requiredDocuments": [
+        "Retirement Order",
+        "PPO",
+        "Service Register",
+        "Identity Proof",
+        "Pay Matrix Details"
+      ],
+      "ruleReference": "Railway Pension Rules 2026",
+      "remarks": "RELHS subscription selected from lookup table: Level 1 - Level 5."
+    }
+  },
+  "fma": {
+    "key": "fma",
+    "benefitName": "Fixed Medical Allowance",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "FMA_MONTHLY_AMOUNT",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "ctg": {
+    "key": "ctg",
+    "benefitName": "Composite Transfer Grant",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "CTG",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "commutation": {
+    "key": "commutation",
+    "benefitName": "Commutation",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "residualPension": {
+    "key": "residualPension",
+    "benefitName": "Residual Pension",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Formula Engine",
+      "formulaKey": "RESIDUAL_PENSION",
+      "workbookSheet": "Formula Engine",
+      "cellReference": "formulas/generated/referenceData.ts",
+      "ruleReference": "Railway Pension Rules 2026",
+      "explanation": "Death while in service selected. Death benefits and family pension rules apply."
+    },
+    "reason": "Death while in service selected. Death benefits and family pension rules apply.",
+    "warnings": [],
+    "details": {}
+  },
+  "complimentaryPass": {
+    "key": "complimentaryPass",
+    "benefitName": "Complimentary Pass",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
+    "formula": {
+      "formulaName": "Rule-Based Entitlement",
+      "formulaKey": "COMPLIMENTARY_PASS_ENTITLEMENT",
+      "workbookSheet": "Pass Rules",
+      "cellReference": "Schedule IV Rule 8(2)",
+      "ruleReference": "Railway Servants (Pass) Rules, 1986",
+      "explanation": "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level."
+    },
+    "reason": "Not eligible for Post-Retirement Complimentary Passes: Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+    "warnings": [],
+    "details": {
+      "passSetsPerYear": 0,
+      "passClass": "Not Applicable",
+      "familyEligibility": "Not Applicable",
+      "ruleReference": "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      "conditions": "Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).",
+      "restrictions": "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).",
+      "requiredDocuments": [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)"
+      ]
+    }
+  },
+  "totalOneTimeBenefits": 250000,
+  "monthlyPension": 0,
+  "monthlyFma": 0,
+  "totalEstimatedSettlement": 250000
+}
+---
