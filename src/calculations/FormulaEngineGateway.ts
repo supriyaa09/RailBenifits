@@ -520,6 +520,112 @@ function calcResidualPension(
   );
 }
 
+function calcComplimentaryPass(
+  context: CalculationContext,
+  decision: RetirementRuleDecision,
+): BenefitCalculation {
+  const { assessment } = context;
+  const admissible = decision.benefits["complimentaryPass" as SettlementBenefitKey];
+
+  const qs = assessment.serviceDetails.qualifyingService;
+  const actualYears = qs.years + qs.months / 12 + qs.days / 365.25;
+  const retirementType = assessment.serviceDetails.otherRetirementType ?? "normal";
+
+  let effectiveServiceYears = actualYears;
+  let hasMedicalCredit = false;
+  if (retirementType === "medical") {
+    effectiveServiceYears += 5;
+    hasMedicalCredit = true;
+  }
+
+  // 19 years and 9 months = 19.75 years, rounded to 20.
+  const isEligible = admissible && (effectiveServiceYears >= 19.75);
+
+  let passSetsPerYear = 0;
+  let passClass = "Not Applicable";
+  let familyEligibility = "Not Applicable";
+  let conditions = "";
+  const restrictions =
+    "Admissibility is subject to non-retention of unauthorized railway quarters (one set of passes is forfeited for every month of unauthorized retention). Passes are not admissible in case of dismissal or removal from service (unless compassionate allowance is sanctioned).";
+
+  if (isEligible) {
+    const group = assessment.employeeDetails.employeeGroup;
+    // Determine sets per year
+    if (group === "A" || group === "B") {
+      passSetsPerYear = effectiveServiceYears >= 25 ? 3 : 2;
+    } else if (group === "C") {
+      passSetsPerYear = effectiveServiceYears >= 25 ? 2 : 1;
+    } else if (group === "D") {
+      passSetsPerYear = 1;
+    }
+
+    // Determine pass class
+    const payMatrixLevelStr = assessment.employeeDetails.payMatrixLevel;
+    const match = payMatrixLevelStr.match(/\d+/);
+    const parsedLevel = match ? Number(match[0]) : null;
+
+    if (group === "A" || group === "B") {
+      passClass = "First Class 'A'";
+    } else if (group === "C") {
+      if (parsedLevel !== null && parsedLevel >= 6) {
+        passClass = "First Class";
+      } else if (parsedLevel === 5) {
+        passClass = "Second Class 'A'";
+      } else {
+        passClass = "Second Class";
+      }
+    } else {
+      // Group D
+      passClass = "Second Class";
+    }
+
+    familyEligibility =
+      "Admissible for self, spouse, children, and dependent widowed mother, subject to dependency criteria.";
+    conditions = `Minimum 20 years of qualifying service (or 19 years 9 months and above rounded off to 20 years).${
+      hasMedicalCredit
+        ? " Includes 5 years additional service credit for medical invalidation retirement."
+        : ""
+    }`;
+  } else {
+    conditions =
+      "Qualifying service is less than the minimum required 20 years (including medical invalidation addition if applicable).";
+  }
+
+  return {
+    key: "complimentaryPass" as any,
+    benefitName: "Complimentary Pass",
+    amount: 0,
+    eligible: isEligible,
+    status: isEligible ? "Calculated" : "Not Eligible",
+    formula: {
+      formulaName: "Rule-Based Entitlement",
+      formulaKey: "COMPLIMENTARY_PASS_ENTITLEMENT",
+      workbookSheet: "Pass Rules",
+      cellReference: "Schedule IV Rule 8(2)",
+      ruleReference: "Railway Servants (Pass) Rules, 1986",
+      explanation:
+        "Post-Retirement Complimentary Pass entitlement is based on Group, Qualifying Service, and Pay Level.",
+    },
+    reason: isEligible
+      ? `Eligible for ${passSetsPerYear} set(s) of ${passClass} passes per year.`
+      : `Not eligible for Post-Retirement Complimentary Passes: ${conditions}`,
+    warnings: [],
+    details: {
+      passSetsPerYear,
+      passClass,
+      familyEligibility,
+      ruleReference: "Schedule IV, Rule 8(2) of Railway Servants (Pass) Rules, 1986",
+      conditions,
+      restrictions,
+      requiredDocuments: [
+        "Service Register",
+        "Pass Account Declaration",
+        "No Dues Certificate (for quarters)",
+      ],
+    },
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Main gateway function
 // ---------------------------------------------------------------------------
@@ -551,6 +657,7 @@ export function calculateWithFormulaEngine(
     basicPension.monthlyAmount ?? 0,
     commutation.amount,
   );
+  const complimentaryPass = calcComplimentaryPass(context, decision);
 
   // Totals: one-time lump sum (exclude monthly-only benefits like fma)
   const totalOneTimeBenefits =
@@ -581,6 +688,7 @@ export function calculateWithFormulaEngine(
     ctg,
     commutation,
     residualPension,
+    complimentaryPass,
     totalOneTimeBenefits,
     monthlyPension,
     monthlyFma,

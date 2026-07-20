@@ -156,14 +156,23 @@ export const benefitRules: BenefitRule[] = [
   {
     benefitName: "Complimentary Pass",
     evaluate: (assessment: SettlementAssessment) => {
+      const qs = assessment.serviceDetails.qualifyingService;
+      const actualYears = qs.years + qs.months / 12 + qs.days / 365.25;
+      const retirementType = assessment.serviceDetails.otherRetirementType ?? "normal";
+      let effectiveServiceYears = actualYears;
+      let hasMedicalCredit = false;
+      if (retirementType === "medical") {
+        effectiveServiceYears += 5;
+        hasMedicalCredit = true;
+      }
       const eligible =
-        isBenefitAdmissible(assessment, "complimentaryPass") && hasMinimumService(assessment, 20);
+        isBenefitAdmissible(assessment, "complimentaryPass") && effectiveServiceYears >= 19.75;
       return benefit(
         "Complimentary Pass",
-        eligible ? "Eligible" : "Conditional",
+        eligible ? "Eligible" : "Not Eligible",
         eligible
-          ? "Employee has minimum qualifying service and separation type is not barred."
-          : "Complimentary Pass requires service and separation-type verification.",
+          ? `Eligible: completed ${Math.round(actualYears)} years of qualifying service (effective ${Math.round(effectiveServiceYears)} years with ${hasMedicalCredit ? "5-year medical credit" : "no overrides"}).`
+          : `Not Eligible: qualifying service of ${Math.round(actualYears)} years (effective ${Math.round(effectiveServiceYears)} years) is below the minimum 20-year threshold.`,
         ["Service Register", "Pass Account Details"],
       );
     },

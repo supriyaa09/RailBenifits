@@ -61,6 +61,7 @@ export interface SettlementCalculation {
   ctg: BenefitCalculation;
   commutation: BenefitCalculation;
   residualPension: BenefitCalculation;
+  complimentaryPass: BenefitCalculation;
   totalOneTimeBenefits: number;
   monthlyPension: number;
   monthlyFma: number;

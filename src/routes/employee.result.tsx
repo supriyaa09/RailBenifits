@@ -375,15 +375,27 @@ function BenefitCard({
             </div>
           </div>
         </div>
-        <div className="rounded-md border border-border bg-muted/30 p-3 min-w-56">
-          <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Amount
+        {benefit.benefitName !== "Complimentary Pass" ? (
+          <div className="rounded-md border border-border bg-muted/30 p-3 min-w-56">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Amount
+            </div>
+            <div className="mt-1 text-sm font-semibold text-foreground">{amount}</div>
+            {calculation?.status && (
+              <div className="text-xs text-muted-foreground mt-1">{calculation.status}</div>
+            )}
           </div>
-          <div className="mt-1 text-sm font-semibold text-foreground">{amount}</div>
-          {calculation?.status && (
-            <div className="text-xs text-muted-foreground mt-1">{calculation.status}</div>
-          )}
-        </div>
+        ) : (
+          <div className="rounded-md border border-border bg-muted/30 p-3 min-w-56">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Benefit Type
+            </div>
+            <div className="mt-1 text-sm font-semibold text-foreground">Non-Monetary (Entitlement)</div>
+            {calculation?.status && (
+              <div className="text-xs text-muted-foreground mt-1">{calculation.status}</div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 mt-5">
@@ -474,6 +486,43 @@ function BenefitCard({
           <ResultMetric
             label="Residual Pension"
             value={formatCurrency(Number(calculation.details.residualPension ?? 0))}
+          />
+        </div>
+      )}
+
+      {benefit.benefitName === "Complimentary Pass" && calculation?.details && (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 mt-5 rounded-md border border-primary/20 bg-primary-soft/30 p-4">
+          <ResultMetric
+            label="Eligibility"
+            value={calculation.eligible ? "Eligible" : "Not Eligible"}
+          />
+          <ResultMetric
+            label="Pass Sets per Year"
+            value={String(calculation.details.passSetsPerYear ?? "0")}
+          />
+          <ResultMetric
+            label="Pass Class"
+            value={String(calculation.details.passClass ?? "Not Applicable")}
+          />
+          <ResultMetric
+            label="Family Eligibility"
+            value={String(calculation.details.familyEligibility ?? "Not Applicable")}
+          />
+          <ResultMetric
+            label="Rule Reference"
+            value={String(calculation.details.ruleReference ?? "Not Applicable")}
+          />
+          <ResultMetric
+            label="Conditions"
+            value={String(calculation.details.conditions ?? "Not Applicable")}
+          />
+          <ResultMetric
+            label="Restrictions"
+            value={String(calculation.details.restrictions ?? "Not Applicable")}
+          />
+          <ResultMetric
+            label="Required Documents"
+            value={Array.isArray(calculation.details.requiredDocuments) ? (calculation.details.requiredDocuments as string[]).join(", ") : "Not Applicable"}
           />
         </div>
       )}
@@ -1524,7 +1573,7 @@ function findCalculation(
     "Fixed Medical Allowance": calculation.fma,
     Commutation: calculation.commutation,
     "Residual Pension": calculation.residualPension,
-    "Complimentary Pass": calculation.ctg,
+    "Complimentary Pass": calculation.complimentaryPass,
     "Composite Transfer Grant": calculation.ctg,
     "Medical Facilities": calculation.relhs,
   };
