@@ -35,7 +35,12 @@ export interface BenefitCalculation {
   amount: number;
   monthlyAmount?: number;
   eligible: boolean;
-  status: "Calculated" | "Manual Input" | "Not Eligible" | "Pending Workbook Formula";
+  status:
+    | "Calculated"
+    | "Manual Input"
+    | "Not Eligible"
+    | "Pending Workbook Formula"
+    | "Pending Formula Engine";
   formula: FormulaMetadata;
   reason: string;
   warnings: string[];
