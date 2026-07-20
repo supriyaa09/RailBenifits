@@ -173,7 +173,7 @@ function calcRetirementGratuity(context: CalculationContext, decision: Retiremen
   }
 
   const emoluments = assessment.promotionDetails.emoluments;
-  const da = (assessment.salaryDetails.dearnessAllowance / 100) * emoluments;
+  const da = assessment.salaryDetails.dearnessAllowance;
   const qs = assessment.serviceDetails.qualifyingService;
   const details = assessment.serviceDetails.otherRetirementDetails;
 
@@ -200,27 +200,25 @@ function calcRetirementGratuity(context: CalculationContext, decision: Retiremen
   if (isDeath) {
     // Death Gratuity: slab-based
     const slab = findDeathGratuitySlab(effectiveQS.years);
-      if (slab) {
-        // Apply slab multiplier but also enforce 16.5× emoluments cap
-        const rawAmount = (emoluments + da) * slab.multiplier;
-        const sixteenPointFiveLimit = (emoluments + da) * 16.5;
-        amount = Math.min(rawAmount, sixteenPointFiveLimit, GRATUITY_RULES.maximumLimit);
-        formula = `Death Gratuity = (Emoluments + DA) × ${slab.multiplier} (slab for ${slab.minYears}–${slab.maxYearsExclusive ?? "+"} yrs), capped at 16.5×Emoluments and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
-      } else {
-        // Long service (20+ years): half monthly emoluments per completed 6-month period, with caps
-        const periods = Math.floor(serviceYears * 2);
-        const rawAmount = (emoluments + da) * GRATUITY_RULES.longServiceDeathMultiplier * periods;
-        const sixteenPointFiveLimit = (emoluments + da) * 16.5;
-        amount = Math.min(rawAmount, sixteenPointFiveLimit, GRATUITY_RULES.maximumLimit);
-        formula = `Death Gratuity (long service) = (Emoluments + DA) × 0.5 × completed 6-month periods, capped at 16.5×Emoluments and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
-      }
+    if (slab) {
+      const rawAmount = (emoluments + da) * slab.multiplier;
+      amount = Math.min(rawAmount, GRATUITY_RULES.maximumLimit);
+      formula = `Death Gratuity = (Emoluments + DA) × ${slab.multiplier} (slab for ${slab.minYears}–${slab.maxYearsExclusive ?? "+"} yrs), capped at ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
+    } else {
+      // Long service (20+ years): half monthly emoluments per completed 6-month period, capped at 33× and ₹2,000,000
+      const periods = Math.floor(serviceYears * 2);
+      const rawAmount = (emoluments + da) * GRATUITY_RULES.longServiceDeathMultiplier * periods;
+      const thirtyThreeLimit = (emoluments + da) * 33;
+      amount = Math.min(rawAmount, thirtyThreeLimit, GRATUITY_RULES.maximumLimit);
+      formula = `Death Gratuity (long service) = (Emoluments + DA) × 0.5 × completed 6-month periods, capped at 33×Emoluments and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
+    }
   } else {
     // Retirement Gratuity: (Emoluments + DA) × qualifying service years / 4, capped at 16.5×Emoluments and the gratuity ceiling
-  const completedHalfYears = Math.floor(serviceYears * 2);
-  const rawAmount = (emoluments + da) * 0.25 * completedHalfYears;
-  const sixteenPointFiveLimit = emoluments * 16.5;
-  amount = Math.min(rawAmount, sixteenPointFiveLimit, GRATUITY_RULES.maximumLimit);
-  formula = `Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×Emoluments and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
+    const completedHalfYears = Math.floor(serviceYears * 2);
+    const rawAmount = (emoluments + da) * 0.25 * completedHalfYears;
+    const sixteenPointFiveLimit = (emoluments + da) * 16.5;
+    amount = Math.min(rawAmount, sixteenPointFiveLimit, GRATUITY_RULES.maximumLimit);
+    formula = `Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
   }
 
   return benefit(
@@ -251,7 +249,7 @@ function calcLeaveEncashment(context: CalculationContext, decision: RetirementRu
   }
 
   const basic = assessment.salaryDetails.currentBasicPay;
-  const da = (assessment.salaryDetails.dearnessAllowance / 100) * basic;
+  const da = assessment.salaryDetails.dearnessAllowance;
   const lapDays = assessment.salaryDetails.lapDays;
   const lhapDays = assessment.salaryDetails.lhapDays;
 
@@ -427,7 +425,10 @@ function calcCommutation(context: CalculationContext, decision: RetirementRuleDe
     return notEligible("commutation", "Commutation", "Commutation is only applicable under OPS.", "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY");
   }
 
-  const ageNextBirthday = calculateAgeNextBirthday(assessment.employeeDetails.dateOfBirth);
+  const ageNextBirthday = calculateAgeNextBirthday(
+    assessment.employeeDetails.dateOfBirth,
+    new Date(assessment.serviceDetails.retirementDate)
+  );
   if (ageNextBirthday === null || ageNextBirthday === undefined) {
     return notEligible(
       "commutation",
