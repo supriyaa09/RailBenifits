@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import jsPDF from "jspdf";
-import { toCanvas } from "html-to-image";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas-pro";
 import {
   AlertTriangle,
   BadgeIndianRupee,
@@ -31,10 +31,7 @@ import { formatIndianDate, formatIndianDateTime } from "@/lib/indian-date-time";
 import { formatCurrency, type SettlementAssessment } from "@/lib/settlement-assessment";
 import { saveSettlementReport, type SettlementReportRecord } from "@/services/ReportManagementService";
 import { processSettlement } from "@/services/SettlementService";
-import {
-  prepareSettlementPdfRequest,
-  printStructuredCertificate,
-} from "@/services/SettlementPdfService";
+// SettlementPdfService: prepareSettlementPdfRequest removed (using window.print directly)
 import { evaluateRetirementRules } from "@/rules/RetirementRuleEngine";
 import type { BenefitCalculation, SettlementCalculation } from "@/calculations/CalculationTypes";
 import type { BenefitResult, EligibilityStatus, SettlementResult } from "@/rules/RuleTypes";
@@ -204,7 +201,7 @@ function SettlementTabs({
       className="space-y-5"
     >
       {/* Tab Navigation Bar */}
-      <div className="settlement-tabs-nav">
+      <div className="settlement-tabs-nav print:hidden">
         <TabsPrimitive.List
           ref={tabsListRef}
           className="settlement-tabs-list"
@@ -676,16 +673,6 @@ function OfficialReport({
     certificateTextRow("7.", "PPO Number", "Pending officer verification"),
   ];
   const [lastSavedReport, setLastSavedReport] = useState<string | null>(null);
-  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
-  const [pdfError, setPdfError] = useState<string | null>(null);
-
-  const describePdfError = (error: unknown) => {
-    if (error instanceof Error) {
-      const cause = error.cause instanceof Error ? `\nCause: ${error.cause.message}` : "";
-      return `${error.name}: ${error.message}${cause}${error.stack ? `\n${error.stack}` : ""}`;
-    }
-    return String(error);
-  };
 
   const saveReport = (status: "Draft" | "Submitted" = "Draft") => {
     const saved = saveSettlementReport(assessment, result, calculation, {
@@ -695,114 +682,71 @@ function OfficialReport({
     setLastSavedReport(`Version ${saved.version || saved.report_version} saved as ${saved.status}.`);
   };
 
+  const triggerPrint = () => {
+    if (typeof window === "undefined") return;
+    document.body.classList.add("printing");
+    const onAfterPrint = () => {
+      document.body.classList.remove("printing");
+      window.removeEventListener("afterprint", onAfterPrint);
+    };
+    window.addEventListener("afterprint", onAfterPrint);
+    window.print();
+  };
+
   const handlePrint = () => {
-    printStructuredCertificate();
+    triggerPrint();
   };
 
   const handleDownloadPdf = async () => {
-    const el = certificateRef.current;
-    if (!el) {
-      setPdfError("Report element not found. Switch to the 'Official Report' tab and try again.");
+    if (typeof window === "undefined" || !assessment) return;
+
+    const page1El = document.getElementById("certificate-page-1");
+    const page2El = document.getElementById("certificate-page-2");
+
+    if (!page1El || !page2El) {
+      console.error("Page elements not found for PDF download");
       return;
     }
 
-    setIsPdfGenerating(true);
-    setPdfError(null);
-
-    const { fileName } = prepareSettlementPdfRequest({
-      assessment,
-      result,
-      calculation,
-      reportVersion: savedSnapshot?.version ?? savedSnapshot?.report_version ?? 1,
-      status: savedSnapshot?.status ?? "Draft",
-    });
-
-    let container: HTMLDivElement | null = null;
-
     try {
-      container = document.createElement("div");
-      container.style.position = "fixed";
-      container.style.top = "-9999px";
-      container.style.left = "-9999px";
-      container.style.width = "794px"; // A4 at 96 dpi
-      container.style.zIndex = "-1";
-      container.style.pointerEvents = "none";
-      document.body.appendChild(container);
-
-      const clone = el.cloneNode(true) as HTMLElement;
-      clone.style.maxWidth = "794px";
-      clone.style.width = "794px";
-      clone.style.boxShadow = "none";
-      clone.style.outline = "none";
-      clone.style.backgroundColor = "#ffffff";
-      container.appendChild(clone);
-
-      await new Promise<void>((resolve) =>
-        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-      );
-
-      const canvas = await toCanvas(clone, {
-        pixelRatio: 2,
-        cacheBust: true,
+      const canvas1 = await html2canvas(page1El, {
+        scale: 2, // High resolution
+        useCORS: true, // Support logo image loading
+        logging: false,
         backgroundColor: "#ffffff",
       });
 
-      const A4_W = 210; // mm
-      const A4_H = 297; // mm
-
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-        compress: true,
+      const canvas2 = await html2canvas(page2El, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
       });
 
-      const canvasW = canvas.width;
-      const canvasH = canvas.height;
-      const pxPerMm = canvasW / A4_W;          // canvas px that equals 1 mm
-      const pageHpx = A4_H * pxPerMm;          // canvas px that fit one A4 page
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = 210;
+      const pdfHeight = 297;
 
-      const totalPages = Math.ceil(canvasH / pageHpx);
+      const imgHeight1 = (canvas1.height * pdfWidth) / canvas1.width;
+      const imgHeight2 = (canvas2.height * pdfWidth) / canvas2.width;
 
-      for (let page = 0; page < totalPages; page++) {
-        if (page > 0) pdf.addPage();
+      const imgData1 = canvas1.toDataURL("image/png");
+      pdf.addImage(imgData1, "PNG", 0, 0, pdfWidth, imgHeight1);
 
-        const srcY = Math.round(page * pageHpx);
-        const srcH = Math.min(pageHpx, canvasH - srcY);
+      pdf.addPage();
+      const imgData2 = canvas2.toDataURL("image/png");
+      pdf.addImage(imgData2, "PNG", 0, 0, pdfWidth, imgHeight2);
 
-        // Draw just this page's slice into a temporary canvas
-        const pageCanvas = document.createElement("canvas");
-        pageCanvas.width = canvasW;
-        pageCanvas.height = Math.round(srcH);
-        const ctx = pageCanvas.getContext("2d");
-        if (ctx) {
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-          ctx.drawImage(
-            canvas,
-            0, srcY, canvasW, srcH,   // source rect
-            0, 0, canvasW, Math.round(srcH) // dest rect
-          );
-        }
-
-        // addImage accepts an HTMLCanvasElement directly (no toDataURL needed)
-        const heightMm = srcH / pxPerMm;
-        pdf.addImage(pageCanvas, "JPEG", 0, 0, A4_W, heightMm, undefined, "FAST");
-      }
-
+      const empId = assessment.employeeDetails.employeeId?.replace(/[^a-zA-Z0-9]/g, "") || "Employee";
+      const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, "");
+      const fileName = `Settlement_Report_${empId}_${dateStr}.pdf`;
       pdf.save(fileName);
-
-    } catch (err: unknown) {
-      console.error("Download PDF failed in src/routes/employee.result.tsx", err);
-      console.error(describePdfError(err));
-      setPdfError(`Download PDF failed: ${describePdfError(err).split("\n")[0]}`);
-    } finally {
-      container?.remove();
-      setIsPdfGenerating(false);
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
     }
   };
 
-  // Handle ?print=true / ?download=true params (triggered from reports page)
+  // Handle ?print=true / ?download=true params (triggered from reports page).
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -813,17 +757,23 @@ function OfficialReport({
     newUrl.searchParams.delete("download");
     window.history.replaceState({}, "", newUrl.toString());
     if (action === "print") {
-      const t = setTimeout(() => window.print(), 1200);
+      const t = setTimeout(() => {
+        triggerPrint();
+      }, 1200);
       return () => clearTimeout(t);
     }
-    const t = setTimeout(() => { void handleDownloadPdf(); }, 1500);
-    return () => clearTimeout(t);
+    if (action === "download") {
+      const t = setTimeout(() => {
+        handleDownloadPdf();
+      }, 1200);
+      return () => clearTimeout(t);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [assessment]);
 
   return (
     <div className="space-y-4">
-      <div className="report-controls rounded-md border border-border bg-card p-4 shadow-sm">
+      <div className="report-controls rounded-md border border-border bg-card p-4 shadow-sm print:hidden">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="text-sm font-semibold text-foreground">
@@ -835,9 +785,6 @@ function OfficialReport({
             {lastSavedReport && (
               <div className="mt-1 text-xs font-medium text-primary">{lastSavedReport}</div>
             )}
-            {pdfError && (
-              <div className="mt-1 text-xs font-medium text-destructive">{pdfError}</div>
-            )}
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
@@ -845,22 +792,9 @@ function OfficialReport({
               variant="outline"
               size="sm"
               onClick={handleDownloadPdf}
-              disabled={isPdfGenerating}
             >
-              {isPdfGenerating ? (
-                <>
-                  <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                  </svg>
-                  Generating…
-                </>
-              ) : (
-                <>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download PDF
-                </>
-              )}
+              <Download className="mr-2 h-4 w-4" />
+              Download PDF
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
               <Printer className="mr-2 h-4 w-4" />
@@ -879,7 +813,8 @@ function OfficialReport({
 
       <section ref={certificateRef} className="settlement-certificate mx-auto max-w-[210mm] bg-white text-slate-950 shadow-sm ring-1 ring-slate-300 print:max-w-none print:shadow-none print:ring-0">
         <div className="min-h-[297mm] px-5 py-5 text-[12px] leading-snug sm:px-8 print:px-8 print:py-6">
-          <header className="border-b-2 border-slate-900 pb-3">
+          <div id="certificate-page-1" className="bg-white px-8 py-6 print:p-0">
+            <header className="border-b-2 border-slate-900 pb-3">
             <div className="grid grid-cols-[72px_1fr_72px] items-center gap-3">
               <img
                 src={INDIAN_RAILWAYS_LOGO}
@@ -909,7 +844,7 @@ function OfficialReport({
               : ""}
           </div>
 
-          <div className="mt-4 grid grid-cols-1 border border-slate-500 sm:grid-cols-2">
+          <div className="mt-4 grid grid-cols-1 border border-slate-500 sm:grid-cols-2 print:grid-cols-2">
             <CertificateMeta
               label="Employee Name"
               value={assessment.employeeDetails.employeeName || "Not available"}
@@ -931,7 +866,7 @@ function OfficialReport({
           </div>
 
           <CertificateSection title="Section A - Employee Details">
-            <div className="grid border border-slate-500 sm:grid-cols-2">
+            <div className="grid border border-slate-500 sm:grid-cols-2 print:grid-cols-2">
               <CertificateMeta
                 label="Designation"
                 value={assessment.employeeDetails.designation || "Not provided"}
@@ -1126,7 +1061,7 @@ function OfficialReport({
                 rows={[
                   certificateTextRow(
                     "1.",
-                    `Family Pension (${calculation.familyPension.formula.formulaName})`,
+                    "Family Pension",
                     formatCurrency(
                       calculation.familyPension.monthlyAmount ??
                       calculation.familyPension.amount,
@@ -1135,7 +1070,7 @@ function OfficialReport({
                   ),
                   certificateTextRow(
                     "2.",
-                    `Enhanced Family Pension (${calculation.familyPension.formula.ruleReference})`,
+                    "Enhanced Family Pension",
                     formatCurrency(
                       Number(
                         calculation.familyPension.details?.enhancedFamilyPension ?? 0,
@@ -1145,7 +1080,7 @@ function OfficialReport({
                   ),
                   certificateTextRow(
                     "3.",
-                    `Death Gratuity (${calculation.retirementGratuity.formula.formulaName})`,
+                    "Death Gratuity",
                     formatCurrency(
                       isDeathCase ? calculation.retirementGratuity.amount : calculation.retirementGratuity.amount,
                     ),
@@ -1159,19 +1094,19 @@ function OfficialReport({
                   ),
                   certificateTextRow(
                     "4(ii).",
-                    `Amount under Savings Fund of CGEGIS (${calculation.cgis.formula.formulaName})`,
+                    "Amount under Savings Fund of CGEGIS",
                     formatCurrency(calculation.cgis.amount),
                     calculation.cgis,
                   ),
                   certificateTextRow(
                     "5.",
-                    `PF Accumulation (${calculation.providentFund.formula.formulaName})${assessment.employeeDetails.employeeId ? ` — AC No. ${assessment.employeeDetails.employeeId}` : ""}`,
+                    `PF Accumulation${assessment.employeeDetails.employeeId ? ` (AC No. ${assessment.employeeDetails.employeeId})` : ""}`,
                     formatCurrency(calculation.providentFund.amount),
                     calculation.providentFund,
                   ),
                   certificateTextRow(
                     "6.",
-                    `Leave Encashment (${calculation.leaveEncashment.formula.formulaName})`,
+                    "Leave Encashment",
                     formatCurrency(calculation.leaveEncashment.amount),
                     calculation.leaveEncashment,
                   ),
@@ -1185,8 +1120,14 @@ function OfficialReport({
             </div>
           </CertificateSection>
 
+          </div> {/* Close #certificate-page-1 */}
+
+          <div className="print-page-break" />
+
+          <div id="certificate-page-2" className="bg-white px-8 py-6 print:p-0">
+
           <CertificateSection title="Section D - Document Checklist">
-            <div className="grid grid-cols-1 border border-slate-500 sm:grid-cols-2">
+            <div className="grid grid-cols-1 border border-slate-500 sm:grid-cols-2 print:grid-cols-2">
               {[
                 "Service Register",
                 "Retirement Order",
@@ -1202,7 +1143,7 @@ function OfficialReport({
               ].map((document) => (
                 <div
                   key={document}
-                  className="flex items-center gap-2 border-b border-slate-300 px-3 py-2 text-[12px] sm:odd:border-r"
+                  className="flex items-center gap-2 border-b border-slate-300 px-3 py-2 text-[12px] sm:odd:border-r print:odd:border-r"
                 >
                   <span aria-hidden="true" className="text-[14px] leading-none">
                     ☐
@@ -1347,13 +1288,13 @@ function OfficialReport({
 
           <CertificateSection title="Section E - Officer Remarks">
             <div className="border border-slate-500">
-              <div className="grid sm:grid-cols-3">
+              <div className="grid sm:grid-cols-3 print:grid-cols-3">
                 <OfficerBlock title="Personnel Officer" />
                 <OfficerBlock title="Accounts Officer" />
                 <OfficerBlock title="Principal Financial Advisor" />
               </div>
-              <div className="grid border-t border-slate-500 sm:grid-cols-[1fr_180px]">
-                <div className="min-h-20 border-b border-slate-300 px-3 py-2 sm:border-b-0 sm:border-r">
+              <div className="grid border-t border-slate-500 sm:grid-cols-[1fr_180px] print:grid-cols-[1fr_180px]">
+                <div className="min-h-20 border-b border-slate-300 px-3 py-2 sm:border-b-0 sm:border-r print:border-b-0 print:border-r">
                   <div className="text-[10px] font-bold uppercase tracking-wide">Remarks</div>
                   <div className="mt-10 border-t border-slate-300" aria-hidden="true" />
                 </div>
@@ -1370,8 +1311,6 @@ function OfficialReport({
           <footer className="mt-8 border-t border-slate-500 pt-3 text-[11px] text-slate-700">
             <div className="grid gap-1 sm:grid-cols-2">
               <div>Prepared by: RailAssist Settlement Engine</div>
-              <div>Rule Version: {savedSnapshot?.rule_version || "Railway Pension Rules 2026"}</div>
-              <div>Formula Version: {savedSnapshot?.formula_version || "v2.4.1"}</div>
               <div>Report Number: {savedSnapshot?.report_number || reportNumber} (Ver: {savedSnapshot?.version || "Draft"})</div>
               <div>Generated: {savedSnapshot?.generated_time ? `${savedSnapshot.generated_date.split("T")[0]} ${savedSnapshot.generated_time}` : generatedTimestamp}</div>
             </div>
@@ -1381,6 +1320,7 @@ function OfficialReport({
               authority.
             </p>
           </footer>
+          </div> {/* Close #certificate-page-2 */}
         </div>
       </section>
     </div>
@@ -1438,7 +1378,7 @@ function CertificateSection({ title, children }: { title: string; children: Reac
 
 function CertificateMeta({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid grid-cols-[130px_1fr] border-b border-slate-300 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0 sm:[&:nth-child(odd)]:border-r">
+    <div className="grid grid-cols-[130px_1fr] border-b border-slate-300 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0 sm:[&:nth-child(odd)]:border-r print:[&:nth-last-child(-n+2)]:border-b-0 print:[&:nth-child(odd)]:border-r">
       <div className="bg-slate-100 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide">
         {label}
       </div>

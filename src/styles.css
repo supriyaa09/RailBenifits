@@ -222,8 +222,60 @@
     line-height: 1.18 !important;
   }
 
-  body *:not(.settlement-certificate):not(.settlement-certificate *):not(:has(.settlement-certificate)) {
+  /* Hide all website UI when printing. This ensures cross-browser compatibility
+     without relying on the broken recursive ancestor hiding selector. */
+  body.printing header,
+  body.printing footer,
+  body.printing aside,
+  body.printing nav,
+  body.printing button,
+  body.printing .report-controls,
+  body.printing .settlement-tabs-nav,
+  body.printing .accessibility-widget,
+  body.printing .page-header-container,
+  body.printing .pointer-events-none.fixed {
     display: none !important;
+  }
+
+  /* Support standard Ctrl+P print preview even if class was not dynamically added */
+  body:has(.settlement-certificate) header,
+  body:has(.settlement-certificate) footer,
+  body:has(.settlement-certificate) aside,
+  body:has(.settlement-certificate) nav,
+  body:has(.settlement-certificate) button,
+  body:has(.settlement-certificate) .report-controls,
+  body:has(.settlement-certificate) .settlement-tabs-nav,
+  body:has(.settlement-certificate) .accessibility-widget,
+  body:has(.settlement-certificate) .page-header-container,
+  body:has(.settlement-certificate) .pointer-events-none.fixed {
+    display: none !important;
+  }
+
+  /* Reset main workspace layouts on print so the certificate spans full page */
+  body.printing main,
+  body:has(.settlement-certificate) main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  body.printing .min-h-screen,
+  body:has(.settlement-certificate) .min-h-screen {
+    min-height: 0 !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+
+  .print-page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
   }
 
   .settlement-certificate {
@@ -238,16 +290,6 @@
     color: #111827 !important;
     background: white !important;
     page-break-after: auto;
-  }
-
-  .report-controls,
-  .report-controls *,
-  [data-sidebar],
-  [data-sidebar] *,
-  nav,
-  aside,
-  button {
-    display: none !important;
   }
 
   .settlement-certificate > div {
@@ -372,15 +414,7 @@
   }
 
   .print-formula-line {
-    display: block !important;
-    margin-top: 1px !important;
-    color: #374151 !important;
-    font-size: 7.4pt !important;
-    line-height: 1.08 !important;
-  }
-
-  .print-formula-line span + span::before {
-    content: " | ";
+    display: none !important;
   }
 
   .calculation-disclosure {

@@ -1,9 +1,5 @@
 import type { OtherRetirementType, SettlementAssessment } from "@/lib/settlement-assessment";
-import {
-  RELHS_MINIMUM_OTHER_THAN_NORMAL_SERVICE_YEARS,
-  RELHS_REQUIRED_DOCUMENTS,
-  RELHS_RULE_REFERENCE,
-} from "./RELHSConstants";
+import { RELHS_RULES } from "../../../formula-engine/generated/referenceData";
 import type { RELHSEvaluation } from "./RELHSTypes";
 
 export function parsePayMatrixLevel(payMatrixLevel: string): number | null {
@@ -27,7 +23,7 @@ export function getRELHSRetirementLabel(assessment: SettlementAssessment): strin
   };
 
   return assessment.serviceDetails.otherRetirementType
-    ? labels[assessment.serviceDetails.otherRetirementType] ?? "Other Than Normal Retirement"
+    ? (labels[assessment.serviceDetails.otherRetirementType] ?? "Other Than Normal Retirement")
     : "Other Than Normal Retirement";
 }
 
@@ -40,8 +36,8 @@ export function baseRELHSEvaluation(
     eligible,
     subscriptionAmount: 0,
     reason,
-    ruleReference: RELHS_RULE_REFERENCE,
-    requiredDocuments: RELHS_REQUIRED_DOCUMENTS,
+    ruleReference: RELHS_RULES.ruleReference,
+    requiredDocuments: [...RELHS_RULES.requiredDocuments],
     remarks: eligible
       ? "RELHS eligibility determined automatically from retirement type, service, pension scheme, and pay matrix details."
       : "RELHS is not admissible for this case under the current Railway rules.",

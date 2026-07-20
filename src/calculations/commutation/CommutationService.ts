@@ -1,4 +1,4 @@
-import defaultFactors from "@/lookup/commutationFactor.default.json";
+import { COMMUTATION_FACTORS } from "../../../formula-engine/generated/referenceData";
 import type {
   CommutationFactorRepository,
   CommutationFactorResult,
@@ -7,7 +7,9 @@ import type {
 
 let activeRepository: CommutationFactorRepository | null = null;
 
-export function registerCommutationFactorRepository(repository: CommutationFactorRepository | null) {
+export function registerCommutationFactorRepository(
+  repository: CommutationFactorRepository | null,
+) {
   activeRepository = repository;
 }
 
@@ -19,7 +21,7 @@ export function getCommutationFactor(ageNextBirthday: number): CommutationFactor
     return toResult(age, databaseRow, "database");
   }
 
-  const fallbackRow = (defaultFactors as CommutationFactorRow[]).find(
+  const fallbackRow = (COMMUTATION_FACTORS as readonly CommutationFactorRow[]).find(
     (row) => row.active && row.age_next_birthday === age,
   );
 

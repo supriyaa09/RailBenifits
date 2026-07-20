@@ -1,5 +1,5 @@
 import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import { RELHS_FMA_MONTHLY_AMOUNT, RELHS_RULE_REFERENCE } from "./RELHSConstants";
+import { RELHS_RULES } from "../../../formula-engine/generated/referenceData";
 import { evaluateRELHSEligibility } from "./RELHSEligibility";
 import { calculateRELHSSubscription } from "./RELHSSubscription";
 import type { FMAEvaluation, RELHSEvaluation } from "./RELHSTypes";
@@ -19,7 +19,7 @@ export function evaluateFMAWithRELHS(
       status: "Not Eligible",
       monthlyAmount: 0,
       reason: "RELHS eligibility is mandatory before FMA can be granted.",
-      reference: RELHS_RULE_REFERENCE,
+      reference: RELHS_RULES.ruleReference,
     };
   }
 
@@ -29,15 +29,15 @@ export function evaluateFMAWithRELHS(
       status: "Not Opted",
       monthlyAmount: 0,
       reason: "Employee chose not to receive Fixed Medical Allowance.",
-      reference: RELHS_RULE_REFERENCE,
+      reference: RELHS_RULES.ruleReference,
     };
   }
 
   return {
     eligible: true,
     status: "Eligible",
-    monthlyAmount: RELHS_FMA_MONTHLY_AMOUNT,
+    monthlyAmount: RELHS_RULES.fmaMonthlyAmount,
     reason: "Employee opted for FMA.",
-    reference: RELHS_RULE_REFERENCE,
+    reference: RELHS_RULES.ruleReference,
   };
 }

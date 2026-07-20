@@ -1,6 +1,7 @@
 import type { SettlementAssessment } from "@/lib/settlement-assessment";
 import type { SettlementResult } from "@/rules/RuleTypes";
 import { evaluateRetirementRules, type SettlementBenefitKey } from "@/rules/RetirementRuleEngine";
+import { SETTLEMENT_RULES, toPercent } from "../../formula-engine/generated/referenceData";
 import { CGISCalculator } from "./CGISCalculator";
 import { CommutationCalculator } from "./CommutationCalculator";
 import { FamilyPensionCalculator } from "./FamilyPensionCalculator";
@@ -136,7 +137,7 @@ export class CalculationEngine {
         (benefit) => benefit.benefitName === "Composite Transfer Grant",
       )?.eligibility !== "Not Eligible";
     const lastDrawnBasicPay = context.assessment.salaryDetails.currentBasicPay;
-    const amount = eligible ? lastDrawnBasicPay * 0.8 : 0;
+    const amount = eligible ? lastDrawnBasicPay * SETTLEMENT_RULES.ctgRate : 0;
     return {
       key: "ctg",
       benefitName: "Composite Transfer Grant",
@@ -149,7 +150,7 @@ export class CalculationEngine {
       warnings: [],
       details: {
         lastDrawnBasicPay,
-        percentage: "80%",
+        percentage: `${toPercent(SETTLEMENT_RULES.ctgRate)}%`,
       },
       formula: calculatedFormula(
         "CTG = 80% x Last Drawn Basic Pay",

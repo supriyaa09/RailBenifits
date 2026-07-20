@@ -1,5 +1,5 @@
 import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import { RELHS_MINIMUM_OTHER_THAN_NORMAL_SERVICE_YEARS } from "./RELHSConstants";
+import { RELHS_RULES } from "../../../formula-engine/generated/referenceData";
 import { baseRELHSEvaluation, getRELHSRetirementLabel } from "./RELHSRules";
 import type { RELHSEvaluation } from "./RELHSTypes";
 
@@ -32,10 +32,14 @@ export function evaluateRELHSEligibility(assessment: SettlementAssessment): RELH
   }
 
   if (retirementType === "self-resignation") {
-    return baseRELHSEvaluation(assessment, false, "Self resignation cases are not eligible for RELHS.");
+    return baseRELHSEvaluation(
+      assessment,
+      false,
+      "Self resignation cases are not eligible for RELHS.",
+    );
   }
 
-  const eligible = qualifyingYears >= RELHS_MINIMUM_OTHER_THAN_NORMAL_SERVICE_YEARS;
+  const eligible = qualifyingYears >= RELHS_RULES.minimumOtherThanNormalServiceYears;
   return baseRELHSEvaluation(
     assessment,
     eligible,

@@ -99,7 +99,7 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
   return (
     <div className={`${isDarkMode ? "dark theme-dark" : "theme-light"} min-h-screen flex flex-col w-full bg-background text-foreground`}>
       {/* Premium Government Top Header Bar */}
-      <header className="border-b border-border bg-card/90 backdrop-blur sticky top-0 z-30 shadow-soft">
+      <header className="border-b border-border bg-card/90 backdrop-blur sticky top-0 z-30 shadow-soft print:hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between gap-4">
             {/* Logo and Brand Title Info */}
@@ -272,12 +272,12 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 print:p-0 print:m-0 print:max-w-none">
         <Outlet />
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-muted/10">
+      <footer className="border-t bg-muted/10 print:hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-xs text-muted-foreground flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img src={INDIAN_RAILWAYS_LOGO} alt="IR" className="h-5 w-5 object-contain" />

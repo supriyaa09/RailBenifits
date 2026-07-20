@@ -33,7 +33,7 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6 rounded-lg border border-border bg-card p-5 shadow-soft">
+    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6 rounded-lg border border-border bg-card p-5 shadow-soft print:hidden">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
         {description && <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{description}</p>}

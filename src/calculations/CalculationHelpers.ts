@@ -1,7 +1,11 @@
-import type { BenefitCalculation, BenefitCalculationKey, FormulaMetadata } from "./CalculationTypes";
+import type {
+  BenefitCalculation,
+  BenefitCalculationKey,
+  FormulaMetadata,
+} from "./CalculationTypes";
+import { RAILWAY_RULE_REFERENCE } from "../../formula-engine/generated/referenceData";
 
-export const railwayRuleReference = "Railway Pension Rules 2026";
-export const GRATUITY_MAXIMUM_LIMIT = 2000000;
+export const railwayRuleReference = RAILWAY_RULE_REFERENCE;
 
 export function workbookFormula(
   benefitName: string,

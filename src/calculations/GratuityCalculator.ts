@@ -1,10 +1,23 @@
 import { BaseBenefitCalculator } from "./BenefitCalculator";
-import { calculatedAmount, calculatedFormula, calculateDearnessAllowanceAmount, completedHalfYearPeriods, GRATUITY_MAXIMUM_LIMIT } from "./CalculationHelpers";
+import {
+  GRATUITY_RULES,
+  findDeathGratuitySlab,
+} from "../../formula-engine/generated/referenceData";
+import {
+  calculatedAmount,
+  calculatedFormula,
+  calculateDearnessAllowanceAmount,
+  completedHalfYearPeriods,
+} from "./CalculationHelpers";
 import type { CalculationContext } from "./CalculationTypes";
 
 export class GratuityCalculator extends BaseBenefitCalculator {
   formulaReference() {
-    return calculatedFormula("Retirement Gratuity = (Basic Pay + DA) x Completed Six Monthly Periods / 4", "OPS_RETIREMENT_GRATUITY", "Applies configurable maximum limit.");
+    return calculatedFormula(
+      "Retirement Gratuity = (Basic Pay + DA) x Completed Six Monthly Periods / 4",
+      "OPS_RETIREMENT_GRATUITY",
+      "Applies configurable maximum limit.",
+    );
   }
 
   explain() {
@@ -12,10 +25,23 @@ export class GratuityCalculator extends BaseBenefitCalculator {
   }
 
   calculate(context: CalculationContext) {
-    const eligible = context.ruleResult.benefitResults.find((benefit) => benefit.benefitName === "Retirement Gratuity")?.eligibility === "Eligible";
-    if (!eligible) return calculatedAmount("retirementGratuity", "Retirement Gratuity", 0, "Not eligible under Rule Engine.", this.formulaReference());
+    const eligible =
+      context.ruleResult.benefitResults.find(
+        (benefit) => benefit.benefitName === "Retirement Gratuity",
+      )?.eligibility === "Eligible";
+    if (!eligible)
+      return calculatedAmount(
+        "retirementGratuity",
+        "Retirement Gratuity",
+        0,
+        "Not eligible under Rule Engine.",
+        this.formulaReference(),
+      );
     const basic = context.assessment.salaryDetails.currentBasicPay;
-    const da = calculateDearnessAllowanceAmount(basic, context.assessment.salaryDetails.dearnessAllowance);
+    const da = calculateDearnessAllowanceAmount(
+      basic,
+      context.assessment.salaryDetails.dearnessAllowance,
+    );
     const emoluments = basic + da;
     const periods = completedHalfYearPeriods(
       context.assessment.serviceDetails.qualifyingService.years,
@@ -23,18 +49,29 @@ export class GratuityCalculator extends BaseBenefitCalculator {
     );
     const deathCase = context.assessment.serviceDetails.otherRetirementType === "death";
     const raw = deathCase
-      ? this.calculateDeathGratuity(emoluments, context.assessment.serviceDetails.qualifyingService.years, periods)
-      : emoluments * periods / 4;
-    const amount = Math.min(raw, GRATUITY_MAXIMUM_LIMIT);
-    return calculatedAmount("retirementGratuity", deathCase ? "Death Gratuity" : "Retirement Gratuity", amount, deathCase ? "Death Gratuity is calculated from qualifying service slabs." : this.explain(), deathCase ? this.deathFormulaReference() : this.formulaReference(), {
-      basicPay: basic,
-      dearnessAllowanceAmount: da,
-      emoluments,
-      completedSixMonthlyPeriods: periods,
-      gratuityType: deathCase ? "Death Gratuity" : "Retirement Gratuity",
-      rawAmount: Math.round(raw),
-      maximumLimit: GRATUITY_MAXIMUM_LIMIT,
-    });
+      ? this.calculateDeathGratuity(
+          emoluments,
+          context.assessment.serviceDetails.qualifyingService.years,
+          periods,
+        )
+      : (emoluments * periods) / 4;
+    const amount = Math.min(raw, GRATUITY_RULES.maximumLimit);
+    return calculatedAmount(
+      "retirementGratuity",
+      deathCase ? "Death Gratuity" : "Retirement Gratuity",
+      amount,
+      deathCase ? "Death Gratuity is calculated from qualifying service slabs." : this.explain(),
+      deathCase ? this.deathFormulaReference() : this.formulaReference(),
+      {
+        basicPay: basic,
+        dearnessAllowanceAmount: da,
+        emoluments,
+        completedSixMonthlyPeriods: periods,
+        gratuityType: deathCase ? "Death Gratuity" : "Retirement Gratuity",
+        rawAmount: Math.round(raw),
+        maximumLimit: GRATUITY_RULES.maximumLimit,
+      },
+    );
   }
 
   private deathFormulaReference() {
@@ -45,11 +82,13 @@ export class GratuityCalculator extends BaseBenefitCalculator {
     );
   }
 
-  private calculateDeathGratuity(emoluments: number, serviceYears: number, completedPeriods: number): number {
-    if (serviceYears < 1) return emoluments * 2;
-    if (serviceYears < 5) return emoluments * 6;
-    if (serviceYears < 12) return emoluments * 12;
-    if (serviceYears < 20) return emoluments * 20;
-    return 0.5 * emoluments * completedPeriods;
+  private calculateDeathGratuity(
+    emoluments: number,
+    serviceYears: number,
+    completedPeriods: number,
+  ): number {
+    const slab = findDeathGratuitySlab(serviceYears);
+    if (slab) return emoluments * slab.multiplier;
+    return GRATUITY_RULES.longServiceDeathMultiplier * emoluments * completedPeriods;
   }
 }

@@ -639,7 +639,7 @@ export function AccessibilityWidget() {
       {/* ADHD Reading Guide Line Overlay */}
       {prefs.adhdMode && (
         <>
-          <div className="pointer-events-none fixed inset-0 z-[9998] overflow-hidden">
+          <div className="pointer-events-none fixed inset-0 z-[9998] overflow-hidden print:hidden">
             {/* Dimmed top overlay */}
             <div
               className="absolute inset-x-0 top-0 bg-black/35 transition-all duration-75"
@@ -663,7 +663,7 @@ export function AccessibilityWidget() {
           {/* Reading Guide Line */}
           {prefs.adhdReadingLine && (
             <div
-              className="pointer-events-none fixed left-0 right-0 z-[9999] border-t-2 border-yellow-400/80 shadow-[0_0_6px_rgba(250,204,21,0.5)] transition-all duration-75"
+              className="pointer-events-none fixed left-0 right-0 z-[9999] border-t-2 border-yellow-400/80 shadow-[0_0_6px_rgba(250,204,21,0.5)] transition-all duration-75 print:hidden"
               style={{ top: `${mouseY}px` }}
             />
           )}
