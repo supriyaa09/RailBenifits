@@ -1,5 +1,5 @@
 import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import { findRELHSSubscriptionBand } from "../../../formula-engine/generated/referenceData";
+import { findRELHSSubscriptionBand } from "../../../formulas/generated/referenceData";
 import { parsePayMatrixLevel } from "./RELHSRules";
 import type { RELHSEvaluation } from "./RELHSTypes";
 

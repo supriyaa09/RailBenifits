@@ -1,5 +1,5 @@
 import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import { RELHS_RULES } from "../../../formula-engine/generated/referenceData";
+import { RELHS_RULES } from "../../../formulas/generated/referenceData";
 import { baseRELHSEvaluation, getRELHSRetirementLabel } from "./RELHSRules";
 import type { RELHSEvaluation } from "./RELHSTypes";
 

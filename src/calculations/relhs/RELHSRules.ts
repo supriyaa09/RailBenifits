@@ -1,5 +1,5 @@
 import type { OtherRetirementType, SettlementAssessment } from "@/lib/settlement-assessment";
-import { RELHS_RULES } from "../../../formula-engine/generated/referenceData";
+import { RELHS_RULES } from "../../../formulas/generated/referenceData";
 import type { RELHSEvaluation } from "./RELHSTypes";
 
 export function parsePayMatrixLevel(payMatrixLevel: string): number | null {
