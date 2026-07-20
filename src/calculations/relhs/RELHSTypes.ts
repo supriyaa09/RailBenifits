@@ -1,4 +1,4 @@
-import type { PensionScheme } from "@/lib/settlement-assessment";
+import type { PensionScheme } from "../../lib/settlement-assessment.ts";
 
 export type RELHSEligibilityStatus = "Eligible" | "Not Eligible";
 export type RELHSVerificationStatus = "Automatic" | "Requires Pay Matrix Verification";

@@ -1,7 +1,7 @@
-import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import type { SettlementResult } from "@/rules/RuleTypes";
-import { calculateWithFormulaEngine } from "./FormulaEngineGateway";
-import type { SettlementCalculation, WorkbookData } from "./CalculationTypes";
+import type { SettlementAssessment } from "../lib/settlement-assessment.ts";
+import type { SettlementResult } from "../rules/RuleTypes.ts";
+import { calculateWithFormulaEngine } from "./FormulaEngineGateway.ts";
+import type { SettlementCalculation, WorkbookData } from "./CalculationTypes.ts";
 
 export class CalculationEngine {
   calculate(

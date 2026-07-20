@@ -1,4 +1,4 @@
-import { formatIndianDate } from "./indian-date-time";
+import { formatIndianDate } from "./indian-date-time.ts";
 
 export type EmployeeGroup = "A" | "B" | "C" | "D";
 export type PensionScheme = "OPS" | "UPS" | "NPS";
@@ -37,6 +37,7 @@ export interface OtherRetirementDetails {
   familyPensionEligible?: boolean;
   compassionateAllowanceSanctioned?: boolean;
   technicalResignation?: boolean;
+  relhsSubscriptionOpted?: boolean;
 }
 
 export interface CommutationDetails {

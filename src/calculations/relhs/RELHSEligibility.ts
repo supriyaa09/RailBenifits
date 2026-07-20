@@ -1,9 +1,18 @@
-import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import { RELHS_RULES } from "../../../formulas/generated/referenceData";
-import { baseRELHSEvaluation, getRELHSRetirementLabel } from "./RELHSRules";
-import type { RELHSEvaluation } from "./RELHSTypes";
+import type { SettlementAssessment } from "../../lib/settlement-assessment.ts";
+import { RELHS_RULES } from "../../../formulas/generated/referenceData.ts";
+import { baseRELHSEvaluation, getRELHSRetirementLabel } from "./RELHSRules.ts";
+import type { RELHSEvaluation } from "./RELHSTypes.ts";
 
 export function evaluateRELHSEligibility(assessment: SettlementAssessment): RELHSEvaluation {
+  const details = assessment.serviceDetails.otherRetirementDetails;
+  if (details && details.relhsSubscriptionOpted === false) {
+    return baseRELHSEvaluation(
+      assessment,
+      false,
+      "Employee explicitly opted out of RELHS subscription.",
+    );
+  }
+
   const retirementType = assessment.serviceDetails.otherRetirementType;
   const qualifyingYears = assessment.serviceDetails.qualifyingService.years;
 

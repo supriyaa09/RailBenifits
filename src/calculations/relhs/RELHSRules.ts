@@ -1,6 +1,6 @@
-import type { OtherRetirementType, SettlementAssessment } from "@/lib/settlement-assessment";
-import { RELHS_RULES } from "../../../formulas/generated/referenceData";
-import type { RELHSEvaluation } from "./RELHSTypes";
+import type { OtherRetirementType, SettlementAssessment } from "../../lib/settlement-assessment.ts";
+import { RELHS_RULES } from "../../../formulas/generated/referenceData.ts";
+import type { RELHSEvaluation } from "./RELHSTypes.ts";
 
 export function parsePayMatrixLevel(payMatrixLevel: string): number | null {
   const match = payMatrixLevel.match(/\d+/);

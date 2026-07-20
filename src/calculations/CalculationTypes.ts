@@ -1,5 +1,6 @@
-import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import type { SettlementResult } from "@/rules/RuleTypes";
+import type { SettlementAssessment } from "../lib/settlement-assessment.ts";
+import type { SettlementResult } from "../rules/RuleTypes.ts";
+
 
 export type BenefitCalculationKey =
   | "basicPension"

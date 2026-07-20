@@ -1,4 +1,4 @@
-import type { OtherRetirementType, SettlementAssessment } from "@/lib/settlement-assessment";
+import type { OtherRetirementType, SettlementAssessment } from "../lib/settlement-assessment.ts";
 
 export type SettlementBenefitKey =
   | "pension"
@@ -22,6 +22,7 @@ export interface RetirementRuleDecision {
   benefits: Record<SettlementBenefitKey, boolean>;
   pensionSanctionPercentage: number;
   reason: string;
+  enhancedFamilyPension?: boolean;
 }
 
 const commonBenefits: Record<SettlementBenefitKey, boolean> = {
@@ -119,11 +120,12 @@ export function evaluateRetirementRules(assessment: SettlementAssessment): Retir
           familyPension: details?.familyPensionEligible !== false,
           commutation: false,
           fma: false,
-          relhs: false,
+          relhs: details?.familyPensionEligible !== false,
           ctg: false,
           complimentaryPass: false,
           medicalFacilities: false,
         },
+        enhancedFamilyPension: details?.familyPensionEligible !== false,
         reason: "Death while in service selected. Death benefits and family pension rules apply.",
       });
     case "removal": {

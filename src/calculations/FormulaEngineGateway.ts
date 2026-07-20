@@ -1,9 +1,9 @@
 import {
   calculateAgeNextBirthday,
   addQualifyingService,
-} from "@/lib/settlement-assessment";
-import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import type { SettlementResult } from "@/rules/RuleTypes";
+} from "../lib/settlement-assessment.ts";
+import type { SettlementAssessment } from "../lib/settlement-assessment.ts";
+import type { SettlementResult } from "../rules/RuleTypes.ts";
 import {
   PENSION_RATES,
   GRATUITY_RULES,
@@ -11,13 +11,13 @@ import {
   SETTLEMENT_RULES,
   COMMUTATION_FACTORS,
   findDeathGratuitySlab,
-} from "../../formulas/generated/referenceData";
-import { evaluateRELHS, evaluateFMAWithRELHS } from "./relhs/RELHSService";
+} from "../../formulas/generated/referenceData.ts";
+import { evaluateRELHS, evaluateFMAWithRELHS } from "./relhs/RELHSService.ts";
 import {
   evaluateRetirementRules,
   type RetirementRuleDecision,
   type SettlementBenefitKey,
-} from "@/rules/RetirementRuleEngine";
+} from "../rules/RetirementRuleEngine.ts";
 import type {
   BenefitCalculation,
   BenefitCalculationKey,
@@ -25,7 +25,7 @@ import type {
   FormulaMetadata,
   SettlementCalculation,
   WorkbookData,
-} from "./CalculationTypes";
+} from "./CalculationTypes.ts";
 
 // ---------------------------------------------------------------------------
 // Formula metadata helpers
@@ -142,18 +142,22 @@ function calcFamilyPension(context: CalculationContext, decision: RetirementRule
     return notEligible("familyPension", "Family Pension", decision.reason, "FAMILY_PENSION");
   }
   const emoluments = assessment.promotionDetails.emoluments;
-  // Enhanced for first 7 years (determined upstream), default to ordinary
-  const rate = PENSION_RATES.familyPension.ordinary;
+  const isEnhanced = decision.enhancedFamilyPension === true;
+  const rate = isEnhanced ? PENSION_RATES.familyPension.enhanced : PENSION_RATES.familyPension.ordinary;
   const amount = emoluments * rate;
+  const enhancedFamilyPension = emoluments * PENSION_RATES.familyPension.enhanced;
+
   return benefit(
     "familyPension",
     "Family Pension",
     amount,
     true,
-    `Family Pension = ${rate * 100}% of emoluments (ordinary rate).`,
+    isEnhanced
+      ? `Family Pension = ${rate * 100}% of emoluments (enhanced rate).`
+      : `Family Pension = ${rate * 100}% of emoluments (ordinary rate).`,
     "FAMILY_PENSION",
     "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced, first 7 years)",
-    { emoluments, rate },
+    { emoluments, rate, enhancedFamilyPension },
     undefined,
     amount,
   );
@@ -181,26 +185,42 @@ function calcRetirementGratuity(context: CalculationContext, decision: Retiremen
 
   const serviceYears = effectiveQS.years + effectiveQS.months / 12;
 
+  if (!isDeath && serviceYears < 5) {
+    return notEligible(
+      "retirementGratuity",
+      "Retirement Gratuity",
+      `Qualifying service of ${serviceYears.toFixed(2)} years is less than the required minimum of 5 years for retirement gratuity.`,
+      "RETIREMENT_GRATUITY",
+    );
+  }
+
   let amount: number;
   let formula: string;
 
   if (isDeath) {
     // Death Gratuity: slab-based
     const slab = findDeathGratuitySlab(effectiveQS.years);
-    if (slab) {
-      amount = (emoluments + da) * slab.multiplier;
-      formula = `Death Gratuity = (Emoluments + DA) × ${slab.multiplier} (slab for ${slab.minYears}–${slab.maxYearsExclusive ?? "+"} yrs)`;
-    } else {
-      // Long service (20+ years): half monthly emoluments per completed 6-month period
-      const periods = Math.floor(serviceYears * 2);
-      amount = Math.min((emoluments + da) * GRATUITY_RULES.longServiceDeathMultiplier * periods, GRATUITY_RULES.maximumLimit);
-      formula = `Death Gratuity (long service) = (Emoluments + DA) × 0.5 × completed 6-month periods, capped at ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
-    }
+      if (slab) {
+        // Apply slab multiplier but also enforce 16.5× emoluments cap
+        const rawAmount = (emoluments + da) * slab.multiplier;
+        const sixteenPointFiveLimit = (emoluments + da) * 16.5;
+        amount = Math.min(rawAmount, sixteenPointFiveLimit, GRATUITY_RULES.maximumLimit);
+        formula = `Death Gratuity = (Emoluments + DA) × ${slab.multiplier} (slab for ${slab.minYears}–${slab.maxYearsExclusive ?? "+"} yrs), capped at 16.5×Emoluments and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
+      } else {
+        // Long service (20+ years): half monthly emoluments per completed 6-month period, with caps
+        const periods = Math.floor(serviceYears * 2);
+        const rawAmount = (emoluments + da) * GRATUITY_RULES.longServiceDeathMultiplier * periods;
+        const sixteenPointFiveLimit = (emoluments + da) * 16.5;
+        amount = Math.min(rawAmount, sixteenPointFiveLimit, GRATUITY_RULES.maximumLimit);
+        formula = `Death Gratuity (long service) = (Emoluments + DA) × 0.5 × completed 6-month periods, capped at 16.5×Emoluments and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
+      }
   } else {
-    // Retirement Gratuity: (Emoluments + DA) × qualifying service years / 4, max ₹20L
-    const completedHalfYears = Math.floor(serviceYears * 2);
-    amount = Math.min((emoluments + da) * 0.25 * completedHalfYears, GRATUITY_RULES.maximumLimit);
-    formula = `Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
+    // Retirement Gratuity: (Emoluments + DA) × qualifying service years / 4, capped at 16.5×Emoluments and the gratuity ceiling
+  const completedHalfYears = Math.floor(serviceYears * 2);
+  const rawAmount = (emoluments + da) * 0.25 * completedHalfYears;
+  const sixteenPointFiveLimit = emoluments * 16.5;
+  amount = Math.min(rawAmount, sixteenPointFiveLimit, GRATUITY_RULES.maximumLimit);
+  formula = `Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×Emoluments and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
   }
 
   return benefit(
@@ -407,7 +427,16 @@ function calcCommutation(context: CalculationContext, decision: RetirementRuleDe
     return notEligible("commutation", "Commutation", "Commutation is only applicable under OPS.", "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY");
   }
 
-  const ageNextBirthday = calculateAgeNextBirthday(assessment.employeeDetails.dateOfBirth) ?? 0;
+  const ageNextBirthday = calculateAgeNextBirthday(assessment.employeeDetails.dateOfBirth);
+  if (ageNextBirthday === null || ageNextBirthday === undefined) {
+    return notEligible(
+      "commutation",
+      "Commutation",
+      "Invalid date of birth provided, cannot calculate age next birthday.",
+      "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
+    );
+  }
+
   const row = COMMUTATION_FACTORS.find(
     (r) => r.age_next_birthday === ageNextBirthday && r.active,
   );

@@ -1,7 +1,7 @@
-import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import { findRELHSSubscriptionBand } from "../../../formulas/generated/referenceData";
-import { parsePayMatrixLevel } from "./RELHSRules";
-import type { RELHSEvaluation } from "./RELHSTypes";
+import type { SettlementAssessment } from "../../lib/settlement-assessment.ts";
+import { findRELHSSubscriptionBand } from "../../../formulas/generated/referenceData.ts";
+import { parsePayMatrixLevel } from "./RELHSRules.ts";
+import type { RELHSEvaluation } from "./RELHSTypes.ts";
 
 export function calculateRELHSSubscription(
   assessment: SettlementAssessment,

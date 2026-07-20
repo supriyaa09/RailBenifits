@@ -1,8 +1,8 @@
-import type { SettlementAssessment } from "@/lib/settlement-assessment";
-import { RELHS_RULES } from "../../../formulas/generated/referenceData";
-import { evaluateRELHSEligibility } from "./RELHSEligibility";
-import { calculateRELHSSubscription } from "./RELHSSubscription";
-import type { FMAEvaluation, RELHSEvaluation } from "./RELHSTypes";
+import type { SettlementAssessment } from "../../lib/settlement-assessment.ts";
+import { RELHS_RULES } from "../../../formulas/generated/referenceData.ts";
+import { evaluateRELHSEligibility } from "./RELHSEligibility.ts";
+import { calculateRELHSSubscription } from "./RELHSSubscription.ts";
+import type { FMAEvaluation, RELHSEvaluation } from "./RELHSTypes.ts";
 
 export function evaluateRELHS(assessment: SettlementAssessment): RELHSEvaluation {
   const eligibility = evaluateRELHSEligibility(assessment);
