@@ -92,12 +92,12 @@ Court Order (if applicable)
 
 ```json
 {
-    "originalPension": 0,
-    "revisedPension": 0,
-    "arrears": 0,
-    "effectiveDate": "",
-    "revisionOrder": "",
-    "status": ""
+  "originalPension": 0,
+  "revisedPension": 0,
+  "arrears": 0,
+  "effectiveDate": "",
+  "revisionOrder": "",
+  "status": ""
 }
 ```
 
@@ -105,12 +105,12 @@ Court Order (if applicable)
 
 # Variables
 
-| Variable | Description |
-|-----------|-------------|
-| OP | Original Pension |
-| RP | Revised Pension |
-| AR | Pension Arrears |
-| ED | Effective Date |
+| Variable | Description      |
+| -------- | ---------------- |
+| OP       | Original Pension |
+| RP       | Revised Pension  |
+| AR       | Pension Arrears  |
+| ED       | Effective Date   |
 
 ---
 
@@ -222,13 +222,13 @@ Return
 
 # Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| OPS-REV-BR-001 | Pension revision shall be performed only for authorized revision events. |
-| OPS-REV-BR-002 | Revision orders shall never be hardcoded. |
-| OPS-REV-BR-003 | Historical revisions shall use the rules effective on the applicable date. |
-| OPS-REV-BR-004 | Arrears shall be calculated only from the notified effective date. |
-| OPS-REV-BR-005 | Every revision shall preserve an audit trail. |
+| Rule ID        | Description                                                                    |
+| -------------- | ------------------------------------------------------------------------------ |
+| OPS-REV-BR-001 | Pension revision shall be performed only for authorized revision events.       |
+| OPS-REV-BR-002 | Revision orders shall never be hardcoded.                                      |
+| OPS-REV-BR-003 | Historical revisions shall use the rules effective on the applicable date.     |
+| OPS-REV-BR-004 | Arrears shall be calculated only from the notified effective date.             |
+| OPS-REV-BR-005 | Every revision shall preserve an audit trail.                                  |
 | OPS-REV-BR-006 | Court orders shall override normal revision rules wherever legally applicable. |
 
 ---
@@ -315,12 +315,12 @@ Return Result
 
 ```json
 {
-    "originalPension": 45000,
-    "revisedPension": 47500,
-    "arrears": 125000,
-    "effectiveDate": "2026-01-01",
-    "revisionOrder": "RB-2026-XX",
-    "status": "Revision Applied"
+  "originalPension": 45000,
+  "revisedPension": 47500,
+  "arrears": 125000,
+  "effectiveDate": "2026-01-01",
+  "revisionOrder": "RB-2026-XX",
+  "status": "Revision Applied"
 }
 ```
 
@@ -328,13 +328,13 @@ Return Result
 
 # Test Cases
 
-| Test Case | Expected Result |
-|------------|-----------------|
-| Government Revision Order | Pension Revised |
-| Court Order | Pension Revised per Court Direction |
-| Pay Correction | Pension Recalculated |
-| Service Correction | Revised Pension Generated |
-| Invalid Revision Order | Validation Error |
+| Test Case                 | Expected Result                     |
+| ------------------------- | ----------------------------------- |
+| Government Revision Order | Pension Revised                     |
+| Court Order               | Pension Revised per Court Direction |
+| Pay Correction            | Pension Recalculated                |
+| Service Correction        | Revised Pension Generated           |
+| Invalid Revision Order    | Validation Error                    |
 
 ---
 

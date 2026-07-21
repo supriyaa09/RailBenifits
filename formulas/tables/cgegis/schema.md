@@ -60,15 +60,15 @@ The CGEGIS rule engine shall use this module as the sole source of reference dat
 
 Every CGEGIS reference table shall contain the following fields where applicable.
 
-| Field | Type | Description |
-|--------|------|-------------|
-| Effective From | Date | Date from which the record becomes applicable |
-| Effective To | Date / Null | End date of applicability. Null indicates the current record |
-| Category | String | Employee group or applicable classification |
-| Value | Number / String | Official notified value |
-| Notification Number | String | Government notification reference |
-| Issuing Authority | String | Authority issuing the notification |
-| Remarks | String | Optional explanatory notes |
+| Field               | Type            | Description                                                  |
+| ------------------- | --------------- | ------------------------------------------------------------ |
+| Effective From      | Date            | Date from which the record becomes applicable                |
+| Effective To        | Date / Null     | End date of applicability. Null indicates the current record |
+| Category            | String          | Employee group or applicable classification                  |
+| Value               | Number / String | Official notified value                                      |
+| Notification Number | String          | Government notification reference                            |
+| Issuing Authority   | String          | Authority issuing the notification                           |
+| Remarks             | String          | Optional explanatory notes                                   |
 
 ---
 
@@ -129,6 +129,6 @@ Populate exact references when official data is entered.
 
 # Revision History
 
-| Version | Date | Description |
-|----------|------|-------------|
-| 1.0.0 | YYYY-MM-DD | Initial schema |    
+| Version | Date       | Description    |
+| ------- | ---------- | -------------- |
+| 1.0.0   | YYYY-MM-DD | Initial schema |

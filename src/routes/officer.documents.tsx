@@ -1,5 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ScrollText, Search, Upload, FileText, Download, Check, Plus, AlertCircle } from "lucide-react";
+import {
+  ScrollText,
+  Search,
+  Upload,
+  FileText,
+  Download,
+  Check,
+  Plus,
+  AlertCircle,
+} from "lucide-react";
 import { useState, useTransition } from "react";
 import { PageHeader, SectionCard, SearchBar } from "@/components/rail/common";
 import { getAdminDocuments, saveAdminDocument, AdminDocument } from "@/database/adminDb";
@@ -10,7 +19,8 @@ export const Route = createFileRoute("/officer/documents")({
   component: DocumentRepositoryPage,
 });
 
-type DocTypeFilter = "All" | "Circular" | "Memorandum" | "Government Order" | "Manual" | "Book" | "Reference PDF";
+type DocTypeFilter =
+  "All" | "Circular" | "Memorandum" | "Government Order" | "Manual" | "Book" | "Reference PDF";
 
 function DocumentRepositoryPage() {
   const [docs, setDocs] = useState<AdminDocument[]>(() => getAdminDocuments());
@@ -37,11 +47,11 @@ function DocumentRepositoryPage() {
       size: newDocSize || "1.0 MB",
       status: "Indexed" as const,
       url: `/reports/${newDocName.replace(/\s+/g, "_")}.pdf`,
-      category: newDocCategory
+      category: newDocCategory,
     };
 
     saveAdminDocument(payload);
-    
+
     // Refresh docs list
     setDocs(getAdminDocuments());
     setNewDocName("");
@@ -57,7 +67,7 @@ function DocumentRepositoryPage() {
     const matchesSearch =
       doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.category.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesTab = activeTab === "All" || doc.type === activeTab;
     return matchesSearch && matchesTab;
   });
@@ -94,19 +104,29 @@ function DocumentRepositoryPage() {
               <Upload className="h-4 w-4 text-primary" />
               Administrative Document Upload Center
             </h3>
-            
+
             {uploadSuccess ? (
               <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-lg p-4 flex items-center gap-3">
                 <Check className="h-5 w-5 shrink-0" />
                 <div>
                   <div className="font-medium text-sm">Document Uploaded Successfully</div>
-                  <div className="text-xs text-emerald-600/90 mt-0.5">Metadata has been indexed into the rules engine database.</div>
+                  <div className="text-xs text-emerald-600/90 mt-0.5">
+                    Metadata has been indexed into the rules engine database.
+                  </div>
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleUploadSubmit} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end">
+              <form
+                onSubmit={handleUploadSubmit}
+                className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end"
+              >
                 <div className="space-y-1">
-                  <label htmlFor="docName" className="text-xs font-bold text-muted-foreground uppercase">Document Filename</label>
+                  <label
+                    htmlFor="docName"
+                    className="text-xs font-bold text-muted-foreground uppercase"
+                  >
+                    Document Filename
+                  </label>
                   <input
                     id="docName"
                     required
@@ -116,9 +136,14 @@ function DocumentRepositoryPage() {
                     className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   />
                 </div>
-                
+
                 <div className="space-y-1">
-                  <label htmlFor="docType" className="text-xs font-bold text-muted-foreground uppercase">Document Type</label>
+                  <label
+                    htmlFor="docType"
+                    className="text-xs font-bold text-muted-foreground uppercase"
+                  >
+                    Document Type
+                  </label>
                   <select
                     id="docType"
                     value={newDocType}
@@ -135,7 +160,12 @@ function DocumentRepositoryPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="docCat" className="text-xs font-bold text-muted-foreground uppercase">Category</label>
+                  <label
+                    htmlFor="docCat"
+                    className="text-xs font-bold text-muted-foreground uppercase"
+                  >
+                    Category
+                  </label>
                   <input
                     id="docCat"
                     placeholder="e.g. Pension, Gratuity, Medical"
@@ -147,7 +177,12 @@ function DocumentRepositoryPage() {
 
                 <div className="flex gap-2">
                   <div className="space-y-1 flex-1">
-                    <label htmlFor="docSize" className="text-xs font-bold text-muted-foreground uppercase">Est. Size</label>
+                    <label
+                      htmlFor="docSize"
+                      className="text-xs font-bold text-muted-foreground uppercase"
+                    >
+                      Est. Size
+                    </label>
                     <input
                       id="docSize"
                       placeholder="e.g. 1.2 MB"
@@ -218,7 +253,10 @@ function DocumentRepositoryPage() {
                         <span className="font-semibold text-sm text-foreground truncate max-w-sm sm:max-w-md">
                           {doc.name}
                         </span>
-                        <Badge variant="outline" className="text-[9px] uppercase tracking-wider bg-background px-1.5 py-0">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] uppercase tracking-wider bg-background px-1.5 py-0"
+                        >
                           {doc.type}
                         </Badge>
                       </div>
@@ -233,7 +271,10 @@ function DocumentRepositoryPage() {
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    <Badge variant="secondary" className="text-[10px] text-emerald-500 bg-emerald-500/10 border-emerald-500/20 font-bold hidden sm:inline-flex">
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] text-emerald-500 bg-emerald-500/10 border-emerald-500/20 font-bold hidden sm:inline-flex"
+                    >
                       {doc.status}
                     </Badge>
                     <a
@@ -254,7 +295,9 @@ function DocumentRepositoryPage() {
               {filteredDocs.length === 0 && (
                 <div className="text-center py-12 border border-dashed border-border rounded-lg bg-muted/5">
                   <AlertCircle className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-60" />
-                  <div className="text-sm font-medium text-muted-foreground">No documents found matching the criteria</div>
+                  <div className="text-sm font-medium text-muted-foreground">
+                    No documents found matching the criteria
+                  </div>
                 </div>
               )}
             </div>

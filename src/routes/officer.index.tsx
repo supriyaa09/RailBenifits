@@ -35,10 +35,34 @@ function OfficerDashboard() {
 
   // Links list for quick access
   const quickLinks = [
-    { title: "Pension Rules", to: "/officer/rules", count: rules.length, icon: ShieldCheck, color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
-    { title: "Formula Library", to: "/officer/formulas", count: formulas.length, icon: FileCog, color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-    { title: "Settlement Benefits", to: "/officer/benefits", count: benefits.length, icon: Wallet, color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
-    { title: "Document Repository", to: "/officer/documents", count: docs.length, icon: ScrollText, color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
+    {
+      title: "Pension Rules",
+      to: "/officer/rules",
+      count: rules.length,
+      icon: ShieldCheck,
+      color: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+    },
+    {
+      title: "Formula Library",
+      to: "/officer/formulas",
+      count: formulas.length,
+      icon: FileCog,
+      color: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+    },
+    {
+      title: "Settlement Benefits",
+      to: "/officer/benefits",
+      count: benefits.length,
+      icon: Wallet,
+      color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+    },
+    {
+      title: "Document Repository",
+      to: "/officer/documents",
+      count: docs.length,
+      icon: ScrollText,
+      color: "text-purple-500 bg-purple-500/10 border-purple-500/20",
+    },
   ];
 
   return (
@@ -80,7 +104,9 @@ function OfficerDashboard() {
       <div className="grid gap-4 md:grid-cols-3">
         <div className="card-surface p-5 flex flex-col justify-between">
           <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">Current Rule Book</div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">
+              Current Rule Book
+            </div>
             <div className="text-lg font-semibold text-foreground mt-2">{config.ruleVersion}</div>
           </div>
           <div className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border/40">
@@ -89,8 +115,12 @@ function OfficerDashboard() {
         </div>
         <div className="card-surface p-5 flex flex-col justify-between">
           <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">Formula Engine Version</div>
-            <div className="text-lg font-semibold text-foreground mt-2">{config.formulaVersion}</div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">
+              Formula Engine Version
+            </div>
+            <div className="text-lg font-semibold text-foreground mt-2">
+              {config.formulaVersion}
+            </div>
           </div>
           <div className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border/40">
             Last calculation update: {config.lastFormulaUpdate}
@@ -98,7 +128,9 @@ function OfficerDashboard() {
         </div>
         <div className="card-surface p-5 flex flex-col justify-between">
           <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">AI Knowledge Model</div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">
+              AI Knowledge Model
+            </div>
             <div className="text-lg font-semibold text-foreground mt-2">{config.aiModel}</div>
           </div>
           <div className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border/40">
@@ -116,7 +148,9 @@ function OfficerDashboard() {
               <TrendingUp className="h-5 w-5 text-primary" />
               Administrative Modules
             </h2>
-            <p className="text-xs text-muted-foreground mt-1">Navigate to specific policy reference databases</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Navigate to specific policy reference databases
+            </p>
           </div>
           <div className="space-y-3">
             {quickLinks.map((link) => {
@@ -135,7 +169,9 @@ function OfficerDashboard() {
                       <div className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
                         {link.title}
                       </div>
-                      <div className="text-xs text-muted-foreground">{link.count} records indexed</div>
+                      <div className="text-xs text-muted-foreground">
+                        {link.count} records indexed
+                      </div>
                     </div>
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
@@ -153,9 +189,14 @@ function OfficerDashboard() {
                 <Clock className="h-5 w-5 text-primary" />
                 Recent System Updates
               </h2>
-              <p className="text-xs text-muted-foreground mt-1">Log of recent administrative uploads and rules database modifications</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Log of recent administrative uploads and rules database modifications
+              </p>
             </div>
-            <Link to="/officer/documents" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
+            <Link
+              to="/officer/documents"
+              className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+            >
               View Repository <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -170,8 +211,12 @@ function OfficerDashboard() {
                   {update.type}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm text-foreground font-medium leading-snug">{update.title}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Date Logged: {update.date}</div>
+                  <div className="text-sm text-foreground font-medium leading-snug">
+                    {update.title}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Date Logged: {update.date}
+                  </div>
                 </div>
               </div>
             ))}

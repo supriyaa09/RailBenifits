@@ -268,8 +268,8 @@ Upcoming Phases:
 
 # 12. Document History
 
-| Version | Date | Author | Description |
-|----------|------|--------|-------------|
-| 1.0 | Initial Draft | Rakesh Kumar | Project Requirements Document |
+| Version | Date          | Author       | Description                   |
+| ------- | ------------- | ------------ | ----------------------------- |
+| 1.0     | Initial Draft | Rakesh Kumar | Project Requirements Document |
 
 ---

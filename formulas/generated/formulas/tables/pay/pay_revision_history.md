@@ -72,15 +72,15 @@ Revision ID
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Revision ID | String | Unique revision identifier |
-| Revision Name | String | Name of the pay revision |
-| Effective Date | Date | Date from which revision is applicable |
-| Implementation Date | Date | Date of implementation |
-| Pay Commission | String | Applicable CPC |
-| Government Order | String | Official notification |
-| Status | String | Active / Superseded |
+| Column              | Type   | Description                            |
+| ------------------- | ------ | -------------------------------------- |
+| Revision ID         | String | Unique revision identifier             |
+| Revision Name       | String | Name of the pay revision               |
+| Effective Date      | Date   | Date from which revision is applicable |
+| Implementation Date | Date   | Date of implementation                 |
+| Pay Commission      | String | Applicable CPC                         |
+| Government Order    | String | Official notification                  |
+| Status              | String | Active / Superseded                    |
 
 ---
 
@@ -100,9 +100,9 @@ Status shall be Active or Superseded.
 
 # 7. Pay Revision History Table
 
-| Revision ID | Revision Name | Effective Date | Implementation Date | Pay Commission | Government Order | Status |
-|--------------|---------------|----------------|---------------------|----------------|------------------|--------|
-| PAYREV-001 | 7th CPC | YYYY-MM-DD | YYYY-MM-DD | 7th CPC | Railway Board Order | Active |
+| Revision ID | Revision Name | Effective Date | Implementation Date | Pay Commission | Government Order    | Status |
+| ----------- | ------------- | -------------- | ------------------- | -------------- | ------------------- | ------ |
+| PAYREV-001  | 7th CPC       | YYYY-MM-DD     | YYYY-MM-DD          | 7th CPC        | Railway Board Order | Active |
 
 > **Note:** Populate this table only using verified Government Notifications and Railway Board Circulars.
 
@@ -155,10 +155,10 @@ Output
 
 ```json
 {
-    "revisionName":"7th CPC",
-    "payCommission":"7th CPC",
-    "governmentOrder":"Railway Board Order",
-    "status":"Active"
+  "revisionName": "7th CPC",
+  "payCommission": "7th CPC",
+  "governmentOrder": "Railway Board Order",
+  "status": "Active"
 }
 ```
 

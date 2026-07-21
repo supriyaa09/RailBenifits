@@ -84,9 +84,9 @@ Current Pension Details
 
 ```json
 {
-    "scheme": "OPS",
-    "revisionModule": "rules/pension/ops/revision.md",
-    "status": "Success"
+  "scheme": "OPS",
+  "revisionModule": "rules/pension/ops/revision.md",
+  "status": "Success"
 }
 ```
 
@@ -94,11 +94,11 @@ Current Pension Details
 
 # Supported Revision Engines
 
-| Pension Scheme | Revision Module |
-|----------------|-----------------|
-| OPS | rules/pension/ops/revision.md |
-| UPS | rules/pension/ups/revision.md |
-| NPS | rules/pension/nps/revision.md |
+| Pension Scheme | Revision Module               |
+| -------------- | ----------------------------- |
+| OPS            | rules/pension/ops/revision.md |
+| UPS            | rules/pension/ups/revision.md |
+| NPS            | rules/pension/nps/revision.md |
 
 ---
 
@@ -200,13 +200,13 @@ Return
 
 # Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| PEN-REV-BR-001 | Pension Scheme shall be identified before revision. |
-| PEN-REV-BR-002 | Only one revision engine shall execute per request. |
+| Rule ID        | Description                                           |
+| -------------- | ----------------------------------------------------- |
+| PEN-REV-BR-001 | Pension Scheme shall be identified before revision.   |
+| PEN-REV-BR-002 | Only one revision engine shall execute per request.   |
 | PEN-REV-BR-003 | This module shall never perform pension calculations. |
-| PEN-REV-BR-004 | This module shall never perform arrear calculations. |
-| PEN-REV-BR-005 | Invalid pension schemes shall return an error. |
+| PEN-REV-BR-004 | This module shall never perform arrear calculations.  |
+| PEN-REV-BR-005 | Invalid pension schemes shall return an error.        |
 
 ---
 
@@ -286,11 +286,11 @@ Return Result
 
 ```json
 {
-    "employeeId": "EMP001",
-    "scheme": "OPS",
-    "revisionModule": "rules/pension/ops/revision.md",
-    "status": "Completed",
-    "effectiveDate": "2026-01-01"
+  "employeeId": "EMP001",
+  "scheme": "OPS",
+  "revisionModule": "rules/pension/ops/revision.md",
+  "status": "Completed",
+  "effectiveDate": "2026-01-01"
 }
 ```
 
@@ -298,13 +298,13 @@ Return Result
 
 # Test Cases
 
-| Test Case | Expected Result |
-|------------|-----------------|
-| OPS Revision | OPS Revision Module Invoked |
-| UPS Revision | UPS Revision Module Invoked |
-| NPS Revision | NPS Revision Module Invoked |
-| Unknown Scheme | Validation Error |
-| Duplicate Request | Duplicate Handling Applied |
+| Test Case         | Expected Result             |
+| ----------------- | --------------------------- |
+| OPS Revision      | OPS Revision Module Invoked |
+| UPS Revision      | UPS Revision Module Invoked |
+| NPS Revision      | NPS Revision Module Invoked |
+| Unknown Scheme    | Validation Error            |
+| Duplicate Request | Duplicate Handling Applied  |
 
 ---
 

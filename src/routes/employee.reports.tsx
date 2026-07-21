@@ -68,7 +68,10 @@ function ReportsPage() {
     .map((reportId) => reports.find((report) => report.report_id === reportId))
     .filter((report): report is SettlementReportRecord => Boolean(report));
 
-  const openReport = (report: SettlementReportRecord, action: "view" | "print" | "download" = "view") => {
+  const openReport = (
+    report: SettlementReportRecord,
+    action: "view" | "print" | "download" = "view",
+  ) => {
     restoreReportToSession(report);
     if (action === "print") {
       navigate({ to: "/employee/result", search: { print: "true" } as any });
@@ -98,7 +101,10 @@ function ReportsPage() {
         }
       />
 
-      <SectionCard title="Report Filters" description="Find reports by employee, report number, case type, scheme, or date order.">
+      <SectionCard
+        title="Report Filters"
+        description="Find reports by employee, report number, case type, scheme, or date order."
+      >
         <div className="grid gap-3 md:grid-cols-[1fr_150px_150px_150px]">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -109,27 +115,40 @@ function ReportsPage() {
               className="pl-9"
             />
           </div>
-          <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value as typeof typeFilter)}>
+          <Select
+            value={typeFilter}
+            onValueChange={(value) => setTypeFilter(value as typeof typeFilter)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {reportTypeFilters.map((value) => (
-                <SelectItem key={value} value={value}>{value}</SelectItem>
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select value={schemeFilter} onValueChange={(value) => setSchemeFilter(value as typeof schemeFilter)}>
+          <Select
+            value={schemeFilter}
+            onValueChange={(value) => setSchemeFilter(value as typeof schemeFilter)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {schemeFilters.map((value) => (
-                <SelectItem key={value} value={value}>{value}</SelectItem>
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as "newest" | "oldest")}>
+          <Select
+            value={sortOrder}
+            onValueChange={(value) => setSortOrder(value as "newest" | "oldest")}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -141,12 +160,17 @@ function ReportsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Previous Reports" description="Each generated report creates a versioned record.">
+      <SectionCard
+        title="Previous Reports"
+        description="Each generated report creates a versioned record."
+      >
         {filteredReports.length === 0 ? (
           <div className="rounded-md border border-dashed border-border p-8 text-center">
             <FileText className="mx-auto h-8 w-8 text-muted-foreground" />
             <div className="mt-3 font-medium">No reports found</div>
-            <div className="mt-1 text-sm text-muted-foreground">Save a draft or generate a new version from the Official Report tab.</div>
+            <div className="mt-1 text-sm text-muted-foreground">
+              Save a draft or generate a new version from the Official Report tab.
+            </div>
           </div>
         ) : (
           <Table>
@@ -173,38 +197,72 @@ function ReportsPage() {
                         className="mt-1"
                       />
                       <span>
-                        <span className="block font-bold text-foreground">Version {report.version || report.report_version}</span>
-                        <span className="block text-xs font-mono text-muted-foreground">{report.report_number || "Draft Report"}</span>
+                        <span className="block font-bold text-foreground">
+                          Version {report.version || report.report_version}
+                        </span>
+                        <span className="block text-xs font-mono text-muted-foreground">
+                          {report.report_number || "Draft Report"}
+                        </span>
                         <span className="block text-[11px] text-muted-foreground mt-0.5">
-                          Rules: {report.rule_version || "Railway Pension Rules 2026"} | Formula: {report.formula_version || "v2.4.1"}
+                          Rules: {report.rule_version || "Railway Pension Rules 2026"} | Formula:{" "}
+                          {report.formula_version || "v2.4.1"}
                         </span>
                       </span>
                     </label>
                   </TableCell>
                   <TableCell>
-                    <div className="font-semibold text-foreground">{report.employee_name || "Not available"}</div>
+                    <div className="font-semibold text-foreground">
+                      {report.employee_name || "Not available"}
+                    </div>
                     <div className="text-xs text-muted-foreground">ID: {report.employee_id}</div>
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium text-foreground">{report.retirement_type || report.report_type}</div>
-                    <div className="text-xs text-muted-foreground">Scheme: {report.scheme || report.pension_scheme}</div>
+                    <div className="font-medium text-foreground">
+                      {report.retirement_type || report.report_type}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Scheme: {report.scheme || report.pension_scheme}
+                    </div>
                   </TableCell>
 
-                  <TableCell className="text-right font-bold text-foreground">{formatCurrency(report.total_one_time_settlement)}</TableCell>
-                  <TableCell className="text-right font-bold text-foreground">{formatCurrency(report.monthly_benefits)}</TableCell>
+                  <TableCell className="text-right font-bold text-foreground">
+                    {formatCurrency(report.total_one_time_settlement)}
+                  </TableCell>
+                  <TableCell className="text-right font-bold text-foreground">
+                    {formatCurrency(report.monthly_benefits)}
+                  </TableCell>
                   <TableCell>
-                    <div className="font-medium text-foreground">{formatReportDate(report.generated_date)}</div>
-                    <div className="text-xs text-muted-foreground">{report.generated_time || "10:30 IST"}</div>
+                    <div className="font-medium text-foreground">
+                      {formatReportDate(report.generated_date)}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {report.generated_time || "10:30 IST"}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openReport(report, "view")} title="View report">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openReport(report, "view")}
+                        title="View report"
+                      >
                         <Eye className="h-4 w-4 text-primary" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => openReport(report, "print")} title="Print report">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openReport(report, "print")}
+                        title="Print report"
+                      >
                         <Printer className="h-4 w-4 text-primary" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => openReport(report, "download")} title="Download PDF">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openReport(report, "download")}
+                        title="Download PDF"
+                      >
                         <Download className="h-4 w-4 text-primary" />
                       </Button>
                     </div>
@@ -217,7 +275,10 @@ function ReportsPage() {
       </SectionCard>
 
       {comparisonReports.length > 0 && (
-        <SectionCard title="Version Comparison" description="Select up to two saved report versions to compare totals and status.">
+        <SectionCard
+          title="Version Comparison"
+          description="Select up to two saved report versions to compare totals and status."
+        >
           <div className="grid gap-4 lg:grid-cols-2">
             {comparisonReports.map((report) => (
               <div key={report.report_id} className="rounded-md border border-border p-4">
@@ -232,8 +293,14 @@ function ReportsPage() {
                   <CompareLine label="Generated" value={formatReportDate(report.generated_date)} />
                   <CompareLine label="Report Type" value={report.report_type} />
                   <CompareLine label="Pension Scheme" value={report.pension_scheme} />
-                  <CompareLine label="One-Time Settlement" value={formatCurrency(report.total_one_time_settlement)} />
-                  <CompareLine label="Monthly Benefits" value={formatCurrency(report.monthly_benefits)} />
+                  <CompareLine
+                    label="One-Time Settlement"
+                    value={formatCurrency(report.total_one_time_settlement)}
+                  />
+                  <CompareLine
+                    label="Monthly Benefits"
+                    value={formatCurrency(report.monthly_benefits)}
+                  />
                   <CompareLine label="PDF Path" value={report.pdf_path} />
                 </div>
               </div>

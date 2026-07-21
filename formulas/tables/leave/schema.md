@@ -68,11 +68,11 @@ Maintain all reference data related to Leave Encashment and leave definitions us
 
 # 5. Tables Covered
 
-| Table | Table ID | Primary Key |
-|---------|----------|-------------|
+| Table                      | Table ID    | Primary Key    |
+| -------------------------- | ----------- | -------------- |
 | leave_encashment_limits.md | TBL-LVE-001 | Effective Date |
-| leave_types.md | TBL-LVE-002 | Leave Type ID |
-| leave_salary_components.md | TBL-LVE-003 | Component ID |
+| leave_types.md             | TBL-LVE-002 | Leave Type ID  |
+| leave_salary_components.md | TBL-LVE-003 | Component ID   |
 
 ---
 
@@ -171,13 +171,13 @@ Leave Encashment Rule
 
 # 11. Error Handling
 
-| Error | Action |
-|---------|--------|
-| Missing Primary Key | Reject |
-| Duplicate Primary Key | Reject |
-| Invalid Data Type | Reject |
-| Missing Government Reference | Reject |
-| Lookup Failure | Return Validation Error |
+| Error                        | Action                  |
+| ---------------------------- | ----------------------- |
+| Missing Primary Key          | Reject                  |
+| Duplicate Primary Key        | Reject                  |
+| Invalid Data Type            | Reject                  |
+| Missing Government Reference | Reject                  |
+| Lookup Failure               | Return Validation Error |
 
 ---
 

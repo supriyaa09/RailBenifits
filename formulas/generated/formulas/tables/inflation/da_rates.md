@@ -71,12 +71,12 @@ Effective Date
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Effective Date | Date | Date from which the DA rate becomes applicable |
-| DA Rate | Decimal | Official Dearness Allowance percentage |
-| Order Reference | String | Government/Railway Order ID |
-| Remarks | String | Optional remarks |
+| Column          | Type    | Description                                    |
+| --------------- | ------- | ---------------------------------------------- |
+| Effective Date  | Date    | Date from which the DA rate becomes applicable |
+| DA Rate         | Decimal | Official Dearness Allowance percentage         |
+| Order Reference | String  | Government/Railway Order ID                    |
+| Remarks         | String  | Optional remarks                               |
 
 ---
 
@@ -94,9 +94,9 @@ Historical records shall never be modified.
 
 # 7. DA Rates Table
 
-| Effective Date | DA Rate (%) | Order Reference | Remarks |
-|----------------|------------:|-----------------|---------|
-| YYYY-MM-DD | TBD | GO-XXXX | Initial entry |
+| Effective Date | DA Rate (%) | Order Reference | Remarks       |
+| -------------- | ----------: | --------------- | ------------- |
+| YYYY-MM-DD     |         TBD | GO-XXXX         | Initial entry |
 
 > **Note:** Populate this table only with officially notified DA rates. Do not enter assumed percentages.
 
@@ -149,8 +149,8 @@ Output
 
 ```json
 {
-    "daRate": 0,
-    "orderReference": "GO-XXXX"
+  "daRate": 0,
+  "orderReference": "GO-XXXX"
 }
 ```
 

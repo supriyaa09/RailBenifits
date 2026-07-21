@@ -20,7 +20,7 @@ function createEmployeeSummary(assessment: SettlementAssessment): EmployeeSummar
     scheme: assessment.serviceDetails.pensionScheme,
     retirementType: getRetirementTypeLabel(assessment),
     qualifyingService: formatQualifyingService(assessment.serviceDetails.qualifyingService),
-    retirementDate: formatDisplayDate(assessment.serviceDetails.retirementDate),
+    retirementDate: formatDisplayDate(assessment.serviceDetails.dateOfExit),
     employeeGroup: assessment.employeeDetails.employeeGroup,
     pensionEmoluments: formatCurrency(assessment.promotionDetails.emoluments),
   };

@@ -70,14 +70,14 @@ Rule ID
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Rule ID | String | Unique rule identifier |
-| Service Event | String | Appointment, Promotion, MACP, Pay Revision, Re-employment, etc. |
-| Effective Date | Date | Date from which the rule is applicable |
-| Rule Reference | String | Government/Railway Order |
-| Description | String | Brief summary of the rule |
-| Status | String | Active / Superseded |
+| Column         | Type   | Description                                                     |
+| -------------- | ------ | --------------------------------------------------------------- |
+| Rule ID        | String | Unique rule identifier                                          |
+| Service Event  | String | Appointment, Promotion, MACP, Pay Revision, Re-employment, etc. |
+| Effective Date | Date   | Date from which the rule is applicable                          |
+| Rule Reference | String | Government/Railway Order                                        |
+| Description    | String | Brief summary of the rule                                       |
+| Status         | String | Active / Superseded                                             |
 
 ---
 
@@ -97,13 +97,13 @@ Status shall be Active or Superseded.
 
 # 7. Pay Fixation Rules Table
 
-| Rule ID | Service Event | Effective Date | Rule Reference | Status |
-|----------|---------------|----------------|----------------|--------|
-| PFR-001 | Initial Appointment | YYYY-MM-DD | Railway Board Order | Active |
-| PFR-002 | Promotion | YYYY-MM-DD | Railway Board Order | Active |
-| PFR-003 | MACP | YYYY-MM-DD | Railway Board Order | Active |
-| PFR-004 | Pay Revision | YYYY-MM-DD | Railway Board Order | Active |
-| PFR-005 | Re-employment | YYYY-MM-DD | Railway Board Order | Active |
+| Rule ID | Service Event       | Effective Date | Rule Reference      | Status |
+| ------- | ------------------- | -------------- | ------------------- | ------ |
+| PFR-001 | Initial Appointment | YYYY-MM-DD     | Railway Board Order | Active |
+| PFR-002 | Promotion           | YYYY-MM-DD     | Railway Board Order | Active |
+| PFR-003 | MACP                | YYYY-MM-DD     | Railway Board Order | Active |
+| PFR-004 | Pay Revision        | YYYY-MM-DD     | Railway Board Order | Active |
+| PFR-005 | Re-employment       | YYYY-MM-DD     | Railway Board Order | Active |
 
 > **Note:** Populate this table only with verified Railway Board Circulars and Government Orders.
 
@@ -115,7 +115,7 @@ Input
 
 Service Event
 
-+
+-
 
 Effective Date
 
@@ -163,9 +163,9 @@ Output
 
 ```json
 {
-    "ruleId": "PFR-002",
-    "ruleReference": "Railway Board Order",
-    "status": "Active"
+  "ruleId": "PFR-002",
+  "ruleReference": "Railway Board Order",
+  "status": "Active"
 }
 ```
 

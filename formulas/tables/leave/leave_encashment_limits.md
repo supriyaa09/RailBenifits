@@ -63,13 +63,13 @@ Effective Date
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Effective Date | Date | Date from which the limit becomes applicable |
-| Maximum Encashable Leave | Integer | Maximum number of leave days that may be encashed |
-| Unit | String | Unit of measurement (Days) |
-| Government Order | String | Official Railway Board / Government notification reference |
-| Remarks | String | Additional remarks |
+| Column                   | Type    | Description                                                |
+| ------------------------ | ------- | ---------------------------------------------------------- |
+| Effective Date           | Date    | Date from which the limit becomes applicable               |
+| Maximum Encashable Leave | Integer | Maximum number of leave days that may be encashed          |
+| Unit                     | String  | Unit of measurement (Days)                                 |
+| Government Order         | String  | Official Railway Board / Government notification reference |
+| Remarks                  | String  | Additional remarks                                         |
 
 ---
 
@@ -89,9 +89,9 @@ Historical records shall never be deleted.
 
 # 7. Leave Encashment Limits Table
 
-| Effective Date | Maximum Encashable Leave | Unit | Government Order | Remarks |
-|----------------|-------------------------:|------|------------------|---------|
-| YYYY-MM-DD | TBD | Days | GO-XXXX | Initial Entry |
+| Effective Date | Maximum Encashable Leave | Unit | Government Order | Remarks       |
+| -------------- | -----------------------: | ---- | ---------------- | ------------- |
+| YYYY-MM-DD     |                      TBD | Days | GO-XXXX          | Initial Entry |
 
 > **Note:** Populate this table only with officially notified Leave Encashment limits. Do not use assumed values.
 
@@ -147,9 +147,9 @@ Output
 
 ```json
 {
-    "maximumEncashableLeave": 300,
-    "unit": "Days",
-    "governmentOrder": "GO-XXXX"
+  "maximumEncashableLeave": 300,
+  "unit": "Days",
+  "governmentOrder": "GO-XXXX"
 }
 ```
 

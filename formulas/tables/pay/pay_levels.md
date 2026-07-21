@@ -69,12 +69,12 @@ Pay Level
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Pay Level | Integer | Official 7th CPC Pay Level |
+| Column           | Type    | Description                                     |
+| ---------------- | ------- | ----------------------------------------------- |
+| Pay Level        | Integer | Official 7th CPC Pay Level                      |
 | Legacy Grade Pay | Integer | Corresponding 6th CPC Grade Pay (if applicable) |
-| Description | String | Name or description of the Pay Level |
-| Status | String | Active / Obsolete |
+| Description      | String  | Name or description of the Pay Level            |
+| Status           | String  | Active / Obsolete                               |
 
 ---
 
@@ -90,13 +90,13 @@ Status shall be either Active or Obsolete.
 
 # 7. Pay Levels Table
 
-| Pay Level | Legacy Grade Pay | Description | Status |
-|-----------:|-----------------:|-------------|--------|
-| 1 | 1800 | Entry Level | Active |
-| 2 | 1900 | Skilled Staff | Active |
-| 3 | 2000 | Technical Staff | Active |
-| ... | ... | ... | ... |
-| 18 | — | Apex Administrative Level | Active |
+| Pay Level | Legacy Grade Pay | Description               | Status |
+| --------: | ---------------: | ------------------------- | ------ |
+|         1 |             1800 | Entry Level               | Active |
+|         2 |             1900 | Skilled Staff             | Active |
+|         3 |             2000 | Technical Staff           | Active |
+|       ... |              ... | ...                       | ...    |
+|        18 |                — | Apex Administrative Level | Active |
 
 > **Note:** Populate the complete table using the officially notified 7th CPC Pay Level mapping.
 
@@ -148,10 +148,10 @@ Output
 
 ```json
 {
-    "payLevel": 6,
-    "legacyGradePay": 4200,
-    "description": "Level 6",
-    "status": "Active"
+  "payLevel": 6,
+  "legacyGradePay": 4200,
+  "description": "Level 6",
+  "status": "Active"
 }
 ```
 

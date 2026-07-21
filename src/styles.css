@@ -43,7 +43,8 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --shadow-soft: 0 1px 2px 0 oklch(0.2 0.05 250 / 0.04), 0 1px 3px 0 oklch(0.2 0.05 250 / 0.06);
-  --shadow-elevated: 0 4px 12px -2px oklch(0.2 0.05 250 / 0.08), 0 2px 6px -1px oklch(0.2 0.05 250 / 0.04);
+  --shadow-elevated:
+    0 4px 12px -2px oklch(0.2 0.05 250 / 0.08), 0 2px 6px -1px oklch(0.2 0.05 250 / 0.04);
 }
 
 :root,
@@ -174,7 +175,12 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: 'Noto Sans', 'Inter', system-ui, -apple-system, sans-serif !important;
+    font-family:
+      "Noto Sans",
+      "Inter",
+      system-ui,
+      -apple-system,
+      sans-serif !important;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
@@ -182,7 +188,12 @@
     scroll-behavior: smooth;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 700 !important;
   }
 
@@ -190,7 +201,8 @@
     font-weight: 600 !important;
   }
 
-  label, .font-medium {
+  label,
+  .font-medium {
     font-weight: 500 !important;
   }
 }
@@ -501,7 +513,7 @@
 .accessibility-line-height-large h2,
 .accessibility-line-height-large h3,
 .accessibility-line-height-large li {
-  line-height: 2.0 !important;
+  line-height: 2 !important;
 }
 
 /* High Contrast Settings */
@@ -560,17 +572,23 @@ html.accessibility-invert video {
 /* Accessibility Cursors */
 .accessibility-cursor-medium,
 .accessibility-cursor-medium * {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="black" stroke="white" stroke-width="2" d="M0,0 L0,22 L6,16 L12,28 L15,26.5 L9,15.5 L16,15.5 Z"/></svg>'), auto !important;
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="black" stroke="white" stroke-width="2" d="M0,0 L0,22 L6,16 L12,28 L15,26.5 L9,15.5 L16,15.5 Z"/></svg>'),
+    auto !important;
 }
 
 .accessibility-cursor-large,
 .accessibility-cursor-large * {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path fill="black" stroke="white" stroke-width="2" d="M0,0 L0,33 L9,24 L18,42 L22.5,39.75 L13.5,23.25 L24,23.25 Z"/></svg>'), auto !important;
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path fill="black" stroke="white" stroke-width="2" d="M0,0 L0,33 L9,24 L18,42 L22.5,39.75 L13.5,23.25 L24,23.25 Z"/></svg>'),
+    auto !important;
 }
 
 .accessibility-cursor-xl,
 .accessibility-cursor-xl * {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path fill="black" stroke="white" stroke-width="2" d="M0,0 L0,44 L12,32 L24,56 L30,53 L18,31 L32,31 Z"/></svg>'), auto !important;
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path fill="black" stroke="white" stroke-width="2" d="M0,0 L0,44 L12,32 L24,56 L30,53 L18,31 L32,31 Z"/></svg>'),
+    auto !important;
 }
 
 /* Pause Animations */
@@ -588,7 +606,7 @@ html.accessibility-invert video {
 /* Dyslexia Friendly */
 .accessibility-dyslexia,
 .accessibility-dyslexia * {
-  font-family: 'OpenDyslexic', 'Comic Sans MS', cursive, sans-serif !important;
+  font-family: "OpenDyslexic", "Comic Sans MS", cursive, sans-serif !important;
 }
 
 /* Hide Images */
@@ -680,7 +698,9 @@ html.accessibility-invert video {
   cursor: pointer;
   white-space: nowrap;
   position: relative;
-  transition: color 200ms ease, background-color 200ms ease;
+  transition:
+    color 200ms ease,
+    background-color 200ms ease;
   user-select: none;
   outline: none;
 }
@@ -722,8 +742,9 @@ html.accessibility-invert video {
   height: 3px;
   background-color: var(--primary);
   border-radius: 3px 3px 0 0;
-  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1),
-              width 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    width 250ms cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   z-index: 1;
 }

@@ -68,8 +68,8 @@ Maintain all reference data related to RELHS contribution rules.
 
 # 5. Tables Covered
 
-| Table | Table ID | Primary Key |
-|---------|----------|-------------|
+| Table                 | Table ID      | Primary Key    |
+| --------------------- | ------------- | -------------- |
 | relhs_contribution.md | TBL-RELHS-001 | Effective Date |
 
 ---
@@ -161,13 +161,13 @@ Settlement Calculation
 
 # 11. Error Handling
 
-| Error | Action |
-|---------|--------|
-| Missing Primary Key | Reject |
-| Duplicate Primary Key | Reject |
-| Invalid Data Type | Reject |
-| Missing Government Reference | Reject |
-| Lookup Failure | Return Validation Error |
+| Error                        | Action                  |
+| ---------------------------- | ----------------------- |
+| Missing Primary Key          | Reject                  |
+| Duplicate Primary Key        | Reject                  |
+| Invalid Data Type            | Reject                  |
+| Missing Government Reference | Reject                  |
+| Lookup Failure               | Return Validation Error |
 
 ---
 

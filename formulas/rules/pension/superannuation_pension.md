@@ -119,14 +119,14 @@ Applicable Dearness Relief
 
 ```json
 {
-    "eligible": true,
-    "qualifyingService": "",
-    "emoluments": 0,
-    "averageEmoluments": 0,
-    "basicPension": 0,
-    "dearnessRelief": 0,
-    "grossPension": 0,
-    "netPension": 0
+  "eligible": true,
+  "qualifyingService": "",
+  "emoluments": 0,
+  "averageEmoluments": 0,
+  "basicPension": 0,
+  "dearnessRelief": 0,
+  "grossPension": 0,
+  "netPension": 0
 }
 ```
 
@@ -183,13 +183,13 @@ limits.
 
 # Variables
 
-| Variable | Description |
-|----------|-------------|
-| E | Emoluments |
-| AE | Average Emoluments |
-| QS | Qualifying Service |
-| BP | Basic Pension |
-| DR | Dearness Relief |
+| Variable | Description        |
+| -------- | ------------------ |
+| E        | Emoluments         |
+| AE       | Average Emoluments |
+| QS       | Qualifying Service |
+| BP       | Basic Pension      |
+| DR       | Dearness Relief    |
 
 ---
 
@@ -439,13 +439,13 @@ Return Result
 
 # Test Cases
 
-| Case | Expected Result |
-|------|-----------------|
-| Normal Superannuation | Pension Calculated |
-| Invalid Retirement Type | Validation Error |
-| Zero Qualifying Service | Not Eligible |
-| Promotion in Last Year | Updated Pension |
-| Revised Pay Order | Recalculated Pension |
+| Case                    | Expected Result      |
+| ----------------------- | -------------------- |
+| Normal Superannuation   | Pension Calculated   |
+| Invalid Retirement Type | Validation Error     |
+| Zero Qualifying Service | Not Eligible         |
+| Promotion in Last Year  | Updated Pension      |
+| Revised Pay Order       | Recalculated Pension |
 
 ---
 

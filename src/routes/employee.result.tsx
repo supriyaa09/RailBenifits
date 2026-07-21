@@ -28,8 +28,15 @@ import {
   SectionCard,
 } from "@/components/rail/common";
 import { formatIndianDate, formatIndianDateTime } from "@/lib/indian-date-time";
-import { formatCurrency, type SettlementAssessment } from "@/lib/settlement-assessment";
-import { saveSettlementReport, type SettlementReportRecord } from "@/services/ReportManagementService";
+import {
+  formatCurrency,
+  getExitDateLabel,
+  type SettlementAssessment,
+} from "@/lib/settlement-assessment";
+import {
+  saveSettlementReport,
+  type SettlementReportRecord,
+} from "@/services/ReportManagementService";
 import { processSettlement } from "@/services/SettlementService";
 // SettlementPdfService: prepareSettlementPdfRequest removed (using window.print directly)
 import { evaluateRetirementRules } from "@/rules/RetirementRuleEngine";
@@ -114,7 +121,11 @@ function SettlementResultsPage() {
         {(activeTab) => (
           <>
             <TabsContent value="overview" className="space-y-5">
-              <OverviewTab result={processed.ruleResult} calculation={processed.calculation} />
+              <OverviewTab
+                assessment={assessment}
+                result={processed.ruleResult}
+                calculation={processed.calculation}
+              />
             </TabsContent>
 
             <TabsContent value="benefits" className="space-y-4">
@@ -158,11 +169,7 @@ const SETTLEMENT_TABS = [
   { value: "report", label: "Official Report", icon: FileText },
 ] as const;
 
-function SettlementTabs({
-  children,
-}: {
-  children: (activeTab: string) => React.ReactNode;
-}) {
+function SettlementTabs({ children }: { children: (activeTab: string) => React.ReactNode }) {
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -177,9 +184,7 @@ function SettlementTabs({
 
   const updateIndicator = useCallback(() => {
     if (!tabsListRef.current || !indicatorRef.current) return;
-    const activeEl = tabsListRef.current.querySelector<HTMLButtonElement>(
-      '[data-state="active"]',
-    );
+    const activeEl = tabsListRef.current.querySelector<HTMLButtonElement>('[data-state="active"]');
     if (!activeEl) return;
     const listRect = tabsListRef.current.getBoundingClientRect();
     const elRect = activeEl.getBoundingClientRect();
@@ -202,10 +207,7 @@ function SettlementTabs({
     >
       {/* Tab Navigation Bar */}
       <div className="settlement-tabs-nav print:hidden">
-        <TabsPrimitive.List
-          ref={tabsListRef}
-          className="settlement-tabs-list"
-        >
+        <TabsPrimitive.List ref={tabsListRef} className="settlement-tabs-list">
           {SETTLEMENT_TABS.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -231,9 +233,11 @@ function SettlementTabs({
 }
 
 function OverviewTab({
+  assessment,
   result,
   calculation,
 }: {
+  assessment: SettlementAssessment;
   result: SettlementResult;
   calculation: SettlementCalculation;
 }) {
@@ -251,7 +255,13 @@ function OverviewTab({
             label="Qualifying Service"
             value={result.employeeSummary.qualifyingService}
           />
-          <ResultMetric label="Retirement Date" value={result.employeeSummary.retirementDate} />
+          <ResultMetric
+            label={getExitDateLabel(
+              assessment.serviceDetails.retirementCategory,
+              assessment.serviceDetails.otherRetirementType,
+            )}
+            value={result.employeeSummary.retirementDate}
+          />
           <ResultMetric label="Employee Group" value={result.employeeSummary.employeeGroup} />
           <ResultMetric
             label="Pension Emoluments"
@@ -390,7 +400,9 @@ function BenefitCard({
             <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Benefit Type
             </div>
-            <div className="mt-1 text-sm font-semibold text-foreground">Non-Monetary (Entitlement)</div>
+            <div className="mt-1 text-sm font-semibold text-foreground">
+              Non-Monetary (Entitlement)
+            </div>
             {calculation?.status && (
               <div className="text-xs text-muted-foreground mt-1">{calculation.status}</div>
             )}
@@ -410,19 +422,14 @@ function BenefitCard({
           label="Formula Key"
           value={formula?.formulaKey ?? (benefit.excelFormulaKey || "Formula Reference Key")}
         />
-        <ResultMetric
-          label="Rule Source"
-          value={formula?.workbookSheet ?? "Rule Engine"}
-        />
+        <ResultMetric label="Rule Source" value={formula?.workbookSheet ?? "Rule Engine"} />
         <ResultMetric
           label="Reference Details"
           value={formula?.cellReference ?? "Calculated dynamically"}
         />
         <ResultMetric
           label="Explanation"
-          value={
-            formula?.explanation ?? "Calculated according to Railway Pension Rules 2026."
-          }
+          value={formula?.explanation ?? "Calculated according to Railway Pension Rules 2026."}
         />
       </div>
 
@@ -522,7 +529,11 @@ function BenefitCard({
           />
           <ResultMetric
             label="Required Documents"
-            value={Array.isArray(calculation.details.requiredDocuments) ? (calculation.details.requiredDocuments as string[]).join(", ") : "Not Applicable"}
+            value={
+              Array.isArray(calculation.details.requiredDocuments)
+                ? (calculation.details.requiredDocuments as string[]).join(", ")
+                : "Not Applicable"
+            }
           />
         </div>
       )}
@@ -545,18 +556,12 @@ function BenefitCard({
 
       {benefit.benefitName === "Leave Encashment" && calculation?.details && (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 mt-5 rounded-md border border-primary/20 bg-primary-soft/30 p-4">
-          <ResultMetric
-            label="LAP Entered"
-            value={`${calculation.details.lapDays ?? 0} Days`}
-          />
+          <ResultMetric label="LAP Entered" value={`${calculation.details.lapDays ?? 0} Days`} />
           <ResultMetric
             label="Encashable LAP"
             value={`${calculation.details.effectiveLapDays ?? 0} Days`}
           />
-          <ResultMetric
-            label="LHAP Entered"
-            value={`${calculation.details.lhapDays ?? 0} Days`}
-          />
+          <ResultMetric label="LHAP Entered" value={`${calculation.details.lhapDays ?? 0} Days`} />
           <ResultMetric
             label="Converted LHAP"
             value={`${calculation.details.effectiveLhapDays ?? 0} Days`}
@@ -649,78 +654,18 @@ function OfficialReport({
     assessment.employeeDetails.employeeId || assessment.employeeDetails.employeeName || "DRAFT",
   )
     .replace(/[^a-zA-Z0-9]/g, "")
-    .slice(0, 12).toUpperCase()}`;
+    .slice(0, 12)
+    .toUpperCase()}`;
 
   const retirementRules = evaluateRetirementRules(assessment);
   const isDeathCase = retirementRules.reportMode === "death";
   const netQualifyingService = result.employeeSummary.qualifyingService;
-  const commutedPension = Number(calculation.commutation.details?.commutedPension ?? 0);
-  const commutationFactor = calculation.commutation.details?.commutationFactor ?? "Not available";
-  const commutationPercent = Number(calculation.commutation.details?.commutationPercentage ?? 0);
   const lastDrawnSalary = assessment.salaryDetails.currentBasicPay;
   const totalMonthlyBenefits = isDeathCase
-    ? (calculation.familyPension.monthlyAmount ?? calculation.familyPension.amount) + calculation.monthlyFma
+    ? (calculation.familyPension.monthlyAmount ?? calculation.familyPension.amount) +
+      calculation.monthlyFma
     : calculation.monthlyPension + calculation.monthlyFma;
-  const pensionEmoluments = assessment.promotionDetails.emoluments;
-  const deathRows: CertificateRow[] = [
-    certificateRow(
-      "1.",
-      "Family Pension",
-      calculation.familyPension.monthlyAmount ?? calculation.familyPension.amount,
-      calculation.familyPension,
-    ),
-    certificateRow(
-      "2.",
-      "Enhanced Family Pension",
-      isDeathCase ? Number(calculation.familyPension.details?.enhancedFamilyPension ?? 0) : 0,
-      calculation.familyPension,
-    ),
-    certificateRow(
-      "3.",
-      "Death Gratuity",
-      isDeathCase ? calculation.retirementGratuity.amount : 0,
-      calculation.retirementGratuity,
-    ),
-    certificateRow("4(i).", "Amount under Insurance Fund of CGEGIS", 0, calculation.cgis),
-    certificateRow(
-      "4(ii).",
-      "Amount under Savings Fund of CGEGIS",
-      calculation.cgis.amount,
-      calculation.cgis,
-    ),
-    certificateRow(
-      "5.",
-      `PF Accumulation${assessment.employeeDetails.employeeId ? ` (AC No. ${assessment.employeeDetails.employeeId})` : ""}`,
-      calculation.providentFund.amount,
-      calculation.providentFund,
-    ),
-    certificateTextRow(
-      "6(a).",
-      "LAP Leave Days",
-      `${assessment.salaryDetails.lapDays} Days`,
-      calculation.leaveEncashment,
-    ),
-    certificateTextRow(
-      "6(b).",
-      "LHAP Leave Days",
-      `${assessment.salaryDetails.lhapDays} Days`,
-      calculation.leaveEncashment,
-    ),
-    certificateTextRow(
-      "6(c).",
-      "Total Encashable Leave Days",
-      `${calculation.leaveEncashment.details?.totalEncashableDays ?? 0} Days`,
-      calculation.leaveEncashment,
-    ),
-    certificateTextRow(
-      "6(d).",
-      "Leave Encashment Amount",
-      formatCurrency(calculation.leaveEncashment.amount),
-      calculation.leaveEncashment,
-      true,
-    ),
-    certificateTextRow("7.", "PPO Number", "Pending officer verification"),
-  ];
+
   const [lastSavedReport, setLastSavedReport] = useState<string | null>(null);
 
   const saveReport = (status: "Draft" | "Submitted" = "Draft") => {
@@ -728,7 +673,9 @@ function OfficialReport({
       status,
       remarks: status === "Submitted" ? "Submitted for officer verification." : "Saved as draft.",
     });
-    setLastSavedReport(`Version ${saved.version || saved.report_version} saved as ${saved.status}.`);
+    setLastSavedReport(
+      `Version ${saved.version || saved.report_version} saved as ${saved.status}.`,
+    );
   };
 
   const triggerPrint = () => {
@@ -750,10 +697,9 @@ function OfficialReport({
     if (typeof window === "undefined" || !assessment) return;
 
     const page1El = document.getElementById("certificate-page-1");
-    const page2El = document.getElementById("certificate-page-2");
 
-    if (!page1El || !page2El) {
-      console.error("Page elements not found for PDF download");
+    if (!page1El) {
+      console.error("Page element not found for PDF download");
       return;
     }
 
@@ -765,28 +711,17 @@ function OfficialReport({
         backgroundColor: "#ffffff",
       });
 
-      const canvas2 = await html2canvas(page2El, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-      });
-
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = 210;
       const pdfHeight = 297;
 
       const imgHeight1 = (canvas1.height * pdfWidth) / canvas1.width;
-      const imgHeight2 = (canvas2.height * pdfWidth) / canvas2.width;
 
       const imgData1 = canvas1.toDataURL("image/png");
       pdf.addImage(imgData1, "PNG", 0, 0, pdfWidth, imgHeight1);
 
-      pdf.addPage();
-      const imgData2 = canvas2.toDataURL("image/png");
-      pdf.addImage(imgData2, "PNG", 0, 0, pdfWidth, imgHeight2);
-
-      const empId = assessment.employeeDetails.employeeId?.replace(/[^a-zA-Z0-9]/g, "") || "Employee";
+      const empId =
+        assessment.employeeDetails.employeeId?.replace(/[^a-zA-Z0-9]/g, "") || "Employee";
       const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, "");
       const fileName = `Settlement_Report_${empId}_${dateStr}.pdf`;
       pdf.save(fileName);
@@ -799,7 +734,12 @@ function OfficialReport({
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
-    const action = params.get("print") === "true" ? "print" : params.get("download") === "true" ? "download" : null;
+    const action =
+      params.get("print") === "true"
+        ? "print"
+        : params.get("download") === "true"
+          ? "download"
+          : null;
     if (!action) return;
     const newUrl = new URL(window.location.href);
     newUrl.searchParams.delete("print");
@@ -820,6 +760,119 @@ function OfficialReport({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessment]);
 
+  const getBenefitRowData = (rowName: string) => {
+    switch (rowName) {
+      case "Basic Pension": {
+        const isEligible = calculation.basicPension.eligible && !isDeathCase;
+        const isNotApplicable = isDeathCase;
+        return {
+          status: isEligible ? "Eligible" : isNotApplicable ? "Not Applicable" : "Not Eligible",
+          amount: isEligible ? formatCurrency(calculation.basicPension.amount) + " / month" : "-",
+        };
+      }
+      case "Family Pension": {
+        const isEligible = calculation.familyPension.eligible;
+        const isNotApplicable = !isDeathCase;
+        return {
+          status: isEligible ? "Eligible" : isNotApplicable ? "Not Applicable" : "Not Eligible",
+          amount: isEligible
+            ? formatCurrency(
+                calculation.familyPension.monthlyAmount ?? calculation.familyPension.amount,
+              ) + " / month"
+            : "-",
+        };
+      }
+      case "Retirement Gratuity": {
+        const isEligible = calculation.retirementGratuity.eligible && !isDeathCase;
+        const isNotApplicable = isDeathCase;
+        return {
+          status: isEligible ? "Eligible" : isNotApplicable ? "Not Applicable" : "Not Eligible",
+          amount: isEligible ? formatCurrency(calculation.retirementGratuity.amount) : "-",
+        };
+      }
+      case "Death Gratuity": {
+        const isEligible = calculation.retirementGratuity.eligible && isDeathCase;
+        const isNotApplicable = !isDeathCase;
+        return {
+          status: isEligible ? "Eligible" : isNotApplicable ? "Not Applicable" : "Not Eligible",
+          amount: isEligible ? formatCurrency(calculation.retirementGratuity.amount) : "-",
+        };
+      }
+      case "Leave Encashment": {
+        const isEligible = calculation.leaveEncashment.eligible;
+        return {
+          status: isEligible ? "Eligible" : "Not Eligible",
+          amount: isEligible ? formatCurrency(calculation.leaveEncashment.amount) : "-",
+        };
+      }
+      case "Commutation": {
+        const isEligible = calculation.commutation.eligible && !isDeathCase;
+        const isNotApplicable = isDeathCase;
+        return {
+          status: isEligible ? "Eligible" : isNotApplicable ? "Not Applicable" : "Not Eligible",
+          amount: isEligible ? formatCurrency(calculation.commutation.amount) : "-",
+        };
+      }
+      case "Provident Fund": {
+        const isEligible = calculation.providentFund.eligible;
+        return {
+          status: isEligible ? "Eligible" : "Not Eligible",
+          amount: isEligible ? formatCurrency(calculation.providentFund.amount) : "-",
+        };
+      }
+      case "CGEGIS": {
+        const isEligible = calculation.cgis.eligible;
+        return {
+          status: isEligible ? "Eligible" : "Not Eligible",
+          amount: isEligible ? formatCurrency(calculation.cgis.amount) : "-",
+        };
+      }
+      case "RELHS": {
+        const isEligible = calculation.relhs.eligible;
+        return {
+          status: isEligible ? "Eligible" : "Not Eligible",
+          amount: isEligible ? formatCurrency(calculation.relhs.amount) : "-",
+        };
+      }
+      case "Complimentary Pass": {
+        const isEligible = calculation.complimentaryPass.eligible && !isDeathCase;
+        const isNotApplicable = isDeathCase;
+        const sets = calculation.complimentaryPass.details?.passSetsPerYear;
+        const cls = calculation.complimentaryPass.details?.passClass;
+        return {
+          status: isEligible ? "Eligible" : isNotApplicable ? "Not Applicable" : "Not Eligible",
+          amount: isEligible ? `${sets} set(s), ${cls} Class` : "-",
+        };
+      }
+      case "FMA": {
+        const isEligible = calculation.fma.eligible;
+        const isNotApplicable = isDeathCase;
+        return {
+          status: isEligible ? "Eligible" : isNotApplicable ? "Not Applicable" : "Not Eligible",
+          amount: isEligible
+            ? formatCurrency(calculation.fma.monthlyAmount ?? calculation.fma.amount) + " / month"
+            : "-",
+        };
+      }
+      default:
+        return { status: "Not Applicable", amount: "-" };
+    }
+  };
+
+  const benefitRows = [
+    "Basic Pension",
+    "Family Pension",
+    "Retirement Gratuity",
+    "Death Gratuity",
+    "Leave Encashment",
+    "Commutation",
+    "Provident Fund",
+    "CGEGIS",
+    "RELHS",
+    "Complimentary Pass",
+    "FMA",
+  ];
+
   return (
     <div className="space-y-4">
       <div className="report-controls rounded-md border border-border bg-card p-4 shadow-sm print:hidden">
@@ -836,12 +889,7 @@ function OfficialReport({
             )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleDownloadPdf}
-            >
+            <Button type="button" variant="outline" size="sm" onClick={handleDownloadPdf}>
               <Download className="mr-2 h-4 w-4" />
               Download PDF
             </Button>
@@ -860,516 +908,199 @@ function OfficialReport({
         </div>
       </div>
 
-      <section ref={certificateRef} className="settlement-certificate mx-auto max-w-[210mm] bg-white text-slate-950 shadow-sm ring-1 ring-slate-300 print:max-w-none print:shadow-none print:ring-0">
-        <div className="min-h-[297mm] px-5 py-5 text-[12px] leading-snug sm:px-8 print:px-8 print:py-6">
+      <section
+        ref={certificateRef}
+        className="settlement-certificate mx-auto max-w-[210mm] bg-white text-slate-950 shadow-sm ring-1 ring-slate-300 print:max-w-none print:shadow-none print:ring-0"
+      >
+        <div className="px-5 py-5 text-[12px] leading-snug sm:px-8 print:px-8 print:py-6">
           <div id="certificate-page-1" className="bg-white px-8 py-6 print:p-0">
             <header className="border-b-2 border-slate-900 pb-3">
-            <div className="grid grid-cols-[72px_1fr_72px] items-center gap-3">
-              <img
-                src={INDIAN_RAILWAYS_LOGO}
-                alt="Indian Railways"
-                className="h-14 w-14 object-contain print:h-12 print:w-12"
-              />
-              <div className="text-center">
-                <div className="text-2xl font-black uppercase tracking-wide">
-                  South Central Railway
+              <div className="grid grid-cols-[72px_1fr_72px] items-center gap-3">
+                <img
+                  src={INDIAN_RAILWAYS_LOGO}
+                  alt="Indian Railways"
+                  className="h-14 w-14 object-contain print:h-12 print:w-12"
+                />
+                <div className="text-center">
+                  <div className="text-2xl font-black uppercase tracking-wide">
+                    South Central Railway
+                  </div>
+                  <div className="mt-1 text-lg font-bold uppercase tracking-wide">
+                    Settlement Certificate
+                  </div>
+                  <div className="text-sm font-semibold uppercase tracking-wide">
+                    Details of Settlement Benefits
+                  </div>
                 </div>
-                <div className="mt-1 text-lg font-bold uppercase tracking-wide">
-                  Settlement Certificate
-                </div>
-                <div className="text-sm font-semibold uppercase tracking-wide">
-                  Details of Settlement Benefits
-                </div>
+                <div />
               </div>
-              {/* Empty spacer to keep title centered */}
-              <div />
+            </header>
+
+            <div className="mt-4 text-center text-sm font-semibold">
+              {assessment.employeeDetails.employeeName || "Employee Name"}
+              {assessment.employeeDetails.employeeId
+                ? ` (${assessment.employeeDetails.employeeId})`
+                : ""}
             </div>
-          </header>
 
-          <div className="mt-4 text-center text-sm font-semibold">
-            {assessment.employeeDetails.employeeName || "Employee Name"}
-            {assessment.employeeDetails.employeeId
-              ? ` (${assessment.employeeDetails.employeeId})`
-              : ""}
-          </div>
-
-          <div className="mt-4 grid grid-cols-1 border border-slate-500 sm:grid-cols-2 print:grid-cols-2">
-            <CertificateMeta
-              label="Employee Name"
-              value={assessment.employeeDetails.employeeName || "Not available"}
-            />
-            <CertificateMeta
-              label="Employee ID"
-              value={assessment.employeeDetails.employeeId || "Not provided"}
-            />
-            <CertificateMeta
-              label="Department"
-              value={assessment.employeeDetails.department || "Not provided"}
-            />
-            <CertificateMeta label="Division" value="South Central Railway" />
-            <CertificateMeta label="Generated Date" value={generatedDate} />
-            <CertificateMeta
-              label="Retirement Type"
-              value={result.employeeSummary.retirementType}
-            />
-          </div>
-
-          <CertificateSection title="Section A - Employee Details">
-            <div className="grid border border-slate-500 sm:grid-cols-2 print:grid-cols-2">
-              <CertificateMeta
-                label="Designation"
-                value={assessment.employeeDetails.designation || "Not provided"}
-              />
-              <CertificateMeta
-                label="Employee Group"
-                value={assessment.employeeDetails.employeeGroup}
-              />
-              <CertificateMeta
-                label="Pay Matrix Level"
-                value={assessment.employeeDetails.payMatrixLevel}
-              />
-              <CertificateMeta
-                label="Pension Scheme"
-                value={assessment.serviceDetails.pensionScheme}
-              />
-              <CertificateMeta
-                label="DOB"
-                value={formatIndianDate(assessment.employeeDetails.dateOfBirth)}
-              />
-              <CertificateMeta
-                label="Appointment Date"
-                value={formatIndianDate(assessment.employeeDetails.dateOfAppointment)}
-              />
-              <CertificateMeta
-                label="Retirement Date"
-                value={formatIndianDate(assessment.serviceDetails.retirementDate)}
-              />
-              {assessment.serviceDetails.otherRetirementDetails?.dateOfDeath && (
+            <CertificateSection title="SECTION A – Employee Details">
+              <div className="grid grid-cols-1 border border-slate-500 sm:grid-cols-2 print:grid-cols-2">
                 <CertificateMeta
-                  label="Date of Death"
-                  value={formatIndianDate(
-                    assessment.serviceDetails.otherRetirementDetails.dateOfDeath,
+                  label="Employee Name"
+                  value={assessment.employeeDetails.employeeName || "Not available"}
+                />
+                <CertificateMeta
+                  label="Employee ID / PF Number"
+                  value={assessment.employeeDetails.employeeId || "Not provided"}
+                />
+                <CertificateMeta
+                  label="Department"
+                  value={assessment.employeeDetails.department || "Not provided"}
+                />
+                <CertificateMeta
+                  label="Designation"
+                  value={assessment.employeeDetails.designation || "Not provided"}
+                />
+                <CertificateMeta
+                  label="Employee Group"
+                  value={assessment.employeeDetails.employeeGroup}
+                />
+                <CertificateMeta label="Railway Zone / Division" value="South Central Railway" />
+                <CertificateMeta
+                  label="Retirement Type"
+                  value={result.employeeSummary.retirementType}
+                />
+                <CertificateMeta
+                  label="Pension Scheme"
+                  value={assessment.serviceDetails.pensionScheme}
+                />
+                <CertificateMeta
+                  label="Date of Birth"
+                  value={formatIndianDate(assessment.employeeDetails.dateOfBirth)}
+                />
+                <CertificateMeta
+                  label="Date of Appointment"
+                  value={formatIndianDate(assessment.employeeDetails.dateOfAppointment)}
+                />
+                <CertificateMeta
+                  label={getExitDateLabel(
+                    assessment.serviceDetails.retirementCategory,
+                    assessment.serviceDetails.otherRetirementType,
                   )}
+                  value={formatIndianDate(assessment.serviceDetails.dateOfExit)}
                 />
-              )}
-              <CertificateMeta
-                label="Qualifying Service"
-                value={result.employeeSummary.qualifyingService}
-              />
-            </div>
-          </CertificateSection>
-
-          {!isDeathCase && (
-            <CertificateSection title="Section B - Financial Calculations">
-              <div className="border border-slate-500">
-                <div className="grid grid-cols-[42px_1fr] border-b border-slate-300">
-                  <div className="border-r border-slate-300 px-2 py-2 font-medium">1.</div>
-                  <div className="px-2 py-2">
-                    <div className="font-semibold">Total Qualifying Service (TQS)</div>
-                    <div className="mt-2 grid gap-2 sm:grid-cols-3">
-                      <ServiceBox label="Total Service" value={netQualifyingService} />
-                      <ServiceBox label="Other Service" value="0 years, 0 months, 0 days" />
-                      <ServiceBox
-                        label="Non Qualifying Service"
-                        value="0 years, 0 months, 0 days"
-                      />
-                      <ServiceBox label="Substitute Service" value="0 years, 0 months, 0 days" />
-                      <ServiceBox label="Weightage" value="0 years, 0 months, 0 days" />
-                      <ServiceBox label="Net Qualifying Service" value={netQualifyingService} />
-                    </div>
+                <CertificateMeta label="Qualifying Service" value={netQualifyingService} />
+                <CertificateMeta
+                  label="Basic Pay"
+                  value={formatCurrency(assessment.salaryDetails.currentBasicPay)}
+                />
+                <CertificateMeta
+                  label="Dearness Allowance"
+                  value={formatCurrency(assessment.salaryDetails.dearnessAllowance)}
+                />
+                <CertificateMeta label="Last Pay Drawn" value={formatCurrency(lastDrawnSalary)} />
+                {/* Balance cell to keep the grid grid-cols-2 even */}
+                <div className="grid grid-cols-[130px_1fr] border-b border-slate-300 last:border-b-0 sm:border-b-0 print:border-b-0 sm:[&:nth-child(odd)]:border-r print:[&:nth-child(odd)]:border-r">
+                  <div className="bg-slate-100 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide">
+                    &nbsp;
                   </div>
+                  <div className="px-2 py-1.5 font-medium">&nbsp;</div>
                 </div>
-
-                <CertificateTable
-                  rows={[
-                    certificateRow(
-                      "2.",
-                      "Pension Emoluments",
-                      pensionEmoluments,
-                      calculation.basicPension,
-                    ),
-                    certificateRow(
-                      "3.",
-                      "Basic Pension",
-                      calculation.basicPension.amount,
-                      calculation.basicPension,
-                    ),
-                    certificateTextRow(
-                      "4.",
-                      `Amount offered for commutation (maximum 40% of Basic Pension)`,
-                      formatCurrency(commutedPension),
-                      calculation.commutation,
-                    ),
-                    certificateTextRow(
-                      "5.",
-                      `Lump Sum Commuted Value (${formatCurrency(commutedPension)} x 12 x ${commutationFactor})`,
-                      formatCurrency(calculation.commutation.amount),
-                      calculation.commutation,
-                    ),
-                    certificateRow(
-                      "6.",
-                      "Residual Pension (Col 3 minus Col 4)",
-                      calculation.residualPension.amount,
-                      calculation.residualPension,
-                    ),
-                    certificateRow(
-                      "7.",
-                      "Retirement Gratuity",
-                      calculation.retirementGratuity.amount,
-                      calculation.retirementGratuity,
-                    ),
-                    certificateRow(
-                      "8.",
-                      `PF Accumulation${assessment.employeeDetails.employeeId ? ` (AC No. ${assessment.employeeDetails.employeeId})` : ""}`,
-                      calculation.providentFund.amount,
-                      calculation.providentFund,
-                    ),
-                    certificateRow(
-                      "9.",
-                      "Last Drawn Salary",
-                      lastDrawnSalary,
-                      calculation.basicPension,
-                    ),
-                    certificateTextRow(
-                      "10(a).",
-                      "LAP Leave Days",
-                      `${assessment.salaryDetails.lapDays} Days`,
-                      calculation.leaveEncashment,
-                    ),
-                    certificateTextRow(
-                      "10(b).",
-                      "LHAP Leave Days",
-                      `${assessment.salaryDetails.lhapDays} Days`,
-                      calculation.leaveEncashment,
-                    ),
-                    certificateTextRow(
-                      "10(c).",
-                      "Total Encashable Leave Days",
-                      `${calculation.leaveEncashment.details?.totalEncashableDays ?? 0} Days`,
-                      calculation.leaveEncashment,
-                    ),
-                    certificateTextRow(
-                      "10(d).",
-                      "Leave Encashment Amount",
-                      formatCurrency(calculation.leaveEncashment.amount),
-                      calculation.leaveEncashment,
-                      true,
-                    ),
-                    certificateRow("11.", "CGIS", calculation.cgis.amount, calculation.cgis),
-                    certificateRow("11(a).", "RELHS", calculation.relhs.amount, calculation.relhs),
-                    certificateTextRow(
-                      "11(b).",
-                      "FMA",
-                      `${formatCurrency(calculation.monthlyFma)} monthly`,
-                      calculation.fma,
-                    ),
-                    certificateRow(
-                      "12.",
-                      "Total One-Time Settlement",
-                      calculation.totalOneTimeBenefits,
-                      undefined,
-                      true,
-                    ),
-                    certificateTextRow(
-                      "13.",
-                      "Monthly Benefits",
-                      formatCurrency(totalMonthlyBenefits),
-                      undefined,
-                      true,
-                    ),
-                  ]}
-                />
-              </div>
-              <div className="mt-2 text-[11px] text-slate-700">
-                {retirementRules.reason} Commutation portion selected: {commutationPercent}% of
-                Basic Pension. Recurring benefits are shown separately in the settlement summary.
               </div>
             </CertificateSection>
-          )}
 
-          {isDeathCase && (
-            <CertificateSection title="Section B - Death Benefits">
+            <CertificateSection title="SECTION B – Benefits Summary">
               <div className="border border-slate-500">
-                <CertificateTable rows={deathRows} />
+                <table className="w-full border-collapse text-[12px]">
+                  <thead>
+                    <tr className="bg-slate-100 font-bold border-b border-slate-500">
+                      <th className="border-r border-slate-300 px-3 py-2 text-left w-[40%]">
+                        Benefit
+                      </th>
+                      <th className="border-r border-slate-300 px-3 py-2 text-center w-[25%]">
+                        Status
+                      </th>
+                      <th className="px-3 py-2 text-right w-[35%]">Amount / Entitlement</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {benefitRows.map((rowName) => {
+                      const { status, amount } = getBenefitRowData(rowName);
+                      return (
+                        <tr key={rowName} className="border-b border-slate-300 last:border-b-0">
+                          <td className="border-r border-slate-300 px-3 py-1.5 align-top font-medium">
+                            {rowName}
+                          </td>
+                          <td className="border-r border-slate-300 px-3 py-1.5 align-top text-center">
+                            <span
+                              className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                status === "Eligible"
+                                  ? "bg-green-100 text-green-800"
+                                  : status === "Not Applicable"
+                                    ? "bg-slate-100 text-slate-600"
+                                    : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {status}
+                            </span>
+                          </td>
+                          <td className="px-3 py-1.5 text-right align-top font-bold text-slate-900">
+                            {amount}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Totals Section */}
+              <div className="mt-4 border border-slate-500 bg-slate-50 p-4 select-none print:bg-slate-50">
+                <table className="w-full text-xs font-bold">
+                  <tbody>
+                    <tr className="border-b border-slate-300">
+                      <td className="py-2 text-left uppercase tracking-wide text-slate-700">
+                        Total One-Time Benefits
+                      </td>
+                      <td className="py-2 text-right text-slate-900 text-sm font-black">
+                        {formatCurrency(calculation.totalOneTimeBenefits)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 text-left uppercase tracking-wide text-slate-700">
+                        Total Monthly Benefits
+                      </td>
+                      <td className="py-2 text-right text-slate-900 text-sm font-black">
+                        {formatCurrency(totalMonthlyBenefits)}{" "}
+                        <span className="text-[10px] font-normal lowercase">per month</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </CertificateSection>
-          )}
 
-          {/* Section C — In Case of Death (informational entitlements) */}
-          <CertificateSection title="Section C - In Case of Death">
-            {!isDeathCase && (
-              <div className="mb-2 border border-slate-400 bg-slate-50 px-3 py-2 text-[11px] text-slate-700">
-                The following entitlements would be applicable to the family / nominee in
-                case of death of the employee, based on the current service record and
-                applicable Railway Pension Rules. This section is for information only and
-                does not affect the settlement calculations above.
-              </div>
-            )}
-            <div className="border border-slate-500">
-              <CertificateTable
-                rows={[
-                  certificateTextRow(
-                    "1.",
-                    "Family Pension",
-                    formatCurrency(
-                      calculation.familyPension.monthlyAmount ??
-                      calculation.familyPension.amount,
-                    ),
-                    calculation.familyPension,
-                  ),
-                  certificateTextRow(
-                    "2.",
-                    "Enhanced Family Pension",
-                    formatCurrency(
-                      Number(
-                        calculation.familyPension.details?.enhancedFamilyPension ?? 0,
-                      ),
-                    ),
-                    calculation.familyPension,
-                  ),
-                  certificateTextRow(
-                    "3.",
-                    "Death Gratuity",
-                    formatCurrency(
-                      isDeathCase ? calculation.retirementGratuity.amount : calculation.retirementGratuity.amount,
-                    ),
-                    calculation.retirementGratuity,
-                  ),
-                  certificateTextRow(
-                    "4(i).",
-                    "Amount under Insurance Fund of CGEGIS",
-                    formatCurrency(0),
-                    calculation.cgis,
-                  ),
-                  certificateTextRow(
-                    "4(ii).",
-                    "Amount under Savings Fund of CGEGIS",
-                    formatCurrency(calculation.cgis.amount),
-                    calculation.cgis,
-                  ),
-                  certificateTextRow(
-                    "5.",
-                    `PF Accumulation${assessment.employeeDetails.employeeId ? ` (AC No. ${assessment.employeeDetails.employeeId})` : ""}`,
-                    formatCurrency(calculation.providentFund.amount),
-                    calculation.providentFund,
-                  ),
-                  certificateTextRow(
-                    "6.",
-                    "Leave Encashment",
-                    formatCurrency(calculation.leaveEncashment.amount),
-                    calculation.leaveEncashment,
-                  ),
-                  certificateTextRow(
-                    "7.",
-                    "PPO Number",
-                    "To be generated",
-                  ),
-                ]}
-              />
-            </div>
-          </CertificateSection>
-
-          </div> {/* Close #certificate-page-1 */}
-
-          <div className="print-page-break" />
-
-          <div id="certificate-page-2" className="bg-white px-8 py-6 print:p-0">
-
-          <CertificateSection title="Section D - Document Checklist">
-            <div className="grid grid-cols-1 border border-slate-500 sm:grid-cols-2 print:grid-cols-2">
-              {[
-                "Service Register",
-                "Retirement Order",
-                "PPO",
-                "Leave Account",
-                "PF Statement",
-                "CGIS Statement",
-                "Nominee Details",
-                "Identity Proof",
-                "Bank Details",
-                "Medical Option Form",
-                "Settlement Order",
-              ].map((document) => (
-                <div
-                  key={document}
-                  className="flex items-center gap-2 border-b border-slate-300 px-3 py-2 text-[12px] sm:odd:border-r print:odd:border-r"
-                >
-                  <span aria-hidden="true" className="text-[14px] leading-none">
-                    ☐
-                  </span>
-                  <span>{document}</span>
+            <footer className="mt-8 border-t border-slate-500 pt-3 text-[10px] text-slate-600">
+              <div className="grid gap-1 sm:grid-cols-2">
+                <div>Prepared by: RailAssist Settlement Engine</div>
+                <div>
+                  Report Number: {savedSnapshot?.report_number || reportNumber} (Ver:{" "}
+                  {savedSnapshot?.version || "Draft"})
                 </div>
-              ))}
-            </div>
-          </CertificateSection>
-
-          {(() => {
-            const oneTimeRows: { label: string; value: string }[] = [];
-
-            if (isDeathCase) {
-              if (calculation.retirementGratuity.amount > 0) {
-                oneTimeRows.push({ label: "Death Gratuity", value: formatCurrency(calculation.retirementGratuity.amount) });
-              }
-            } else {
-              if (calculation.retirementGratuity.amount > 0) {
-                oneTimeRows.push({ label: "Retirement Gratuity", value: formatCurrency(calculation.retirementGratuity.amount) });
-              }
-            }
-
-            if (calculation.leaveEncashment.amount > 0) {
-              oneTimeRows.push({ label: "Leave Encashment", value: formatCurrency(calculation.leaveEncashment.amount) });
-            }
-
-            if (calculation.providentFund.amount > 0) {
-              oneTimeRows.push({
-                label: `Provident Fund${assessment.employeeDetails.employeeId ? ` (AC No. ${assessment.employeeDetails.employeeId})` : ""}`,
-                value: formatCurrency(calculation.providentFund.amount),
-              });
-            }
-
-            if (calculation.cgis.amount > 0) {
-              oneTimeRows.push({ label: "CGEGIS Savings Fund", value: formatCurrency(calculation.cgis.amount) });
-            }
-
-            if (isDeathCase) {
-              const insFund = Number(calculation.cgis.details?.insuranceFundAmount ?? 0);
-              if (insFund > 0) {
-                oneTimeRows.push({ label: "CGEGIS Insurance Fund", value: formatCurrency(insFund) });
-              }
-            }
-
-            if (calculation.relhs.amount > 0) {
-              oneTimeRows.push({ label: "RELHS Medical Contribution", value: formatCurrency(calculation.relhs.amount) });
-            }
-
-            if (!isDeathCase && calculation.commutation.amount > 0) {
-              oneTimeRows.push({ label: "Commutation Lump Sum", value: formatCurrency(calculation.commutation.amount) });
-            }
-
-            if (calculation.ctg.amount > 0) {
-              oneTimeRows.push({ label: "Composite Transfer Grant (CTG)", value: formatCurrency(calculation.ctg.amount) });
-            }
-
-            const monthlyRows: { label: string; value: string }[] = [];
-
-            if (isDeathCase) {
-              const fpAmt = calculation.familyPension.monthlyAmount ?? calculation.familyPension.amount;
-              if (fpAmt > 0) {
-                monthlyRows.push({ label: "Family Pension", value: formatCurrency(fpAmt) });
-              }
-              const efpAmt = Number(calculation.familyPension.details?.enhancedFamilyPension ?? 0);
-              if (efpAmt > 0) {
-                monthlyRows.push({ label: "Enhanced Family Pension", value: formatCurrency(efpAmt) });
-              }
-              if (calculation.monthlyFma > 0) {
-                monthlyRows.push({ label: "Fixed Medical Allowance (FMA)", value: formatCurrency(calculation.monthlyFma) });
-              }
-            } else {
-              if (calculation.basicPension.amount > 0) {
-                monthlyRows.push({ label: "Basic Pension", value: formatCurrency(calculation.basicPension.amount) });
-              }
-              if (calculation.commutation.amount > 0 && calculation.residualPension.amount > 0) {
-                monthlyRows.push({ label: "Residual Pension (After Commutation)", value: formatCurrency(calculation.residualPension.amount) });
-              }
-              if (calculation.monthlyFma > 0) {
-                monthlyRows.push({ label: "Fixed Medical Allowance (FMA)", value: formatCurrency(calculation.monthlyFma) });
-              }
-            }
-
-            return (
-              <CertificateSection title="Settlement Summary">
-                <div className="border border-slate-400 bg-slate-50/50 p-4 select-none print:border-slate-500 print:bg-slate-50">
-                  {/* One-Time Benefits Section */}
-                  <div className="mb-4">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-400 pb-1 mb-2">
-                      One-Time Settlement Benefits
-                    </h4>
-                    <table className="w-full text-xs">
-                      <tbody>
-                        {oneTimeRows.map((row) => (
-                          <tr key={row.label} className="border-b border-slate-200/60 last:border-b-0">
-                            <td className="py-1.5 text-left text-slate-700 font-medium">{row.label}</td>
-                            <td className="py-1.5 text-right font-bold text-slate-900">{row.value}</td>
-                          </tr>
-                        ))}
-                        {oneTimeRows.length === 0 && (
-                          <tr>
-                            <td colSpan={2} className="py-1.5 text-left text-slate-500 italic">No one-time benefits applicable</td>
-                          </tr>
-                        )}
-                        <tr className="border-t-2 border-slate-400 font-bold text-slate-950">
-                          <td className="py-2 text-left uppercase tracking-wide">Total One-Time Settlement</td>
-                          <td className="py-2 text-right">{formatCurrency(calculation.totalOneTimeBenefits)}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Monthly Benefits Section */}
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-400 pb-1 mb-2">
-                      Monthly Benefits
-                    </h4>
-                    <table className="w-full text-xs">
-                      <tbody>
-                        {monthlyRows.map((row) => (
-                          <tr key={row.label} className="border-b border-slate-200/60 last:border-b-0">
-                            <td className="py-1.5 text-left text-slate-700 font-medium">{row.label}</td>
-                            <td className="py-1.5 text-right font-bold text-slate-900">{row.value}</td>
-                          </tr>
-                        ))}
-                        {monthlyRows.length === 0 && (
-                          <tr>
-                            <td colSpan={2} className="py-1.5 text-left text-slate-500 italic font-medium">Not Applicable</td>
-                          </tr>
-                        )}
-                        <tr className="border-t-2 border-slate-400 font-bold text-slate-950">
-                          <td className="py-2 text-left uppercase tracking-wide">Total Monthly Benefits</td>
-                          <td className="py-2 text-right">{formatCurrency(totalMonthlyBenefits)} <span className="text-[10px] font-normal lowercase">per month</span></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </CertificateSection>
-            );
-          })()}
-
-          <CertificateSection title="Section E - Officer Remarks">
-            <div className="border border-slate-500">
-              <div className="grid sm:grid-cols-3 print:grid-cols-3">
-                <OfficerBlock title="Personnel Officer" />
-                <OfficerBlock title="Accounts Officer" />
-                <OfficerBlock title="Principal Financial Advisor" />
-              </div>
-              <div className="grid border-t border-slate-500 sm:grid-cols-[1fr_180px] print:grid-cols-[1fr_180px]">
-                <div className="min-h-20 border-b border-slate-300 px-3 py-2 sm:border-b-0 sm:border-r print:border-b-0 print:border-r">
-                  <div className="text-[10px] font-bold uppercase tracking-wide">Remarks</div>
-                  <div className="mt-10 border-t border-slate-300" aria-hidden="true" />
-                </div>
-                <div className="px-3 py-2">
-                  <div className="text-[10px] font-bold uppercase tracking-wide">Approval Date</div>
-                  <div className="mt-8 border-t border-slate-500 pt-1 text-center text-[11px]">
-                    Date
-                  </div>
+                <div>
+                  Generated:{" "}
+                  {savedSnapshot?.generated_time
+                    ? `${savedSnapshot.generated_date.split("T")[0]} ${savedSnapshot.generated_time}`
+                    : generatedTimestamp}
                 </div>
               </div>
-            </div>
-          </CertificateSection>
-
-          <footer className="mt-8 border-t border-slate-500 pt-3 text-[11px] text-slate-700">
-            <div className="grid gap-1 sm:grid-cols-2">
-              <div>Prepared by: RailAssist Settlement Engine</div>
-              <div>Report Number: {savedSnapshot?.report_number || reportNumber} (Ver: {savedSnapshot?.version || "Draft"})</div>
-              <div>Generated: {savedSnapshot?.generated_time ? `${savedSnapshot.generated_date.split("T")[0]} ${savedSnapshot.generated_time}` : generatedTimestamp}</div>
-            </div>
-            <p className="mt-3">
-              Disclaimer: This report is generated based on Railway pension and settlement rules.
-              Final settlement is subject to verification and approval by the competent Railway
-              authority.
-            </p>
-          </footer>
-          </div> {/* Close #certificate-page-2 */}
+              <p className="mt-2 leading-relaxed">
+                Disclaimer: This report is generated based on Railway pension and settlement rules.
+                Final settlement is subject to verification and approval by the competent Railway
+                authority.
+              </p>
+            </footer>
+          </div>
         </div>
       </section>
     </div>

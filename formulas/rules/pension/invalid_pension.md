@@ -98,10 +98,10 @@ Employee Status
 
 ```json
 {
-    "eligible": true,
-    "scheme": "OPS",
-    "module": "rules/pension/ops/calculation.md",
-    "status": "Approved"
+  "eligible": true,
+  "scheme": "OPS",
+  "module": "rules/pension/ops/calculation.md",
+  "status": "Approved"
 }
 ```
 
@@ -231,13 +231,13 @@ Return
 
 # Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| PEN-INV-BR-001 | Retirement Type shall be Invalid Retirement. |
-| PEN-INV-BR-002 | Medical Board certification is mandatory. |
+| Rule ID        | Description                                                           |
+| -------------- | --------------------------------------------------------------------- |
+| PEN-INV-BR-001 | Retirement Type shall be Invalid Retirement.                          |
+| PEN-INV-BR-002 | Medical Board certification is mandatory.                             |
 | PEN-INV-BR-003 | Qualifying Service shall be verified as per applicable Railway rules. |
-| PEN-INV-BR-004 | Pension Scheme shall be identified before calculation. |
-| PEN-INV-BR-005 | This module shall never calculate pension directly. |
+| PEN-INV-BR-004 | Pension Scheme shall be identified before calculation.                |
+| PEN-INV-BR-005 | This module shall never calculate pension directly.                   |
 
 ---
 
@@ -325,11 +325,11 @@ Return Result
 
 ```json
 {
-    "employeeId": "EMP001",
-    "eligible": true,
-    "scheme": "OPS",
-    "module": "rules/pension/ops/calculation.md",
-    "status": "Approved"
+  "employeeId": "EMP001",
+  "eligible": true,
+  "scheme": "OPS",
+  "module": "rules/pension/ops/calculation.md",
+  "status": "Approved"
 }
 ```
 
@@ -337,13 +337,13 @@ Return Result
 
 # Test Cases
 
-| Test Case | Expected Result |
-|------------|-----------------|
-| OPS + Valid Medical Board | OPS Engine Invoked |
-| UPS + Valid Medical Board | UPS Engine Invoked |
-| NPS + Valid Medical Board | NPS Engine Invoked |
-| Missing Medical Certificate | Validation Error |
-| Invalid Retirement Type | Rejected |
+| Test Case                   | Expected Result    |
+| --------------------------- | ------------------ |
+| OPS + Valid Medical Board   | OPS Engine Invoked |
+| UPS + Valid Medical Board   | UPS Engine Invoked |
+| NPS + Valid Medical Board   | NPS Engine Invoked |
+| Missing Medical Certificate | Validation Error   |
+| Invalid Retirement Type     | Rejected           |
 
 ---
 

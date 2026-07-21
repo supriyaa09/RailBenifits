@@ -78,9 +78,9 @@ Commutation Date
 
 ```json
 {
-    "age": 61,
-    "factor": 8.194,
-    "status": "Success"
+  "age": 61,
+  "factor": 8.194,
+  "status": "Success"
 }
 ```
 
@@ -176,23 +176,23 @@ Return
 
 # 9. Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
+| Rule ID        | Description                                                                            |
+| -------------- | -------------------------------------------------------------------------------------- |
 | COM-LKP-BR-001 | Lookup shall always use the applicable age determined under the Railway Pension Rules. |
-| COM-LKP-BR-002 | Commutation factors shall always be retrieved from the official reference table. |
-| COM-LKP-BR-003 | Commutation factors shall never be hardcoded in business logic. |
-| COM-LKP-BR-004 | Exactly one factor shall be returned for one valid age. |
-| COM-LKP-BR-005 | If the requested age is unavailable, the lookup shall fail with a validation error. |
+| COM-LKP-BR-002 | Commutation factors shall always be retrieved from the official reference table.       |
+| COM-LKP-BR-003 | Commutation factors shall never be hardcoded in business logic.                        |
+| COM-LKP-BR-004 | Exactly one factor shall be returned for one valid age.                                |
+| COM-LKP-BR-005 | If the requested age is unavailable, the lookup shall fail with a validation error.    |
 
 ---
 
 # 10. Decision Table
 
-| Condition | Action |
-|-----------|--------|
-| Age Found | Return Factor |
+| Condition     | Action           |
+| ------------- | ---------------- |
+| Age Found     | Return Factor    |
 | Age Not Found | Validation Error |
-| Invalid Age | Reject |
+| Invalid Age   | Reject           |
 | Missing Input | Validation Error |
 
 ---
@@ -245,13 +245,13 @@ Replace reference table without modifying business logic.
 
 # 13. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| COM-LKP-001 | Validate Input | validateLookupInput() |
+| Rule ID     | Requirement              | Backend Function         |
+| ----------- | ------------------------ | ------------------------ |
+| COM-LKP-001 | Validate Input           | validateLookupInput()    |
 | COM-LKP-002 | Determine Applicable Age | determineApplicableAge() |
-| COM-LKP-003 | Load Table | loadFactorTable() |
-| COM-LKP-004 | Lookup Factor | getCommutationFactor() |
-| COM-LKP-005 | Validate Result | validateLookupResult() |
+| COM-LKP-003 | Load Table               | loadFactorTable()        |
+| COM-LKP-004 | Lookup Factor            | getCommutationFactor()   |
+| COM-LKP-005 | Validate Result          | validateLookupResult()   |
 
 ---
 
@@ -297,9 +297,9 @@ Return Validation Error
 
 ```json
 {
-    "age": 61,
-    "factor": 8.194,
-    "status": "Success"
+  "age": 61,
+  "factor": 8.194,
+  "status": "Success"
 }
 ```
 
@@ -329,13 +329,13 @@ Output
 
 # 17. Test Cases
 
-| Test Case | Expected Result |
-|-----------|-----------------|
-| Age Exists | Factor Returned |
-| Age Missing | Validation Error |
-| Invalid Age | Rejected |
-| Duplicate Age | Data Integrity Error |
-| Corrupted Table | Lookup Failed |
+| Test Case       | Expected Result      |
+| --------------- | -------------------- |
+| Age Exists      | Factor Returned      |
+| Age Missing     | Validation Error     |
+| Invalid Age     | Rejected             |
+| Duplicate Age   | Data Integrity Error |
+| Corrupted Table | Lookup Failed        |
 
 ---
 

@@ -61,9 +61,7 @@ function PensionRulesPage() {
             <tbody className="divide-y divide-border/60">
               {filteredRules.map((rule) => (
                 <tr key={rule.id} className="hover:bg-muted/10 transition-colors align-top">
-                  <td className="px-4 py-4 font-mono text-xs font-bold text-primary">
-                    {rule.id}
-                  </td>
+                  <td className="px-4 py-4 font-mono text-xs font-bold text-primary">{rule.id}</td>
                   <td className="px-4 py-4 space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-foreground">{rule.name}</span>
@@ -91,7 +89,10 @@ function PensionRulesPage() {
                     </div>
                   </td>
                   <td className="px-4 py-4">
-                    <Badge variant={rule.applicableScheme.includes("OPS") ? "default" : "secondary"} className="text-[10px] px-2 py-0.5 font-bold">
+                    <Badge
+                      variant={rule.applicableScheme.includes("OPS") ? "default" : "secondary"}
+                      className="text-[10px] px-2 py-0.5 font-bold"
+                    >
                       {rule.applicableScheme}
                     </Badge>
                   </td>

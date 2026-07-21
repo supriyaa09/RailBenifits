@@ -222,11 +222,11 @@ Apply
 
 # Variables
 
-| Variable | Description |
-|----------|-------------|
-| E | Emoluments |
-| CSP | Completed Six-Month Periods |
-| DG | Death Gratuity |
+| Variable | Description                 |
+| -------- | --------------------------- |
+| E        | Emoluments                  |
+| CSP      | Completed Six-Month Periods |
+| DG       | Death Gratuity              |
 
 ---
 
@@ -470,14 +470,14 @@ Return Final Amount
 
 # Test Cases
 
-| Case | Expected Result |
-|------|-----------------|
-| 8 months service | 2 × Emoluments |
-| 2 years service | 6 × Emoluments |
-| 10 years service | 12 × Emoluments |
-| 22 years service | Half emoluments × completed six-month periods |
-| High amount exceeding ceiling | Ceiling applied |
-| No nominee | Family rules invoked |
+| Case                          | Expected Result                               |
+| ----------------------------- | --------------------------------------------- |
+| 8 months service              | 2 × Emoluments                                |
+| 2 years service               | 6 × Emoluments                                |
+| 10 years service              | 12 × Emoluments                               |
+| 22 years service              | Half emoluments × completed six-month periods |
+| High amount exceeding ceiling | Ceiling applied                               |
+| No nominee                    | Family rules invoked                          |
 
 ---
 

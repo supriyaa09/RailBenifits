@@ -71,10 +71,10 @@ Age
 
 # 5. Column Definitions
 
-| Column | Data Type | Required | Description |
-|----------|-----------|----------|-------------|
-| age | Integer | Yes | Applicable age for factor lookup |
-| factor | Decimal(5,3) | Yes | Official commutation factor |
+| Column | Data Type    | Required | Description                      |
+| ------ | ------------ | -------- | -------------------------------- |
+| age    | Integer      | Yes      | Applicable age for factor lookup |
+| factor | Decimal(5,3) | Yes      | Official commutation factor      |
 
 ---
 
@@ -166,8 +166,8 @@ Return Validation Error
 
 ```json
 {
-    "age": 61,
-    "factor": 8.194
+  "age": 61,
+  "factor": 8.194
 }
 ```
 
@@ -190,13 +190,13 @@ age,factor
 
 # 12. Error Handling
 
-| Error | Action |
-|---------|--------|
-| Missing Age | Reject |
-| Duplicate Age | Data Integrity Error |
-| Missing Factor | Reject |
-| Invalid Data Type | Reject |
-| Age Outside Supported Range | Reject |
+| Error                       | Action               |
+| --------------------------- | -------------------- |
+| Missing Age                 | Reject               |
+| Duplicate Age               | Data Integrity Error |
+| Missing Factor              | Reject               |
+| Invalid Data Type           | Reject               |
+| Age Outside Supported Range | Reject               |
 
 ---
 

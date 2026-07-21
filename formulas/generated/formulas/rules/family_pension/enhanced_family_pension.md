@@ -91,11 +91,11 @@ Applicable Government Order
 
 ```json
 {
-    "eligible": true,
-    "enhancedFamilyPension": 0,
-    "effectiveFrom": "",
-    "effectiveTo": "",
-    "nextModule": "family_pension.md"
+  "eligible": true,
+  "enhancedFamilyPension": 0,
+  "effectiveFrom": "",
+  "effectiveTo": "",
+  "nextModule": "family_pension.md"
 }
 ```
 
@@ -103,12 +103,12 @@ Applicable Government Order
 
 # 7. Variables
 
-| Variable | Description |
-|----------|-------------|
-| PE | Pensionable Emoluments |
-| EFP | Enhanced Family Pension |
-| SDATE | Start Date |
-| EDATE | End Date |
+| Variable | Description             |
+| -------- | ----------------------- |
+| PE       | Pensionable Emoluments  |
+| EFP      | Enhanced Family Pension |
+| SDATE    | Start Date              |
+| EDATE    | End Date                |
 
 ---
 
@@ -204,25 +204,25 @@ Return
 
 # 9. Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| FP-ENH-BR-001 | Eligibility shall be verified before calculation. |
-| FP-ENH-BR-002 | Beneficiary shall be determined before calculation. |
+| Rule ID       | Description                                                                                                                      |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| FP-ENH-BR-001 | Eligibility shall be verified before calculation.                                                                                |
+| FP-ENH-BR-002 | Beneficiary shall be determined before calculation.                                                                              |
 | FP-ENH-BR-003 | Enhanced Family Pension shall be granted only if conditions prescribed under the applicable Railway Pension Rules are satisfied. |
-| FP-ENH-BR-004 | Enhanced pension period shall be determined from the applicable Government/Railway rules. |
-| FP-ENH-BR-005 | After expiry of the enhanced period, the system shall automatically switch to Normal Family Pension. |
-| FP-ENH-BR-006 | Rates and duration shall never be hardcoded. |
+| FP-ENH-BR-004 | Enhanced pension period shall be determined from the applicable Government/Railway rules.                                        |
+| FP-ENH-BR-005 | After expiry of the enhanced period, the system shall automatically switch to Normal Family Pension.                             |
+| FP-ENH-BR-006 | Rates and duration shall never be hardcoded.                                                                                     |
 
 ---
 
 # 10. Decision Table
 
-| Condition | Action |
-|-----------|--------|
-| Eligible for Enhanced Pension | Continue |
-| Enhanced Period Active | Pay Enhanced Family Pension |
-| Enhanced Period Expired | Switch to Normal Family Pension |
-| Not Eligible | Route to Normal Family Pension |
+| Condition                     | Action                          |
+| ----------------------------- | ------------------------------- |
+| Eligible for Enhanced Pension | Continue                        |
+| Enhanced Period Active        | Pay Enhanced Family Pension     |
+| Enhanced Period Expired       | Switch to Normal Family Pension |
+| Not Eligible                  | Route to Normal Family Pension  |
 
 ---
 
@@ -276,15 +276,15 @@ Apply revised rules from effective date.
 
 # 13. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| FP-ENH-001 | Validate Eligibility | validateEligibility() |
-| FP-ENH-002 | Validate Beneficiary | validateBeneficiary() |
-| FP-ENH-003 | Determine Enhanced Eligibility | determineEnhancedEligibility() |
-| FP-ENH-004 | Determine Enhanced Period | calculateEnhancedPeriod() |
-| FP-ENH-005 | Calculate Enhanced Pension | calculateEnhancedFamilyPension() |
-| FP-ENH-006 | Monitor Expiry | checkEnhancedPeriodExpiry() |
-| FP-ENH-007 | Switch to Normal Pension | transitionToNormalFamilyPension() |
+| Rule ID    | Requirement                    | Backend Function                  |
+| ---------- | ------------------------------ | --------------------------------- |
+| FP-ENH-001 | Validate Eligibility           | validateEligibility()             |
+| FP-ENH-002 | Validate Beneficiary           | validateBeneficiary()             |
+| FP-ENH-003 | Determine Enhanced Eligibility | determineEnhancedEligibility()    |
+| FP-ENH-004 | Determine Enhanced Period      | calculateEnhancedPeriod()         |
+| FP-ENH-005 | Calculate Enhanced Pension     | calculateEnhancedFamilyPension()  |
+| FP-ENH-006 | Monitor Expiry                 | checkEnhancedPeriodExpiry()       |
+| FP-ENH-007 | Switch to Normal Pension       | transitionToNormalFamilyPension() |
 
 ---
 
@@ -340,11 +340,11 @@ Return Result
 
 ```json
 {
-    "eligible": true,
-    "enhancedFamilyPension": 42000,
-    "effectiveFrom": "2026-01-01",
-    "effectiveTo": "2033-12-31",
-    "nextModule": "rules/family_pension/family_pension.md"
+  "eligible": true,
+  "enhancedFamilyPension": 42000,
+  "effectiveFrom": "2026-01-01",
+  "effectiveTo": "2033-12-31",
+  "nextModule": "rules/family_pension/family_pension.md"
 }
 ```
 
@@ -352,13 +352,13 @@ Return Result
 
 # 16. Test Cases
 
-| Test Case | Expected Result |
-|-----------|-----------------|
-| Eligible Enhanced Pension | Enhanced Pension Calculated |
-| Enhanced Period Expired | Switched to Normal Family Pension |
-| Invalid Beneficiary | Rejected |
-| Government Rule Revision | Recalculated |
-| Court Order | Court Order Applied |
+| Test Case                 | Expected Result                   |
+| ------------------------- | --------------------------------- |
+| Eligible Enhanced Pension | Enhanced Pension Calculated       |
+| Enhanced Period Expired   | Switched to Normal Family Pension |
+| Invalid Beneficiary       | Rejected                          |
+| Government Rule Revision  | Recalculated                      |
+| Court Order               | Court Order Applied               |
 
 ---
 

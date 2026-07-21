@@ -56,17 +56,17 @@ Referenced by:
 
 # Table Structure
 
-| Field | Type | Description |
-|--------|------|-------------|
-| Retirement Code | String | Unique code identifying the retirement type |
-| Retirement Type | String | Official retirement classification |
-| Description | String | Brief description of the retirement type |
-| Pension Eligible | Boolean | Indicates whether pension may be applicable |
-| Effective From | Date | Date from which the retirement type is applicable |
-| Effective To | Date / Null | End date of applicability |
-| Notification Number | String | Official notification reference |
-| Issuing Authority | String | Authority issuing the notification |
-| Remarks | String | Optional notes |
+| Field               | Type        | Description                                       |
+| ------------------- | ----------- | ------------------------------------------------- |
+| Retirement Code     | String      | Unique code identifying the retirement type       |
+| Retirement Type     | String      | Official retirement classification                |
+| Description         | String      | Brief description of the retirement type          |
+| Pension Eligible    | Boolean     | Indicates whether pension may be applicable       |
+| Effective From      | Date        | Date from which the retirement type is applicable |
+| Effective To        | Date / Null | End date of applicability                         |
+| Notification Number | String      | Official notification reference                   |
+| Issuing Authority   | String      | Authority issuing the notification                |
+| Remarks             | String      | Optional notes                                    |
 
 ---
 
@@ -83,9 +83,9 @@ Referenced by:
 
 # Reference Table
 
-| Retirement Code | Retirement Type | Description | Pension Eligible | Effective From | Effective To | Notification Number | Issuing Authority | Remarks |
-|-----------------|-----------------|-------------|------------------|----------------|--------------|---------------------|------------------|---------|
-| TBD | TBD | TBD | TBD | YYYY-MM-DD | NULL | GO-XXXX | Railway Board | Initial placeholder |
+| Retirement Code | Retirement Type | Description | Pension Eligible | Effective From | Effective To | Notification Number | Issuing Authority | Remarks             |
+| --------------- | --------------- | ----------- | ---------------- | -------------- | ------------ | ------------------- | ----------------- | ------------------- |
+| TBD             | TBD             | TBD         | TBD              | YYYY-MM-DD     | NULL         | GO-XXXX             | Railway Board     | Initial placeholder |
 
 ---
 
@@ -138,6 +138,6 @@ Populate using official sources such as:
 
 # Revision History
 
-| Version | Date | Description |
-|----------|------|-------------|
-| 1.0.0 | YYYY-MM-DD | Initial version |
+| Version | Date       | Description     |
+| ------- | ---------- | --------------- |
+| 1.0.0   | YYYY-MM-DD | Initial version |

@@ -1,7 +1,9 @@
 import type { SettlementAssessment } from "../lib/settlement-assessment.ts";
 
-export type EligibilityStatus = "Eligible" | "Not Eligible" | "Conditional" | "Not Opted" | "Pending Verification";
-export type BenefitStatus = "Approved by Rule" | "Not Applicable" | "Needs Verification" | "Calculation Pending";
+export type EligibilityStatus =
+  "Eligible" | "Not Eligible" | "Conditional" | "Not Opted" | "Pending Verification";
+export type BenefitStatus =
+  "Approved by Rule" | "Not Applicable" | "Needs Verification" | "Calculation Pending";
 
 export interface EmployeeSummary {
   employeeName: string;

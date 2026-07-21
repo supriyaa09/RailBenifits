@@ -316,15 +316,15 @@ Completed Six-Month Periods
 
 # Test Cases
 
-| Calendar Service | Rounded Result |
-|------------------|----------------|
-| 20Y 2M | 20 Years |
-| 20Y 3M | 20Y + 1 Half-Year |
-| 20Y 5M | 20Y + 1 Half-Year |
-| 20Y 6M | 20Y + 1 Half-Year |
-| 20Y 8M | 20Y + 1 Half-Year |
-| 20Y 9M | 20Y + 2 Half-Years |
-| 20Y 11M | 20Y + 2 Half-Years |
+| Calendar Service | Rounded Result     |
+| ---------------- | ------------------ |
+| 20Y 2M           | 20 Years           |
+| 20Y 3M           | 20Y + 1 Half-Year  |
+| 20Y 5M           | 20Y + 1 Half-Year  |
+| 20Y 6M           | 20Y + 1 Half-Year  |
+| 20Y 8M           | 20Y + 1 Half-Year  |
+| 20Y 9M           | 20Y + 2 Half-Years |
+| 20Y 11M          | 20Y + 2 Half-Years |
 
 ---
 

@@ -68,12 +68,12 @@ Effective Date
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Effective Date | Date | Date from which the limits become applicable |
-| Minimum Pension | Decimal | Minimum admissible pension |
-| Maximum Pension | Decimal | Maximum admissible pension |
-| Authority | String | Government/Railway order reference |
+| Column          | Type    | Description                                  |
+| --------------- | ------- | -------------------------------------------- |
+| Effective Date  | Date    | Date from which the limits become applicable |
+| Minimum Pension | Decimal | Minimum admissible pension                   |
+| Maximum Pension | Decimal | Maximum admissible pension                   |
+| Authority       | String  | Government/Railway order reference           |
 
 ---
 
@@ -91,9 +91,9 @@ Every revision shall include an authority reference.
 
 # 7. Pension Limits Table
 
-| Effective Date | Minimum Pension | Maximum Pension | Authority |
-|----------------|----------------:|----------------:|-----------|
-| YYYY-MM-DD | TBD | TBD | Government Order Reference |
+| Effective Date | Minimum Pension | Maximum Pension | Authority                  |
+| -------------- | --------------: | --------------: | -------------------------- |
+| YYYY-MM-DD     |             TBD |             TBD | Government Order Reference |
 
 > **Note:** Populate this table only with verified values from the applicable Government/Railway orders. Do not hardcode assumed amounts.
 

@@ -23,7 +23,7 @@ export interface ServiceDetails {
   employeeCategory: EmployeeCategory;
   retirementCategory: RetirementCategory;
   otherRetirementType?: OtherRetirementType;
-  retirementDate: string;
+  dateOfExit: string;
   qualifyingService: QualifyingService;
   otherRetirementDetails?: OtherRetirementDetails;
 }
@@ -32,7 +32,6 @@ export interface OtherRetirementDetails {
   medicalRetirementApproved?: boolean;
   notionalServiceAddition?: QualifyingService;
   pensionSanctionPercentage?: number;
-  dateOfDeath?: string;
   spouseAvailable?: boolean;
   familyPensionEligible?: boolean;
   compassionateAllowanceSanctioned?: boolean;
@@ -250,4 +249,35 @@ export function determineFma(fmaOpted: boolean): FmaSummary {
       ? "Employee opted for Fixed Medical Allowance."
       : "Employee did not opt for Fixed Medical Allowance.",
   };
+}
+
+export function getExitDateLabel(retirementCategory: string, otherRetirementType?: string): string {
+  if (retirementCategory === "normal") {
+    return "Retirement Date";
+  }
+  switch (otherRetirementType) {
+    case "voluntary":
+      return "Voluntary Retirement Date";
+    case "premature":
+      return "Premature Retirement Date";
+    case "medical":
+      return "Medical Invalidation Date";
+    case "compulsory":
+      return "Compulsory Retirement Date";
+    case "self-resignation":
+    case "resignation":
+      return "Resignation Date";
+    case "removal":
+      return "Removal Date";
+    case "dismissal":
+      return "Dismissal Date";
+    case "death":
+    case "death-after-retirement":
+      return "Date of Death";
+    case "invalid":
+    case "disability":
+      return "Invalid Retirement Date";
+    default:
+      return "Exit Date";
+  }
 }

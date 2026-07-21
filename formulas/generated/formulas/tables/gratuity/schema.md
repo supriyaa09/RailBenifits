@@ -68,10 +68,10 @@ Maintain all reference data related to gratuity benefits.
 
 # 5. Tables Covered
 
-| Table | Table ID | Primary Key |
-|---------|----------|-------------|
-| gratuity_ceiling.md | TBL-GRT-001 | Effective Date |
-| death_gratuity_slabs.md | TBL-GRT-002 | Slab ID |
+| Table                   | Table ID    | Primary Key    |
+| ----------------------- | ----------- | -------------- |
+| gratuity_ceiling.md     | TBL-GRT-001 | Effective Date |
+| death_gratuity_slabs.md | TBL-GRT-002 | Slab ID        |
 
 ---
 
@@ -168,13 +168,13 @@ Service Gratuity Rule
 
 # 11. Error Handling
 
-| Error | Action |
-|---------|--------|
-| Missing Primary Key | Reject |
-| Duplicate Primary Key | Reject |
-| Invalid Data Type | Reject |
-| Missing Government Reference | Reject |
-| Lookup Failure | Return Validation Error |
+| Error                        | Action                  |
+| ---------------------------- | ----------------------- |
+| Missing Primary Key          | Reject                  |
+| Duplicate Primary Key        | Reject                  |
+| Invalid Data Type            | Reject                  |
+| Missing Government Reference | Reject                  |
+| Lookup Failure               | Return Validation Error |
 
 ---
 

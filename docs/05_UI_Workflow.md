@@ -22,14 +22,15 @@ For the current version, users can switch between portals using a Portal Switche
 # 2. Portal Switcher
 
 +--------------------------------------------------------+
-|                     RailAssist                         |
-|--------------------------------------------------------|
-|                                                        |
-|                Select Your Portal                      |
-|                                                        |
-|      [ Employee Portal ]  [ Officer Portal ]           |
-|                                                        |
-+--------------------------------------------------------+
+
+| RailAssist                                                 |
+| ---------------------------------------------------------- |
+|                                                            |
+| Select Your Portal                                         |
+|                                                            |
+| [ Employee Portal ] [ Officer Portal ]                     |
+|                                                            |
+| +--------------------------------------------------------+ |
 
 ---
 
@@ -185,18 +186,18 @@ Check Settlement
 Layout
 
 +--------------------------------------------------------------+
-| Header                                                       |
+| Header |
 +--------------+-----------------------------------------------+
-| Sidebar      | Settlement Assessment                         |
-|              |-----------------------------------------------|
-| Dashboard    | Employee Details                              |
-| Assessment   | Service Details                               |
-| Results      | Salary Details                                |
-| Reports      | Promotion Details                             |
-| AI           | Medical Benefits                              |
-| Schemes      | Additional Inputs                             |
-| Circulars    |                                               |
-| FAQ          |           [ Check Settlement ]                |
+| Sidebar | Settlement Assessment |
+| |-----------------------------------------------|
+| Dashboard | Employee Details |
+| Assessment | Service Details |
+| Results | Salary Details |
+| Reports | Promotion Details |
+| AI | Medical Benefits |
+| Schemes | Additional Inputs |
+| Circulars | |
+| FAQ | [ Check Settlement ] |
 +--------------+-----------------------------------------------+
 
 ---

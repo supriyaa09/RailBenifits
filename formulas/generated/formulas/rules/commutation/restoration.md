@@ -82,10 +82,10 @@ Court Order (if any)
 
 ```json
 {
-    "eligible": true,
-    "restorationDate": "",
-    "restoredPension": 0,
-    "status": "Success"
+  "eligible": true,
+  "restorationDate": "",
+  "restoredPension": 0,
+  "status": "Success"
 }
 ```
 
@@ -175,24 +175,24 @@ Return Restoration Details.
 
 # 9. Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| COM-RES-BR-001 | Restoration shall occur only after the prescribed period. |
-| COM-RES-BR-002 | Restoration period shall never be hardcoded. |
-| COM-RES-BR-003 | Restoration shall be automatic once eligibility is established. |
+| Rule ID        | Description                                                                    |
+| -------------- | ------------------------------------------------------------------------------ |
+| COM-RES-BR-001 | Restoration shall occur only after the prescribed period.                      |
+| COM-RES-BR-002 | Restoration period shall never be hardcoded.                                   |
+| COM-RES-BR-003 | Restoration shall be automatic once eligibility is established.                |
 | COM-RES-BR-004 | Court orders shall override normal restoration rules where legally applicable. |
-| COM-RES-BR-005 | Every restoration shall be recorded in the audit history. |
+| COM-RES-BR-005 | Every restoration shall be recorded in the audit history.                      |
 
 ---
 
 # 10. Decision Table
 
-| Condition | Action |
-|-----------|--------|
-| Restoration Due | Restore Pension |
-| Restoration Not Yet Due | Continue Reduced Pension |
-| Court Order | Apply Court Order |
-| Invalid Commutation Record | Reject |
+| Condition                  | Action                   |
+| -------------------------- | ------------------------ |
+| Restoration Due            | Restore Pension          |
+| Restoration Not Yet Due    | Continue Reduced Pension |
+| Court Order                | Apply Court Order        |
+| Invalid Commutation Record | Reject                   |
 
 ---
 
@@ -246,13 +246,13 @@ Reject restoration.
 
 # 13. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| COM-RES-001 | Validate Record | validateCommutationRecord() |
+| Rule ID     | Requirement       | Backend Function                  |
+| ----------- | ----------------- | --------------------------------- |
+| COM-RES-001 | Validate Record   | validateCommutationRecord()       |
 | COM-RES-002 | Check Eligibility | determineRestorationEligibility() |
-| COM-RES-003 | Calculate Date | calculateRestorationDate() |
-| COM-RES-004 | Restore Pension | restorePension() |
-| COM-RES-005 | Save History | saveRestorationHistory() |
+| COM-RES-003 | Calculate Date    | calculateRestorationDate()        |
+| COM-RES-004 | Restore Pension   | restorePension()                  |
+| COM-RES-005 | Save History      | saveRestorationHistory()          |
 
 ---
 
@@ -290,10 +290,10 @@ Return Result
 
 ```json
 {
-    "eligible": true,
-    "restorationDate": "2041-08-01",
-    "restoredPension": 40000,
-    "status": "Restored"
+  "eligible": true,
+  "restorationDate": "2041-08-01",
+  "restoredPension": 40000,
+  "status": "Restored"
 }
 ```
 
@@ -301,13 +301,13 @@ Return Result
 
 # 16. Test Cases
 
-| Test Case | Expected Result |
-|-----------|-----------------|
-| Restoration Period Completed | Pension Restored |
-| Restoration Not Yet Due | Continue Reduced Pension |
-| Court Order | Court Order Applied |
-| Missing Commutation Record | Validation Error |
-| Corrected Commutation Date | Restoration Recalculated |
+| Test Case                    | Expected Result          |
+| ---------------------------- | ------------------------ |
+| Restoration Period Completed | Pension Restored         |
+| Restoration Not Yet Due      | Continue Reduced Pension |
+| Court Order                  | Court Order Applied      |
+| Missing Commutation Record   | Validation Error         |
+| Corrected Commutation Date   | Restoration Recalculated |
 
 ---
 

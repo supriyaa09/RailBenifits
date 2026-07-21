@@ -64,15 +64,15 @@ This schema is referenced by:
 
 Every service reference table shall contain the following fields where applicable.
 
-| Field | Type | Description |
-|--------|------|-------------|
-| Effective From | Date | Date from which the record becomes applicable |
-| Effective To | Date / Null | End date of applicability. Null indicates current record |
-| Category | String | Service category or classification |
-| Value | String / Number | Applicable value |
-| Notification Number | String | Official notification reference |
-| Issuing Authority | String | Authority issuing the notification |
-| Remarks | String | Optional explanatory notes |
+| Field               | Type            | Description                                              |
+| ------------------- | --------------- | -------------------------------------------------------- |
+| Effective From      | Date            | Date from which the record becomes applicable            |
+| Effective To        | Date / Null     | End date of applicability. Null indicates current record |
+| Category            | String          | Service category or classification                       |
+| Value               | String / Number | Applicable value                                         |
+| Notification Number | String          | Official notification reference                          |
+| Issuing Authority   | String          | Authority issuing the notification                       |
+| Remarks             | String          | Optional explanatory notes                               |
 
 ---
 
@@ -131,6 +131,6 @@ Populate exact references when official data is entered.
 
 # Revision History
 
-| Version | Date | Description |
-|----------|------|-------------|
-| 1.0.0 | YYYY-MM-DD | Initial schema |
+| Version | Date       | Description    |
+| ------- | ---------- | -------------- |
+| 1.0.0   | YYYY-MM-DD | Initial schema |

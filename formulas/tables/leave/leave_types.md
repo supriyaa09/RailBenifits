@@ -65,14 +65,14 @@ Leave Type ID
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Leave Type ID | String | Unique leave type identifier |
-| Leave Type | String | Official leave name |
-| Encashable | Boolean | Indicates whether the leave type is eligible for encashment |
-| Effective Date | Date | Date from which the definition is applicable |
-| Government Order | String | Official Railway Board / Government notification reference |
-| Status | String | Active / Superseded |
+| Column           | Type    | Description                                                 |
+| ---------------- | ------- | ----------------------------------------------------------- |
+| Leave Type ID    | String  | Unique leave type identifier                                |
+| Leave Type       | String  | Official leave name                                         |
+| Encashable       | Boolean | Indicates whether the leave type is eligible for encashment |
+| Effective Date   | Date    | Date from which the definition is applicable                |
+| Government Order | String  | Official Railway Board / Government notification reference  |
+| Status           | String  | Active / Superseded                                         |
 
 ---
 
@@ -95,9 +95,9 @@ Historical records shall never be deleted.
 
 # 7. Leave Types Table
 
-| Leave Type ID | Leave Type | Encashable | Effective Date | Government Order | Status |
-|----------------|------------|------------|----------------|------------------|--------|
-| LVT-001 | Earned Leave | Yes | YYYY-MM-DD | GO-XXXX | Active |
+| Leave Type ID | Leave Type   | Encashable | Effective Date | Government Order | Status |
+| ------------- | ------------ | ---------- | -------------- | ---------------- | ------ |
+| LVT-001       | Earned Leave | Yes        | YYYY-MM-DD     | GO-XXXX          | Active |
 
 > **Note:** Populate this table only with officially recognized leave types relevant to settlement and leave encashment under Railway rules.
 
@@ -149,9 +149,9 @@ Output
 
 ```json
 {
-    "leaveTypeId": "LVT-001",
-    "encashable": true,
-    "status": "Active"
+  "leaveTypeId": "LVT-001",
+  "encashable": true,
+  "status": "Active"
 }
 ```
 

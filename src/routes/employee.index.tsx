@@ -1,5 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Bot, BookOpen, ClipboardCheck, FileText, HelpCircle, ScrollText } from "lucide-react";
+import {
+  ArrowRight,
+  Bot,
+  BookOpen,
+  ClipboardCheck,
+  FileText,
+  HelpCircle,
+  ScrollText,
+} from "lucide-react";
 import { DashboardCard, PageHeader } from "@/components/rail/common";
 
 export const Route = createFileRoute("/employee/")({
@@ -9,19 +17,22 @@ export const Route = createFileRoute("/employee/")({
 const cards = [
   {
     title: "Start Settlement Assessment",
-    description: "Begin the guided settlement assessment workflow when Sprint 2 enables forms and rules.",
+    description:
+      "Begin the guided settlement assessment workflow when Sprint 2 enables forms and rules.",
     to: "/employee/benefits",
     icon: ClipboardCheck,
   },
   {
     title: "My Settlement Reports",
-    description: "Review generated settlement summaries and advisory reports once reporting is enabled.",
+    description:
+      "Review generated settlement summaries and advisory reports once reporting is enabled.",
     to: "/employee/reports",
     icon: FileText,
   },
   {
     title: "Railway Knowledge Assistant",
-    description: "Access the knowledge assistant to ask AI guided pension and settlement questions.",
+    description:
+      "Access the knowledge assistant to ask AI guided pension and settlement questions.",
     to: "/employee/assistant",
     icon: Bot,
   },
@@ -43,7 +54,10 @@ function EmployeeDashboard() {
             description={card.description}
             icon={<card.icon className="h-5 w-5" />}
             action={
-              <Link to={card.to} className="text-sm font-medium text-primary inline-flex items-center gap-2">
+              <Link
+                to={card.to}
+                className="text-sm font-medium text-primary inline-flex items-center gap-2"
+              >
                 Open module
                 <ArrowRight className="h-4 w-4" />
               </Link>

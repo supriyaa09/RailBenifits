@@ -163,14 +163,14 @@ Court orders shall override standard eligibility wherever legally applicable.
 
 # 9. Decision Table
 
-| Condition | Result |
-|-----------|--------|
-| Eligible Pension | Continue |
-| Valid Application | Continue |
-| Medical Examination Required | Route to Medical Examination |
-| Medical Examination Not Required | Continue |
-| Invalid Pension Type | Reject |
-| Court Order | Apply Court Order |
+| Condition                        | Result                       |
+| -------------------------------- | ---------------------------- |
+| Eligible Pension                 | Continue                     |
+| Valid Application                | Continue                     |
+| Medical Examination Required     | Route to Medical Examination |
+| Medical Examination Not Required | Continue                     |
+| Invalid Pension Type             | Reject                       |
+| Court Order                      | Apply Court Order            |
 
 ---
 
@@ -254,13 +254,13 @@ Reject application.
 
 # 13. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| COM-ELG-001 | Validate Eligibility | validateEligibility() |
-| COM-ELG-002 | Validate Pension Type | validatePensionType() |
+| Rule ID     | Requirement                   | Backend Function              |
+| ----------- | ----------------------------- | ----------------------------- |
+| COM-ELG-001 | Validate Eligibility          | validateEligibility()         |
+| COM-ELG-002 | Validate Pension Type         | validatePensionType()         |
 | COM-ELG-003 | Determine Medical Requirement | determineMedicalRequirement() |
-| COM-ELG-004 | Validate Pension Sanction | validatePensionSanction() |
-| COM-ELG-005 | Validate Application | validateApplication() |
+| COM-ELG-004 | Validate Pension Sanction     | validatePensionSanction()     |
+| COM-ELG-005 | Validate Application          | validateApplication()         |
 
 ---
 
@@ -296,13 +296,13 @@ Return Eligibility
 
 # 16. Test Cases
 
-| Test Case | Expected Result |
-|-----------|-----------------|
-| Eligible Superannuation Pension | Eligible |
-| Invalid Pension Type | Rejected |
-| Medical Examination Required | Route to Medical Examination |
-| Court Order | Court Order Applied |
-| Missing Pension Sanction | Validation Error |
+| Test Case                       | Expected Result              |
+| ------------------------------- | ---------------------------- |
+| Eligible Superannuation Pension | Eligible                     |
+| Invalid Pension Type            | Rejected                     |
+| Medical Examination Required    | Route to Medical Examination |
+| Court Order                     | Court Order Applied          |
+| Missing Pension Sanction        | Validation Error             |
 
 ---
 

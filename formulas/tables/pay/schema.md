@@ -68,13 +68,13 @@ Maintain all reference data related to employee pay structures.
 
 # 5. Tables Covered
 
-| Table | Table ID | Primary Key |
-|---------|----------|-------------|
-| pay_matrix.md | TBL-PAY-001 | Pay Level + Cell |
-| pay_levels.md | TBL-PAY-002 | Pay Level |
-| increment_rules.md | TBL-PAY-003 | Rule ID |
-| pay_fixation_rules.md | TBL-PAY-004 | Rule ID |
-| pay_revision_history.md | TBL-PAY-005 | Revision ID |
+| Table                     | Table ID    | Primary Key          |
+| ------------------------- | ----------- | -------------------- |
+| pay_matrix.md             | TBL-PAY-001 | Pay Level + Cell     |
+| pay_levels.md             | TBL-PAY-002 | Pay Level            |
+| increment_rules.md        | TBL-PAY-003 | Rule ID              |
+| pay_fixation_rules.md     | TBL-PAY-004 | Rule ID              |
+| pay_revision_history.md   | TBL-PAY-005 | Revision ID          |
 | pay_bands_6cpc_mapping.md | TBL-PAY-006 | Pay Band + Grade Pay |
 
 ---
@@ -186,13 +186,13 @@ Legacy Mapping
 
 # 11. Error Handling
 
-| Error | Action |
-|---------|--------|
-| Missing Primary Key | Reject |
-| Duplicate Primary Key | Reject |
-| Invalid Data Type | Reject |
-| Missing Government Reference | Reject |
-| Lookup Failure | Return Validation Error |
+| Error                        | Action                  |
+| ---------------------------- | ----------------------- |
+| Missing Primary Key          | Reject                  |
+| Duplicate Primary Key        | Reject                  |
+| Invalid Data Type            | Reject                  |
+| Missing Government Reference | Reject                  |
+| Lookup Failure               | Return Validation Error |
 
 ---
 

@@ -56,13 +56,18 @@ function FormulaLibraryPage() {
                 {/* Header */}
                 <div className="flex items-start justify-between gap-2 border-b border-border/40 pb-3">
                   <div className="min-w-0">
-                    <h3 className="font-semibold text-base text-foreground leading-tight">{f.name}</h3>
+                    <h3 className="font-semibold text-base text-foreground leading-tight">
+                      {f.name}
+                    </h3>
                     <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
                       <Scale className="h-3 w-3 shrink-0" />
                       Rule Ref: {f.ruleReference}
                     </p>
                   </div>
-                  <Badge variant="outline" className="font-mono text-[10px] uppercase tracking-wider shrink-0 bg-background">
+                  <Badge
+                    variant="outline"
+                    className="font-mono text-[10px] uppercase tracking-wider shrink-0 bg-background"
+                  >
                     {f.id}
                   </Badge>
                 </div>

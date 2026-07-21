@@ -97,7 +97,9 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
     exact ? pathname === to : pathname === to || pathname.startsWith(to + "/");
 
   return (
-    <div className={`${isDarkMode ? "dark theme-dark" : "theme-light"} min-h-screen flex flex-col w-full bg-background text-foreground`}>
+    <div
+      className={`${isDarkMode ? "dark theme-dark" : "theme-light"} min-h-screen flex flex-col w-full bg-background text-foreground`}
+    >
       {/* Premium Government Top Header Bar */}
       <header className="border-b border-border bg-card/90 backdrop-blur sticky top-0 z-30 shadow-soft print:hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -125,13 +127,18 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
             </div>
 
             {/* Desktop Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center gap-2 max-w-xs w-full">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="hidden md:flex items-center gap-2 max-w-xs w-full"
+            >
               <div className="relative w-full">
                 <Search className="h-4 w-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={isOfficer ? "Search rules, formulas, benefits..." : "Search rules, circulars..."}
+                  placeholder={
+                    isOfficer ? "Search rules, formulas, benefits..." : "Search rules, circulars..."
+                  }
                   className="h-9 w-full pl-8 pr-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring/40 transition-shadow"
                 />
               </div>
@@ -147,8 +154,14 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
                 aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
                 title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
               >
-                {isDarkMode ? <Sun className="h-4 w-4 text-amber-500" /> : <Moon className="h-4 w-4" />}
-                <span className="hidden text-xs font-semibold md:inline">{isDarkMode ? "Light" : "Dark"}</span>
+                {isDarkMode ? (
+                  <Sun className="h-4 w-4 text-amber-500" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+                <span className="hidden text-xs font-semibold md:inline">
+                  {isDarkMode ? "Light" : "Dark"}
+                </span>
               </button>
 
               {/* Notifications */}
@@ -165,8 +178,12 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
                   <UserCircle className="h-4 w-4" />
                 </div>
                 <div className="text-left text-[10px] leading-tight">
-                  <div className="font-bold text-foreground">{isOfficer ? "Officer Portal" : "Employee Portal"}</div>
-                  <div className="text-muted-foreground">{isOfficer ? "SCR/HQ Admin" : "SCR/HQ Employee"}</div>
+                  <div className="font-bold text-foreground">
+                    {isOfficer ? "Officer Portal" : "Employee Portal"}
+                  </div>
+                  <div className="text-muted-foreground">
+                    {isOfficer ? "SCR/HQ Admin" : "SCR/HQ Employee"}
+                  </div>
                 </div>
               </div>
 
@@ -195,7 +212,10 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
         {/* Desktop Navigation Links Row */}
         <div className="hidden md:block border-t border-border bg-card">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <nav className="flex space-x-1 py-1.5 overflow-x-auto scrollbar-none" aria-label="Global Navigation">
+            <nav
+              className="flex space-x-1 py-1.5 overflow-x-auto scrollbar-none"
+              aria-label="Global Navigation"
+            >
               {items.map((item) => {
                 const active = isActive(item.to, item.exact);
                 return (
@@ -208,7 +228,9 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
                         : "text-muted-foreground hover:text-primary hover:bg-primary-soft/20"
                     }`}
                   >
-                    <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                    <item.icon
+                      className={`h-4 w-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground"}`}
+                    />
                     <span>{item.title}</span>
                   </Link>
                 );
@@ -247,7 +269,9 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
                       : "text-muted-foreground hover:bg-primary-soft/10 hover:text-primary"
                   }`}
                 >
-                  <item.icon className={`h-5 w-5 shrink-0 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                  <item.icon
+                    className={`h-5 w-5 shrink-0 ${active ? "text-primary" : "text-muted-foreground"}`}
+                  />
                   <span>{item.title}</span>
                 </Link>
               );

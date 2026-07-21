@@ -57,7 +57,7 @@ Basic Pay
 
 Current Pay in Pay Matrix
 
-+
+-
 
 Admissible Increment(s)
 
@@ -116,10 +116,10 @@ Running Staff Status
 
 ```json
 {
-    "basicPay": 0,
-    "payLevel": "",
-    "payMatrixCell": "",
-    "effectiveDate": ""
+  "basicPay": 0,
+  "payLevel": "",
+  "payMatrixCell": "",
+  "effectiveDate": ""
 }
 ```
 
@@ -291,10 +291,10 @@ Return Result
 
 ```json
 {
-    "basicPay": 78800,
-    "currency": "INR",
-    "payLevel": "Level-11",
-    "effectiveDate": "YYYY-MM-DD"
+  "basicPay": 78800,
+  "currency": "INR",
+  "payLevel": "Level-11",
+  "effectiveDate": "YYYY-MM-DD"
 }
 ```
 

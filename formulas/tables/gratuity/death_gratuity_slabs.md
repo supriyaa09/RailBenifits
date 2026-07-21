@@ -67,15 +67,15 @@ Slab ID
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Slab ID | String | Unique slab identifier |
-| Minimum Service | String | Minimum qualifying service |
-| Maximum Service | String | Maximum qualifying service (if applicable) |
-| Benefit Rule | String | Applicable gratuity entitlement |
-| Effective Date | Date | Date from which the slab is applicable |
-| Government Order | String | Official Government/Railway notification |
-| Status | String | Active / Superseded |
+| Column           | Type   | Description                                |
+| ---------------- | ------ | ------------------------------------------ |
+| Slab ID          | String | Unique slab identifier                     |
+| Minimum Service  | String | Minimum qualifying service                 |
+| Maximum Service  | String | Maximum qualifying service (if applicable) |
+| Benefit Rule     | String | Applicable gratuity entitlement            |
+| Effective Date   | Date   | Date from which the slab is applicable     |
+| Government Order | String | Official Government/Railway notification   |
+| Status           | String | Active / Superseded                        |
 
 ---
 
@@ -98,8 +98,8 @@ Historical slabs shall never be deleted.
 # 7. Death Gratuity Slabs Table
 
 | Slab ID | Minimum Service | Maximum Service | Benefit Rule | Effective Date | Government Order | Status |
-|----------|-----------------|-----------------|--------------|----------------|------------------|--------|
-| DG-001 | TBD | TBD | TBD | YYYY-MM-DD | GO-XXXX | Active |
+| ------- | --------------- | --------------- | ------------ | -------------- | ---------------- | ------ |
+| DG-001  | TBD             | TBD             | TBD          | YYYY-MM-DD     | GO-XXXX          | Active |
 
 > **Note:** Populate this table only with the officially prescribed Death Gratuity slabs under the Railway Services (Pension) Rules. Do not assume service ranges or gratuity entitlements.
 
@@ -151,10 +151,10 @@ Output
 
 ```json
 {
-    "slabId": "DG-003",
-    "benefitRule": "TBD",
-    "governmentOrder": "GO-XXXX",
-    "status": "Active"
+  "slabId": "DG-003",
+  "benefitRule": "TBD",
+  "governmentOrder": "GO-XXXX",
+  "status": "Active"
 }
 ```
 

@@ -97,11 +97,11 @@ Court Orders (if any)
 
 ```json
 {
-    "eligible": true,
-    "beneficiaryCategory": "",
-    "scheme": "",
-    "reason": "",
-    "ruleId": ""
+  "eligible": true,
+  "beneficiaryCategory": "",
+  "scheme": "",
+  "reason": "",
+  "ruleId": ""
 }
 ```
 
@@ -195,15 +195,15 @@ Incomplete or inconsistent claimant information shall result in validation failu
 
 # 9. Decision Table
 
-| Condition | Result |
-|------------|--------|
-| Valid Death Event | Continue |
-| Eligible Family Member | Continue |
-| Valid Relationship | Continue |
-| Required Documents Available | Continue |
-| Unknown Relationship | Reject |
-| Missing Documents | Reject |
-| Court Order Exists | Apply Court Order |
+| Condition                    | Result            |
+| ---------------------------- | ----------------- |
+| Valid Death Event            | Continue          |
+| Eligible Family Member       | Continue          |
+| Valid Relationship           | Continue          |
+| Required Documents Available | Continue          |
+| Unknown Relationship         | Reject            |
+| Missing Documents            | Reject            |
+| Court Order Exists           | Apply Court Order |
 
 ---
 
@@ -311,14 +311,14 @@ Process according to Railway rules applicable to missing employees.
 
 # 14. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| FP-ELG-001 | Validate Death Event | validateDeathEvent() |
-| FP-ELG-002 | Validate Claimant | validateClaimant() |
+| Rule ID    | Requirement           | Backend Function               |
+| ---------- | --------------------- | ------------------------------ |
+| FP-ELG-001 | Validate Death Event  | validateDeathEvent()           |
+| FP-ELG-002 | Validate Claimant     | validateClaimant()             |
 | FP-ELG-003 | Determine Beneficiary | determineBeneficiaryPriority() |
-| FP-ELG-004 | Verify Relationship | validateRelationship() |
-| FP-ELG-005 | Validate Documents | validateDocuments() |
-| FP-ELG-006 | Determine Scheme | determineScheme() |
+| FP-ELG-004 | Verify Relationship   | validateRelationship()         |
+| FP-ELG-005 | Validate Documents    | validateDocuments()            |
+| FP-ELG-006 | Determine Scheme      | determineScheme()              |
 
 ---
 
@@ -356,11 +356,11 @@ Return Eligibility
 
 ```json
 {
-    "eligible": true,
-    "beneficiaryCategory": "Spouse",
-    "scheme": "OPS",
-    "reason": "",
-    "status": "Eligible"
+  "eligible": true,
+  "beneficiaryCategory": "Spouse",
+  "scheme": "OPS",
+  "reason": "",
+  "status": "Eligible"
 }
 ```
 
@@ -368,15 +368,15 @@ Return Eligibility
 
 # 17. Test Cases
 
-| Test Case | Expected Result |
-|------------|-----------------|
-| Eligible Spouse | Eligible |
-| Eligible Minor Child | Eligible |
-| Eligible Disabled Child | Eligible |
-| Invalid Relationship | Rejected |
-| Missing Documents | Validation Error |
-| Court Order | Court Order Applied |
-| Missing Employee Case | Processed under applicable rules |
+| Test Case               | Expected Result                  |
+| ----------------------- | -------------------------------- |
+| Eligible Spouse         | Eligible                         |
+| Eligible Minor Child    | Eligible                         |
+| Eligible Disabled Child | Eligible                         |
+| Invalid Relationship    | Rejected                         |
+| Missing Documents       | Validation Error                 |
+| Court Order             | Court Order Applied              |
+| Missing Employee Case   | Processed under applicable rules |
 
 ---
 

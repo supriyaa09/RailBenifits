@@ -55,8 +55,13 @@ function SettlementBenefitsPage() {
               {/* Left Column: Details */}
               <div className="space-y-3 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-semibold text-base text-foreground leading-tight">{b.name}</h3>
-                  <Badge variant="secondary" className="font-mono text-[9px] uppercase tracking-wider bg-muted/60 text-muted-foreground border-border/80">
+                  <h3 className="font-semibold text-base text-foreground leading-tight">
+                    {b.name}
+                  </h3>
+                  <Badge
+                    variant="secondary"
+                    className="font-mono text-[9px] uppercase tracking-wider bg-muted/60 text-muted-foreground border-border/80"
+                  >
                     {b.id}
                   </Badge>
                   <span className="text-xs text-muted-foreground ml-auto md:ml-0 font-medium">

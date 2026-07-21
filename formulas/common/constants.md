@@ -354,14 +354,14 @@ unless they represent actual values.
 
 # Measurement Units
 
-| Field | Unit |
-|--------|------|
-| Basic Pay | INR |
-| Pension | INR |
-| Gratuity | INR |
-| Service | Years / Months / Days |
-| Age | Completed Years |
-| Date | YYYY-MM-DD |
+| Field     | Unit                  |
+| --------- | --------------------- |
+| Basic Pay | INR                   |
+| Pension   | INR                   |
+| Gratuity  | INR                   |
+| Service   | Years / Months / Days |
+| Age       | Completed Years       |
+| Date      | YYYY-MM-DD            |
 
 ---
 

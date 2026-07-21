@@ -100,10 +100,10 @@ Disciplinary Proceedings Details
 
 ```json
 {
-    "eligible": true,
-    "scheme": "OPS",
-    "module": "rules/pension/ops/calculation.md",
-    "status": "Approved"
+  "eligible": true,
+  "scheme": "OPS",
+  "module": "rules/pension/ops/calculation.md",
+  "status": "Approved"
 }
 ```
 
@@ -243,13 +243,13 @@ Return
 
 # Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| PEN-CRT-BR-001 | Retirement Type shall be Compulsory Retirement. |
-| PEN-CRT-BR-002 | Competent Authority Order is mandatory. |
-| PEN-CRT-BR-003 | Pension sanction shall be verified before calculation. |
-| PEN-CRT-BR-004 | Pension Scheme shall be identified before routing. |
-| PEN-CRT-BR-005 | This module shall never calculate pension directly. |
+| Rule ID        | Description                                                                                                |
+| -------------- | ---------------------------------------------------------------------------------------------------------- |
+| PEN-CRT-BR-001 | Retirement Type shall be Compulsory Retirement.                                                            |
+| PEN-CRT-BR-002 | Competent Authority Order is mandatory.                                                                    |
+| PEN-CRT-BR-003 | Pension sanction shall be verified before calculation.                                                     |
+| PEN-CRT-BR-004 | Pension Scheme shall be identified before routing.                                                         |
+| PEN-CRT-BR-005 | This module shall never calculate pension directly.                                                        |
 | PEN-CRT-BR-006 | Pension reduction or withholding shall follow the applicable disciplinary order and Railway Pension Rules. |
 
 ---
@@ -342,11 +342,11 @@ Return Result
 
 ```json
 {
-    "employeeId": "EMP001",
-    "eligible": true,
-    "scheme": "OPS",
-    "module": "rules/pension/ops/calculation.md",
-    "status": "Approved"
+  "employeeId": "EMP001",
+  "eligible": true,
+  "scheme": "OPS",
+  "module": "rules/pension/ops/calculation.md",
+  "status": "Approved"
 }
 ```
 
@@ -354,14 +354,14 @@ Return Result
 
 # Test Cases
 
-| Test Case | Expected Result |
-|------------|-----------------|
-| OPS + Valid Compulsory Retirement | OPS Engine Invoked |
-| UPS + Valid Compulsory Retirement | UPS Engine Invoked |
-| NPS + Valid Compulsory Retirement | NPS Engine Invoked |
-| Missing Authority Order | Validation Error |
-| Pension Withheld | Process According to Sanction Order |
-| Invalid Retirement Type | Rejected |
+| Test Case                         | Expected Result                     |
+| --------------------------------- | ----------------------------------- |
+| OPS + Valid Compulsory Retirement | OPS Engine Invoked                  |
+| UPS + Valid Compulsory Retirement | UPS Engine Invoked                  |
+| NPS + Valid Compulsory Retirement | NPS Engine Invoked                  |
+| Missing Authority Order           | Validation Error                    |
+| Pension Withheld                  | Process According to Sanction Order |
+| Invalid Retirement Type           | Rejected                            |
 
 ---
 

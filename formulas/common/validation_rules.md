@@ -313,23 +313,23 @@ Invalid records shall generate descriptive error messages.
 
 # Standard Error Codes
 
-| Code | Description |
-|------|-------------|
-| VR001 | Missing Employee ID |
-| VR002 | Missing Employee Name |
-| VR003 | Missing Date of Birth |
-| VR004 | Missing Appointment Date |
-| VR005 | Missing Retirement Date |
-| VR006 | Invalid Date Format |
-| VR007 | Invalid Retirement Type |
-| VR008 | Invalid Pension Scheme |
-| VR009 | Invalid Basic Pay |
-| VR010 | Invalid Pay Level |
+| Code  | Description                |
+| ----- | -------------------------- |
+| VR001 | Missing Employee ID        |
+| VR002 | Missing Employee Name      |
+| VR003 | Missing Date of Birth      |
+| VR004 | Missing Appointment Date   |
+| VR005 | Missing Retirement Date    |
+| VR006 | Invalid Date Format        |
+| VR007 | Invalid Retirement Type    |
+| VR008 | Invalid Pension Scheme     |
+| VR009 | Invalid Basic Pay          |
+| VR010 | Invalid Pay Level          |
 | VR011 | Invalid Qualifying Service |
-| VR012 | Duplicate Pay Record |
-| VR013 | Missing Promotion Order |
-| VR014 | Missing Retirement Order |
-| VR015 | Calculation Not Allowed |
+| VR012 | Duplicate Pay Record       |
+| VR013 | Missing Promotion Order    |
+| VR014 | Missing Retirement Order   |
+| VR015 | Calculation Not Allowed    |
 
 ---
 

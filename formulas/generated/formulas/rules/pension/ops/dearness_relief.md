@@ -74,10 +74,10 @@ Pension Status
 
 ```json
 {
-    "basicPension": 0,
-    "drRate": 0,
-    "drAmount": 0,
-    "totalPension": 0
+  "basicPension": 0,
+  "drRate": 0,
+  "drAmount": 0,
+  "totalPension": 0
 }
 ```
 
@@ -85,12 +85,12 @@ Pension Status
 
 # Variables
 
-| Variable | Description |
-|----------|-------------|
-| BP | Basic Pension |
-| DR | Dearness Relief Rate (%) |
-| DRA | Dearness Relief Amount |
-| TP | Total Pension Payable |
+| Variable | Description              |
+| -------- | ------------------------ |
+| BP       | Basic Pension            |
+| DR       | Dearness Relief Rate (%) |
+| DRA      | Dearness Relief Amount   |
+| TP       | Total Pension Payable    |
 
 ---
 
@@ -164,13 +164,13 @@ Total Pension Payable
 
 # Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| OPS-DR-BR-001 | DR shall be calculated only on sanctioned Basic Pension. |
-| OPS-DR-BR-002 | DR rates shall never be hardcoded. |
-| OPS-DR-BR-003 | DR rates shall always be fetched from reference tables. |
+| Rule ID       | Description                                                            |
+| ------------- | ---------------------------------------------------------------------- |
+| OPS-DR-BR-001 | DR shall be calculated only on sanctioned Basic Pension.               |
+| OPS-DR-BR-002 | DR rates shall never be hardcoded.                                     |
+| OPS-DR-BR-003 | DR rates shall always be fetched from reference tables.                |
 | OPS-DR-BR-004 | Historical calculations shall use the DR rate applicable on that date. |
-| OPS-DR-BR-005 | Future DR revisions shall not require code changes. |
+| OPS-DR-BR-005 | Future DR revisions shall not require code changes.                    |
 
 ---
 
@@ -228,10 +228,10 @@ Return Result
 
 ```json
 {
-    "basicPension": 50000,
-    "drRate": 55,
-    "drAmount": 27500,
-    "totalPension": 77500
+  "basicPension": 50000,
+  "drRate": 55,
+  "drAmount": 27500,
+  "totalPension": 77500
 }
 ```
 
@@ -239,13 +239,13 @@ Return Result
 
 # Test Cases
 
-| Test Case | Expected Result |
-|------------|-----------------|
-| Current DR Rate | Correct DR Amount |
+| Test Case          | Expected Result         |
+| ------------------ | ----------------------- |
+| Current DR Rate    | Correct DR Amount       |
 | Historical DR Rate | Historical Rate Applied |
-| Missing DR Rate | Validation Error |
-| Zero Pension | Zero DR |
-| Revised Pension | DR Recalculated |
+| Missing DR Rate    | Validation Error        |
+| Zero Pension       | Zero DR                 |
+| Revised Pension    | DR Recalculated         |
 
 ---
 

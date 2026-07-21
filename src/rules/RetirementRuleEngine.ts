@@ -114,7 +114,7 @@ export function evaluateRetirementRules(assessment: SettlementAssessment): Retir
     case "death":
       return decision(assessment, {
         reportMode: "death",
-        visibleInputs: ["dateOfDeath", "spouseAvailable", "familyPensionEligible"],
+        visibleInputs: ["spouseAvailable", "familyPensionEligible"],
         benefits: {
           pension: false,
           familyPension: details?.familyPensionEligible !== false,

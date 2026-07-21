@@ -56,7 +56,7 @@ function RailwayKnowledgeBasePage() {
       r.name.toLowerCase().includes(searchLower) ||
       r.description.toLowerCase().includes(searchLower) ||
       r.ruleNumber.toLowerCase().includes(searchLower) ||
-      r.ruleReference.toLowerCase().includes(searchLower)
+      r.ruleReference.toLowerCase().includes(searchLower),
   );
 
   const matchedFormulas = formulas.filter(
@@ -64,7 +64,7 @@ function RailwayKnowledgeBasePage() {
       f.name.toLowerCase().includes(searchLower) ||
       f.completeFormula.toLowerCase().includes(searchLower) ||
       f.ruleReference.toLowerCase().includes(searchLower) ||
-      f.variablesUsed.some((v) => v.toLowerCase().includes(searchLower))
+      f.variablesUsed.some((v) => v.toLowerCase().includes(searchLower)),
   );
 
   const matchedBenefits = benefits.filter(
@@ -72,21 +72,18 @@ function RailwayKnowledgeBasePage() {
       b.name.toLowerCase().includes(searchLower) ||
       b.eligibility.toLowerCase().includes(searchLower) ||
       b.formulaUsed.toLowerCase().includes(searchLower) ||
-      b.ruleReference.toLowerCase().includes(searchLower)
+      b.ruleReference.toLowerCase().includes(searchLower),
   );
 
   const matchedDocuments = documents.filter(
     (d) =>
       d.name.toLowerCase().includes(searchLower) ||
       d.category.toLowerCase().includes(searchLower) ||
-      d.type.toLowerCase().includes(searchLower)
+      d.type.toLowerCase().includes(searchLower),
   );
 
   const totalMatches =
-    matchedRules.length +
-    matchedFormulas.length +
-    matchedBenefits.length +
-    matchedDocuments.length;
+    matchedRules.length + matchedFormulas.length + matchedBenefits.length + matchedDocuments.length;
 
   const handleQuickSearch = (term: string) => {
     if (typeof window !== "undefined") {
@@ -121,9 +118,14 @@ function RailwayKnowledgeBasePage() {
       {/* Main Search Panel */}
       <div className="card-surface p-6 bg-gradient-to-br from-card to-muted/20 border border-border/80 shadow-soft">
         <div className="max-w-2xl mx-auto text-center space-y-4 py-4">
-          <h2 className="text-xl font-semibold text-foreground">SCR Rules & Formulas Query Center</h2>
-          <p className="text-xs text-muted-foreground">Type any keyword (e.g. Gratuity, Pension, Leave, RELHS) to query the administration ledger.</p>
-          
+          <h2 className="text-xl font-semibold text-foreground">
+            SCR Rules & Formulas Query Center
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Type any keyword (e.g. Gratuity, Pension, Leave, RELHS) to query the administration
+            ledger.
+          </p>
+
           <div className="relative max-w-xl mx-auto">
             <Search className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/80" />
             <input
@@ -158,7 +160,10 @@ function RailwayKnowledgeBasePage() {
               <TrendingUp className="h-4 w-4 text-primary" />
               Query Results for "{searchTerm}"
             </h3>
-            <Badge variant="outline" className="text-xs font-semibold bg-primary-soft/30 text-primary">
+            <Badge
+              variant="outline"
+              className="text-xs font-semibold bg-primary-soft/30 text-primary"
+            >
               {totalMatches} matches found
             </Badge>
           </div>
@@ -172,12 +177,22 @@ function RailwayKnowledgeBasePage() {
               </h4>
               <div className="space-y-2">
                 {matchedRules.map((rule) => (
-                  <div key={rule.id} className="card-surface p-4 border border-border/80 bg-card hover:border-blue-500/20 transition-colors">
+                  <div
+                    key={rule.id}
+                    className="card-surface p-4 border border-border/80 bg-card hover:border-blue-500/20 transition-colors"
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-semibold text-sm text-foreground">{rule.name}</span>
-                      <Badge variant="outline" className="text-[10px] uppercase font-mono font-bold">{rule.id}</Badge>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] uppercase font-mono font-bold"
+                      >
+                        {rule.id}
+                      </Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">{rule.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
+                      {rule.description}
+                    </p>
                     <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border/30 text-[10px] text-muted-foreground font-medium">
                       <span>{rule.ruleNumber}</span>
                       <span className="h-1 w-1 rounded-full bg-border" />
@@ -201,10 +216,18 @@ function RailwayKnowledgeBasePage() {
               </h4>
               <div className="space-y-2">
                 {matchedFormulas.map((formula) => (
-                  <div key={formula.id} className="card-surface p-4 border border-border/80 bg-card hover:border-amber-500/20 transition-colors">
+                  <div
+                    key={formula.id}
+                    className="card-surface p-4 border border-border/80 bg-card hover:border-amber-500/20 transition-colors"
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-semibold text-sm text-foreground">{formula.name}</span>
-                      <Badge variant="outline" className="text-[10px] uppercase font-mono font-bold">{formula.id}</Badge>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] uppercase font-mono font-bold"
+                      >
+                        {formula.id}
+                      </Badge>
                     </div>
                     <div className="bg-muted/30 p-2 rounded border border-border/60 font-mono text-[11px] text-primary mt-2 break-all">
                       {formula.completeFormula}
@@ -230,12 +253,22 @@ function RailwayKnowledgeBasePage() {
               </h4>
               <div className="space-y-2">
                 {matchedBenefits.map((benefit) => (
-                  <div key={benefit.id} className="card-surface p-4 border border-border/80 bg-card hover:border-emerald-500/20 transition-colors">
+                  <div
+                    key={benefit.id}
+                    className="card-surface p-4 border border-border/80 bg-card hover:border-emerald-500/20 transition-colors"
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-semibold text-sm text-foreground">{benefit.name}</span>
-                      <Badge variant="outline" className="text-[10px] uppercase font-mono font-bold">{benefit.id}</Badge>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] uppercase font-mono font-bold"
+                      >
+                        {benefit.id}
+                      </Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">{benefit.eligibility}</p>
+                    <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
+                      {benefit.eligibility}
+                    </p>
                     <div className="mt-2 text-[11px] font-mono text-primary bg-primary-soft/10 px-2 py-0.5 rounded border border-primary/10 inline-block">
                       Uses: {benefit.formulaUsed}
                     </div>
@@ -257,10 +290,20 @@ function RailwayKnowledgeBasePage() {
               </h4>
               <div className="space-y-2">
                 {matchedDocuments.map((doc) => (
-                  <div key={doc.id} className="card-surface p-4 border border-border/80 bg-card hover:border-purple-500/20 transition-colors">
+                  <div
+                    key={doc.id}
+                    className="card-surface p-4 border border-border/80 bg-card hover:border-purple-500/20 transition-colors"
+                  >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-sm text-foreground truncate max-w-[200px] sm:max-w-xs">{doc.name}</span>
-                      <Badge variant="outline" className="text-[9px] uppercase tracking-wider bg-background px-1.5 py-0 shrink-0">{doc.type}</Badge>
+                      <span className="font-semibold text-sm text-foreground truncate max-w-[200px] sm:max-w-xs">
+                        {doc.name}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="text-[9px] uppercase tracking-wider bg-background px-1.5 py-0 shrink-0"
+                      >
+                        {doc.type}
+                      </Badge>
                     </div>
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30 text-[10px] text-muted-foreground font-medium">
                       <span>Category: {doc.category}</span>
@@ -285,19 +328,25 @@ function RailwayKnowledgeBasePage() {
               <BookOpen className="h-4.5 w-4.5 text-primary" />
               Indexed Administrative Guidelines
             </h3>
-            
+
             <div className="space-y-3 text-xs text-muted-foreground leading-relaxed">
               <p>
-                Welcome to the South Central Railway Knowledge Index. This lookup interface offers reading lookup capabilities mapped against the underlying pension rules calculation engine.
+                Welcome to the South Central Railway Knowledge Index. This lookup interface offers
+                reading lookup capabilities mapped against the underlying pension rules calculation
+                engine.
               </p>
               <div className="grid gap-3 sm:grid-cols-2 pt-2">
                 <div className="p-3 bg-muted/20 border border-border/60 rounded-lg">
                   <div className="font-bold text-foreground mb-1">Qualifying Service Mapping</div>
-                  Rule 49 defines qualifying service limits for full vs. partial pensions (minimum 10 years for pension eligibility, 5 years for gratuity).
+                  Rule 49 defines qualifying service limits for full vs. partial pensions (minimum
+                  10 years for pension eligibility, 5 years for gratuity).
                 </div>
                 <div className="p-3 bg-muted/20 border border-border/60 rounded-lg">
-                  <div className="font-bold text-foreground mb-1">Gratuity Formula Admissibility</div>
-                  Rule 50 limits maximum lump sum gratuity payouts to ₹20,00,000 using completed six-month service emolument factors.
+                  <div className="font-bold text-foreground mb-1">
+                    Gratuity Formula Admissibility
+                  </div>
+                  Rule 50 limits maximum lump sum gratuity payouts to ₹20,00,000 using completed
+                  six-month service emolument factors.
                 </div>
               </div>
             </div>
@@ -313,7 +362,7 @@ function RailwayKnowledgeBasePage() {
                 { name: "How is LAP Leave Encashment calculated?", term: "Leave" },
                 { name: "What is the enhanced family pension limit?", term: "Family Pension" },
                 { name: "RELHS post-retirement medical eligibility", term: "RELHS" },
-                { name: "CGEGIS subscription saving multipliers", term: "CGEGIS" }
+                { name: "CGEGIS subscription saving multipliers", term: "CGEGIS" },
               ].map((faq, idx) => (
                 <li key={idx} className="flex items-start gap-1.5">
                   <ArrowRight className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />

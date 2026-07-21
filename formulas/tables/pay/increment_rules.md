@@ -67,14 +67,14 @@ Rule ID
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Rule ID | String | Unique increment rule identifier |
-| Employee Category | String | Applicable employee category |
-| Increment Type | String | Annual / Special |
-| Effective Date | Date | Rule effective date |
-| Eligibility Criteria | String | Summary of eligibility |
-| Rule Reference | String | Official order or rule |
+| Column               | Type   | Description                      |
+| -------------------- | ------ | -------------------------------- |
+| Rule ID              | String | Unique increment rule identifier |
+| Employee Category    | String | Applicable employee category     |
+| Increment Type       | String | Annual / Special                 |
+| Effective Date       | Date   | Rule effective date              |
+| Eligibility Criteria | String | Summary of eligibility           |
+| Rule Reference       | String | Official order or rule           |
 
 ---
 
@@ -92,9 +92,9 @@ Historical rules shall never be deleted.
 
 # 7. Increment Rules Table
 
-| Rule ID | Employee Category | Increment Type | Effective Date | Eligibility Criteria | Rule Reference |
-|----------|-------------------|----------------|----------------|----------------------|----------------|
-| INC-001 | All Eligible Employees | Annual | YYYY-MM-DD | TBD | Railway Board Order |
+| Rule ID | Employee Category      | Increment Type | Effective Date | Eligibility Criteria | Rule Reference      |
+| ------- | ---------------------- | -------------- | -------------- | -------------------- | ------------------- |
+| INC-001 | All Eligible Employees | Annual         | YYYY-MM-DD     | TBD                  | Railway Board Order |
 
 > **Note:** Populate this table only with verified increment rules and effective dates from the applicable CCS (Revised Pay) Rules and Railway Board instructions.
 
@@ -106,7 +106,7 @@ Input
 
 Employee Category
 
-+
+-
 
 Effective Date
 
@@ -153,9 +153,9 @@ Output
 
 ```json
 {
-    "incrementType": "Annual",
-    "eligibility": "TBD",
-    "ruleReference": "Railway Board Order"
+  "incrementType": "Annual",
+  "eligibility": "TBD",
+  "ruleReference": "Railway Board Order"
 }
 ```
 

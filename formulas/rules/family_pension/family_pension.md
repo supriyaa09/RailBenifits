@@ -95,10 +95,10 @@ Average Emoluments
 
 ```json
 {
-    "familyPension": 0,
-    "beneficiary": "",
-    "calculationMethod": "",
-    "effectiveDate": ""
+  "familyPension": 0,
+  "beneficiary": "",
+  "calculationMethod": "",
+  "effectiveDate": ""
 }
 ```
 
@@ -106,12 +106,12 @@ Average Emoluments
 
 # 7. Variables
 
-| Variable | Description |
-|----------|-------------|
-| PE | Pensionable Emoluments |
-| FP | Family Pension |
-| MIN | Minimum Family Pension |
-| MAX | Maximum Family Pension |
+| Variable | Description            |
+| -------- | ---------------------- |
+| PE       | Pensionable Emoluments |
+| FP       | Family Pension         |
+| MIN      | Minimum Family Pension |
+| MAX      | Maximum Family Pension |
 
 ---
 
@@ -218,25 +218,25 @@ Return
 
 # 9. Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| FP-CAL-BR-001 | Eligibility shall be verified before calculation. |
-| FP-CAL-BR-002 | Beneficiary shall be determined before calculation. |
-| FP-CAL-BR-003 | Pension rates shall never be hardcoded. |
-| FP-CAL-BR-004 | Family Pension shall follow the applicable Railway rules. |
+| Rule ID       | Description                                                  |
+| ------------- | ------------------------------------------------------------ |
+| FP-CAL-BR-001 | Eligibility shall be verified before calculation.            |
+| FP-CAL-BR-002 | Beneficiary shall be determined before calculation.          |
+| FP-CAL-BR-003 | Pension rates shall never be hardcoded.                      |
+| FP-CAL-BR-004 | Family Pension shall follow the applicable Railway rules.    |
 | FP-CAL-BR-005 | Minimum and maximum limits shall come from reference tables. |
-| FP-CAL-BR-006 | Rounding shall follow applicable Railway rules. |
+| FP-CAL-BR-006 | Rounding shall follow applicable Railway rules.              |
 
 ---
 
 # 10. Decision Table
 
-| Condition | Action |
-|-----------|--------|
-| Eligible Claim | Continue |
-| Beneficiary Selected | Continue |
-| Rate Available | Calculate Pension |
-| Invalid Rate | Validation Error |
+| Condition            | Action            |
+| -------------------- | ----------------- |
+| Eligible Claim       | Continue          |
+| Beneficiary Selected | Continue          |
+| Rate Available       | Calculate Pension |
+| Invalid Rate         | Validation Error  |
 
 ---
 
@@ -282,13 +282,13 @@ Recompute pension.
 
 # 13. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| FP-CAL-001 | Validate Eligibility | validateEligibility() |
-| FP-CAL-002 | Validate Beneficiary | validateBeneficiary() |
-| FP-CAL-003 | Determine Emoluments | determineEmoluments() |
-| FP-CAL-004 | Fetch Pension Rate | getFamilyPensionRate() |
-| FP-CAL-005 | Calculate Pension | calculateFamilyPension() |
+| Rule ID    | Requirement          | Backend Function         |
+| ---------- | -------------------- | ------------------------ |
+| FP-CAL-001 | Validate Eligibility | validateEligibility()    |
+| FP-CAL-002 | Validate Beneficiary | validateBeneficiary()    |
+| FP-CAL-003 | Determine Emoluments | determineEmoluments()    |
+| FP-CAL-004 | Fetch Pension Rate   | getFamilyPensionRate()   |
+| FP-CAL-005 | Calculate Pension    | calculateFamilyPension() |
 
 ---
 
@@ -330,10 +330,10 @@ Return Result
 
 ```json
 {
-    "familyPension": 32000,
-    "beneficiary": "Spouse",
-    "calculationMethod": "Normal Family Pension",
-    "effectiveDate": "2026-01-01"
+  "familyPension": 32000,
+  "beneficiary": "Spouse",
+  "calculationMethod": "Normal Family Pension",
+  "effectiveDate": "2026-01-01"
 }
 ```
 
@@ -341,13 +341,13 @@ Return Result
 
 # 16. Test Cases
 
-| Test Case | Expected Result |
-|-----------|-----------------|
-| Eligible Spouse | Family Pension Calculated |
-| Eligible Child | Family Pension Calculated |
-| Missing Rate | Validation Error |
-| Invalid Beneficiary | Rejected |
-| Court Order | Court Order Applied |
+| Test Case           | Expected Result           |
+| ------------------- | ------------------------- |
+| Eligible Spouse     | Family Pension Calculated |
+| Eligible Child      | Family Pension Calculated |
+| Missing Rate        | Validation Error          |
+| Invalid Beneficiary | Rejected                  |
+| Court Order         | Court Order Applied       |
 
 ---
 

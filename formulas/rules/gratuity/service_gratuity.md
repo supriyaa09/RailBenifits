@@ -87,12 +87,12 @@ Pension Eligibility
 
 ```json
 {
-    "eligible": true,
-    "qualifyingService": "",
-    "emoluments": 0,
-    "completedHalfYears": 0,
-    "grossServiceGratuity": 0,
-    "payableServiceGratuity": 0
+  "eligible": true,
+  "qualifyingService": "",
+  "emoluments": 0,
+  "completedHalfYears": 0,
+  "grossServiceGratuity": 0,
+  "payableServiceGratuity": 0
 }
 ```
 
@@ -140,11 +140,11 @@ Service Gratuity
 
 # Variables
 
-| Variable | Description |
-|-----------|-------------|
-| E | Emoluments |
-| CSP | Completed Six-Month Periods |
-| SG | Service Gratuity |
+| Variable | Description                 |
+| -------- | --------------------------- |
+| E        | Emoluments                  |
+| CSP      | Completed Six-Month Periods |
+| SG       | Service Gratuity            |
 
 Formula
 
@@ -364,12 +364,12 @@ Return Result
 
 # Test Cases
 
-| Case | Expected Result |
-|------|-----------------|
-| Pension Eligible | Service Gratuity Not Payable |
-| Not Pension Eligible | Service Gratuity Calculated |
-| Invalid Retirement | Rule-specific eligibility checked |
-| Zero Emoluments | Validation Error |
+| Case                 | Expected Result                   |
+| -------------------- | --------------------------------- |
+| Pension Eligible     | Service Gratuity Not Payable      |
+| Not Pension Eligible | Service Gratuity Calculated       |
+| Invalid Retirement   | Rule-specific eligibility checked |
+| Zero Emoluments      | Validation Error                  |
 
 ---
 

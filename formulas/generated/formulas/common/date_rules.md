@@ -441,11 +441,11 @@ compareDates()
 
 ```json
 {
-    "years": 0,
-    "months": 0,
-    "days": 0,
-    "isLeapYear": false,
-    "lastDayOfMonth": 31
+  "years": 0,
+  "months": 0,
+  "days": 0,
+  "isLeapYear": false,
+  "lastDayOfMonth": 31
 }
 ```
 
@@ -453,14 +453,14 @@ compareDates()
 
 # Test Cases
 
-| Input | Expected Result |
-|--------|-----------------|
-| 2024 | Leap Year |
-| 2025 | Not Leap Year |
-| Feb 2024 | 29 Days |
-| Feb 2025 | 28 Days |
-| 2026-02-30 | Invalid Date |
-| 2026-07-31 | Valid Date |
+| Input      | Expected Result |
+| ---------- | --------------- |
+| 2024       | Leap Year       |
+| 2025       | Not Leap Year   |
+| Feb 2024   | 29 Days         |
+| Feb 2025   | 28 Days         |
+| 2026-02-30 | Invalid Date    |
+| 2026-07-31 | Valid Date      |
 
 ---
 

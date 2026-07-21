@@ -66,12 +66,12 @@ Effective Date
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Effective Date | Date | Date from which DR becomes effective |
-| DR Rate | Decimal | Official Dearness Relief percentage |
-| Order Reference | String | Government/Railway Order ID |
-| Remarks | String | Optional remarks |
+| Column          | Type    | Description                          |
+| --------------- | ------- | ------------------------------------ |
+| Effective Date  | Date    | Date from which DR becomes effective |
+| DR Rate         | Decimal | Official Dearness Relief percentage  |
+| Order Reference | String  | Government/Railway Order ID          |
+| Remarks         | String  | Optional remarks                     |
 
 ---
 
@@ -89,9 +89,9 @@ Historical records shall never be modified.
 
 # 7. DR Rates Table
 
-| Effective Date | DR Rate (%) | Order Reference | Remarks |
-|----------------|------------:|-----------------|---------|
-| YYYY-MM-DD | TBD | GO-XXXX | Initial entry |
+| Effective Date | DR Rate (%) | Order Reference | Remarks       |
+| -------------- | ----------: | --------------- | ------------- |
+| YYYY-MM-DD     |         TBD | GO-XXXX         | Initial entry |
 
 > **Note:** Enter only officially notified DR rates. Do not populate this table using assumed percentages.
 
@@ -144,8 +144,8 @@ Output
 
 ```json
 {
-    "drRate": 0,
-    "orderReference": "GO-XXXX"
+  "drRate": 0,
+  "orderReference": "GO-XXXX"
 }
 ```
 

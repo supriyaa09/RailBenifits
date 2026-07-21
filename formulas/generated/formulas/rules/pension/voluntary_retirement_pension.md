@@ -94,10 +94,10 @@ Employee Status
 
 ```json
 {
-    "eligible": true,
-    "scheme": "OPS",
-    "module": "rules/pension/ops/calculation.md",
-    "status": "Approved"
+  "eligible": true,
+  "scheme": "OPS",
+  "module": "rules/pension/ops/calculation.md",
+  "status": "Approved"
 }
 ```
 
@@ -223,13 +223,13 @@ Return
 
 # Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| PEN-VRS-BR-001 | Retirement Type shall be Voluntary Retirement. |
+| Rule ID        | Description                                                    |
+| -------------- | -------------------------------------------------------------- |
+| PEN-VRS-BR-001 | Retirement Type shall be Voluntary Retirement.                 |
 | PEN-VRS-BR-002 | Qualifying Service shall satisfy the applicable Railway rules. |
-| PEN-VRS-BR-003 | Department approval shall be verified where required. |
-| PEN-VRS-BR-004 | Pension Scheme shall be identified before calculation. |
-| PEN-VRS-BR-005 | This module shall never calculate pension directly. |
+| PEN-VRS-BR-003 | Department approval shall be verified where required.          |
+| PEN-VRS-BR-004 | Pension Scheme shall be identified before calculation.         |
+| PEN-VRS-BR-005 | This module shall never calculate pension directly.            |
 
 ---
 
@@ -307,11 +307,11 @@ Return Result
 
 ```json
 {
-    "employeeId": "EMP001",
-    "eligible": true,
-    "scheme": "OPS",
-    "module": "rules/pension/ops/calculation.md",
-    "status": "Approved"
+  "employeeId": "EMP001",
+  "eligible": true,
+  "scheme": "OPS",
+  "module": "rules/pension/ops/calculation.md",
+  "status": "Approved"
 }
 ```
 
@@ -319,13 +319,13 @@ Return Result
 
 # Test Cases
 
-| Test Case | Expected Result |
-|------------|-----------------|
-| OPS + Valid VRS | OPS Engine Invoked |
-| UPS + Valid VRS | UPS Engine Invoked |
-| NPS + Valid VRS | NPS Engine Invoked |
-| Insufficient Qualifying Service | Not Eligible |
-| Missing Approval (where required) | Validation Error |
+| Test Case                         | Expected Result    |
+| --------------------------------- | ------------------ |
+| OPS + Valid VRS                   | OPS Engine Invoked |
+| UPS + Valid VRS                   | UPS Engine Invoked |
+| NPS + Valid VRS                   | NPS Engine Invoked |
+| Insufficient Qualifying Service   | Not Eligible       |
+| Missing Approval (where required) | Validation Error   |
 
 ---
 

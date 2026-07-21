@@ -100,12 +100,12 @@ Pension Scheme
 
 ```json
 {
-    "eligible": true,
-    "basicPension": 0,
-    "pensionableEmoluments": 0,
-    "qualifyingService": "",
-    "calculationMethod": "",
-    "ruleVersion": ""
+  "eligible": true,
+  "basicPension": 0,
+  "pensionableEmoluments": 0,
+  "qualifyingService": "",
+  "calculationMethod": "",
+  "ruleVersion": ""
 }
 ```
 
@@ -113,13 +113,13 @@ Pension Scheme
 
 # Variables
 
-| Variable | Description |
-|-----------|-------------|
-| QS | Qualifying Service |
-| E | Emoluments |
-| AE | Average Emoluments |
-| PE | Pensionable Emoluments |
-| BP | Basic Pension |
+| Variable | Description            |
+| -------- | ---------------------- |
+| QS       | Qualifying Service     |
+| E        | Emoluments             |
+| AE       | Average Emoluments     |
+| PE       | Pensionable Emoluments |
+| BP       | Basic Pension          |
 
 ---
 
@@ -266,15 +266,15 @@ Rule Version
 
 # Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| OPS-CAL-BR-001 | Eligibility must be verified before calculation. |
-| OPS-CAL-BR-002 | Use verified qualifying service only. |
-| OPS-CAL-BR-003 | Do not calculate emoluments in this module. |
+| Rule ID        | Description                                         |
+| -------------- | --------------------------------------------------- |
+| OPS-CAL-BR-001 | Eligibility must be verified before calculation.    |
+| OPS-CAL-BR-002 | Use verified qualifying service only.               |
+| OPS-CAL-BR-003 | Do not calculate emoluments in this module.         |
 | OPS-CAL-BR-004 | Do not calculate average emoluments in this module. |
-| OPS-CAL-BR-005 | Pension rates shall never be hardcoded. |
-| OPS-CAL-BR-006 | Pension limits shall come from reference tables. |
-| OPS-CAL-BR-007 | Rounding shall follow applicable Railway rules. |
+| OPS-CAL-BR-005 | Pension rates shall never be hardcoded.             |
+| OPS-CAL-BR-006 | Pension limits shall come from reference tables.    |
+| OPS-CAL-BR-007 | Rounding shall follow applicable Railway rules.     |
 
 ---
 
@@ -358,11 +358,11 @@ Return Result
 
 ```json
 {
-    "eligible": true,
-    "basicPension": 0,
-    "calculationMethod": "OPS",
-    "ruleVersion": "",
-    "remarks": ""
+  "eligible": true,
+  "basicPension": 0,
+  "calculationMethod": "OPS",
+  "ruleVersion": "",
+  "remarks": ""
 }
 ```
 
@@ -370,13 +370,13 @@ Return Result
 
 # Test Cases
 
-| Test Case | Expected Result |
-|------------|-----------------|
-| Normal Superannuation | Pension Calculated |
-| Invalid Retirement Type | Validation Error |
-| Missing Emoluments | Validation Error |
-| Promotion in Last Year | Updated Pension |
-| Pay Revision | Recalculated Pension |
+| Test Case               | Expected Result      |
+| ----------------------- | -------------------- |
+| Normal Superannuation   | Pension Calculated   |
+| Invalid Retirement Type | Validation Error     |
+| Missing Emoluments      | Validation Error     |
+| Promotion in Last Year  | Updated Pension      |
+| Pay Revision            | Recalculated Pension |
 
 ---
 

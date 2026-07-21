@@ -52,17 +52,17 @@ Referenced by:
 
 # Table Structure
 
-| Field | Type | Description |
-|--------|------|-------------|
-| Employee Group | String | Employee group (A, B, C, etc.) |
-| Monthly Subscription | Decimal | Official monthly subscription amount |
-| Insurance Fund | Decimal | Insurance fund component |
-| Savings Fund | Decimal | Savings fund component |
-| Effective From | Date | Date from which the rates become applicable |
-| Effective To | Date / Null | End date of applicability |
-| Notification Number | String | Official notification reference |
-| Issuing Authority | String | Authority issuing the notification |
-| Remarks | String | Optional notes |
+| Field                | Type        | Description                                 |
+| -------------------- | ----------- | ------------------------------------------- |
+| Employee Group       | String      | Employee group (A, B, C, etc.)              |
+| Monthly Subscription | Decimal     | Official monthly subscription amount        |
+| Insurance Fund       | Decimal     | Insurance fund component                    |
+| Savings Fund         | Decimal     | Savings fund component                      |
+| Effective From       | Date        | Date from which the rates become applicable |
+| Effective To         | Date / Null | End date of applicability                   |
+| Notification Number  | String      | Official notification reference             |
+| Issuing Authority    | String      | Authority issuing the notification          |
+| Remarks              | String      | Optional notes                              |
 
 ---
 
@@ -80,9 +80,9 @@ Referenced by:
 
 # Reference Table
 
-| Employee Group | Monthly Subscription | Insurance Fund | Savings Fund | Effective From | Effective To | Notification Number | Issuing Authority | Remarks |
-|----------------|---------------------:|---------------:|-------------:|----------------|--------------|---------------------|------------------|---------|
-| TBD | TBD | TBD | TBD | YYYY-MM-DD | NULL | GO-XXXX | Ministry of Finance | Initial placeholder |
+| Employee Group | Monthly Subscription | Insurance Fund | Savings Fund | Effective From | Effective To | Notification Number | Issuing Authority   | Remarks             |
+| -------------- | -------------------: | -------------: | -----------: | -------------- | ------------ | ------------------- | ------------------- | ------------------- |
+| TBD            |                  TBD |            TBD |          TBD | YYYY-MM-DD     | NULL         | GO-XXXX             | Ministry of Finance | Initial placeholder |
 
 ---
 
@@ -136,6 +136,6 @@ Populate using official sources such as:
 
 # Revision History
 
-| Version | Date | Description |
-|----------|------|-------------|
-| 1.0.0 | YYYY-MM-DD | Initial version |
+| Version | Date       | Description     |
+| ------- | ---------- | --------------- |
+| 1.0.0   | YYYY-MM-DD | Initial version |

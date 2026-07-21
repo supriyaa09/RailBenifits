@@ -60,7 +60,10 @@ function PortalCard({
   icon: ReactNode;
 }) {
   return (
-    <Link to={to} className="card-surface p-6 min-h-48 flex flex-col hover:border-primary/40 hover:shadow-elevated transition-all group">
+    <Link
+      to={to}
+      className="card-surface p-6 min-h-48 flex flex-col hover:border-primary/40 hover:shadow-elevated transition-all group"
+    >
       <div className="h-12 w-12 rounded-md bg-primary-soft text-primary grid place-items-center ring-1 ring-primary/10">
         {icon}
       </div>

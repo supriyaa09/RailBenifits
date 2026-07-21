@@ -4,12 +4,7 @@ import type { SettlementResult } from "@/rules/RuleTypes";
 import { getSystemConfig } from "@/database/adminDb";
 
 export type SettlementReportStatus =
-  | "Draft"
-  | "Submitted"
-  | "Verified"
-  | "Approved"
-  | "Rejected"
-  | "Archived";
+  "Draft" | "Submitted" | "Verified" | "Approved" | "Rejected" | "Archived";
 
 export interface SettlementReportRecord {
   report_id: string;
@@ -76,31 +71,35 @@ export function saveSettlementReport(
   const existingReports = listSettlementReports();
   const employeeId = assessment.employeeDetails.employeeId || "unassigned";
   const reportType = getReportType(assessment);
-  
+
   const nextVersion =
     existingReports
       .filter((report) => report.employee_id === employeeId)
-      .reduce((latest, report) => Math.max(latest, report.version || report.report_version || 0), 0) + 1;
-      
+      .reduce(
+        (latest, report) => Math.max(latest, report.version || report.report_version || 0),
+        0,
+      ) + 1;
+
   const generatedDate = new Date().toISOString();
-  
+
   const timeOptions: Intl.DateTimeFormatOptions = {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
-    timeZone: "Asia/Kolkata"
+    timeZone: "Asia/Kolkata",
   };
   const timeStr = new Intl.DateTimeFormat("en-IN", timeOptions).format(new Date()) + " IST";
-  
+
   const reportId = buildReportId(employeeId, nextVersion, generatedDate);
   const config = getSystemConfig();
-  
+
   const reportNumber = `SCR-STL-${new Date().getFullYear()}-${String(
     assessment.employeeDetails.employeeId || assessment.employeeDetails.employeeName || "DRAFT",
   )
     .replace(/[^a-zA-Z0-9]/g, "")
-    .slice(0, 12).toUpperCase()}`;
+    .slice(0, 12)
+    .toUpperCase()}`;
 
   const record: SettlementReportRecord = {
     report_id: reportId,
@@ -120,7 +119,7 @@ export function saveSettlementReport(
     },
     pdf_path: options.pdfPath ?? buildPdfFileName(employeeId, generatedDate),
     status: options.status ?? "Draft",
-    
+
     // Backward compatibility fields
     assessment_id: `ASM-${employeeId}-${nextVersion}`,
     report_version: nextVersion,
@@ -146,7 +145,10 @@ export function findSettlementReport(reportId: string): SettlementReportRecord |
   return listSettlementReports().find((report) => report.report_id === reportId) ?? null;
 }
 
-export function buildPdfFileName(employeeId: string, generatedDate = new Date().toISOString()): string {
+export function buildPdfFileName(
+  employeeId: string,
+  generatedDate = new Date().toISOString(),
+): string {
   const date = new Date(generatedDate);
   const dateStamp = Number.isNaN(date.getTime())
     ? "undated"
@@ -156,7 +158,10 @@ export function buildPdfFileName(employeeId: string, generatedDate = new Date().
 
 export function restoreReportToSession(report: SettlementReportRecord) {
   if (typeof window === "undefined") return;
-  window.sessionStorage.setItem("railassist:settlement-assessment", JSON.stringify(report.assessment || report.report_snapshot?.assessment));
+  window.sessionStorage.setItem(
+    "railassist:settlement-assessment",
+    JSON.stringify(report.assessment || report.report_snapshot?.assessment),
+  );
   window.sessionStorage.setItem("railassist:active-report-snapshot", JSON.stringify(report));
 }
 

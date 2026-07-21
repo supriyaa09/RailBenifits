@@ -8,6 +8,24 @@
 
 ---
 
+> **Note**
+>
+> This document defines the generic Leave Encashment calculation methodology.
+>
+> The actual formula and eligibility shall be selected based on the employee's exit type.
+>
+> Exit-specific rules are documented in:
+>
+> - Superannuation Retirement
+> - Voluntary Retirement
+> - Compulsory Retirement
+> - Invalid/Medical Retirement
+> - Death While in Service
+> - Resignation/Quitting Service
+> - Technical Resignation
+>
+> The Leave Encashment engine shall determine the applicable exit type first and then apply the corresponding calculation rules.
+
 # Purpose
 
 This document defines the business rules governing leave encashment calculations applicable to Railway employees.
@@ -165,6 +183,6 @@ Populate using:
 
 # Revision History
 
-| Version | Date | Description |
-|----------|------|-------------|
-| 1.0.0 | YYYY-MM-DD | Initial version |
+| Version | Date       | Description     |
+| ------- | ---------- | --------------- |
+| 1.0.0   | YYYY-MM-DD | Initial version |

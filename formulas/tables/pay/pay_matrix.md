@@ -74,11 +74,11 @@ Pay Level + Cell
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Pay Level | Integer | CPC Pay Level |
-| Cell | Integer | Cell Number within the Pay Level |
-| Basic Pay | Decimal | Official Basic Pay |
+| Column    | Type    | Description                      |
+| --------- | ------- | -------------------------------- |
+| Pay Level | Integer | CPC Pay Level                    |
+| Cell      | Integer | Cell Number within the Pay Level |
+| Basic Pay | Decimal | Official Basic Pay               |
 
 ---
 
@@ -103,14 +103,14 @@ Basic Pay shall increase sequentially within a Pay Level.
 Example:
 
 | Pay Level | Cell | Basic Pay |
-|-----------:|-----:|----------:|
-| 1 | 1 | 18000 |
-| 1 | 2 | 18500 |
-| 1 | 3 | 19100 |
-| ... | ... | ... |
-| 6 | 1 | 35400 |
-| 6 | 2 | 36500 |
-| ... | ... | ... |
+| --------: | ---: | --------: |
+|         1 |    1 |     18000 |
+|         1 |    2 |     18500 |
+|         1 |    3 |     19100 |
+|       ... |  ... |       ... |
+|         6 |    1 |     35400 |
+|         6 |    2 |     36500 |
+|       ... |  ... |       ... |
 
 ---
 
@@ -120,7 +120,7 @@ Input
 
 Pay Level
 
-+
+-
 
 Cell
 

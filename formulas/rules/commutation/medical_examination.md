@@ -83,10 +83,10 @@ Court Order (if any)
 
 ```json
 {
-    "medicalExaminationRequired": false,
-    "reason": "",
-    "medicalAuthority": "",
-    "status": "Eligible"
+  "medicalExaminationRequired": false,
+  "reason": "",
+  "medicalAuthority": "",
+  "status": "Eligible"
 }
 ```
 
@@ -148,12 +148,12 @@ Incomplete application details shall result in validation failure.
 
 # 9. Decision Table
 
-| Condition | Action |
-|-----------|--------|
-| Medical Examination Required | Refer to Medical Authority |
+| Condition                        | Action                              |
+| -------------------------------- | ----------------------------------- |
+| Medical Examination Required     | Refer to Medical Authority          |
 | Medical Examination Not Required | Continue to Commutation Calculation |
-| Court Order Exists | Apply Court Order |
-| Missing Information | Validation Error |
+| Court Order Exists               | Apply Court Order                   |
+| Missing Information              | Validation Error                    |
 
 ---
 
@@ -247,13 +247,13 @@ Suspend processing until records are complete.
 
 # 13. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| COM-MED-001 | Determine Requirement | determineMedicalRequirement() |
-| COM-MED-002 | Check Exemption | checkMedicalExemption() |
-| COM-MED-003 | Refer Medical Authority | assignMedicalAuthority() |
-| COM-MED-004 | Apply Court Order | applyCourtOrder() |
-| COM-MED-005 | Validate Application | validateMedicalApplication() |
+| Rule ID     | Requirement             | Backend Function              |
+| ----------- | ----------------------- | ----------------------------- |
+| COM-MED-001 | Determine Requirement   | determineMedicalRequirement() |
+| COM-MED-002 | Check Exemption         | checkMedicalExemption()       |
+| COM-MED-003 | Refer Medical Authority | assignMedicalAuthority()      |
+| COM-MED-004 | Apply Court Order       | applyCourtOrder()             |
+| COM-MED-005 | Validate Application    | validateMedicalApplication()  |
 
 ---
 
@@ -299,9 +299,9 @@ Proceed to Commutation Calculation
 
 ```json
 {
-    "medicalExaminationRequired": true,
-    "medicalAuthority": "Competent Railway Medical Authority",
-    "status": "Pending Medical Examination"
+  "medicalExaminationRequired": true,
+  "medicalAuthority": "Competent Railway Medical Authority",
+  "status": "Pending Medical Examination"
 }
 ```
 
@@ -309,12 +309,12 @@ Proceed to Commutation Calculation
 
 # 16. Test Cases
 
-| Test Case | Expected Result |
-|-----------|-----------------|
-| Medical Examination Required | Referred to Medical Authority |
-| Medical Examination Not Required | Continue |
-| Court Order Exemption | Exempted |
-| Missing Application Details | Validation Error |
+| Test Case                        | Expected Result               |
+| -------------------------------- | ----------------------------- |
+| Medical Examination Required     | Referred to Medical Authority |
+| Medical Examination Not Required | Continue                      |
+| Court Order Exemption            | Exempted                      |
+| Missing Application Details      | Validation Error              |
 
 ---
 

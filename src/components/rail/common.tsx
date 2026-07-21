@@ -17,7 +17,9 @@ export function Brand({ subtitle }: { subtitle?: string }) {
       />
       <div className="leading-tight">
         <div className="font-semibold tracking-tight text-foreground">RailAssist</div>
-        <div className="text-[11px] text-muted-foreground">{subtitle ?? "South Central Railway HQ"}</div>
+        <div className="text-[11px] text-muted-foreground">
+          {subtitle ?? "South Central Railway HQ"}
+        </div>
       </div>
     </Link>
   );
@@ -36,7 +38,9 @@ export function PageHeader({
     <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6 rounded-lg border border-border bg-card p-5 shadow-soft print:hidden">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
-        {description && <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{description}</p>}
+        {description && (
+          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{description}</p>
+        )}
       </div>
       {actions && <div className="flex gap-2">{actions}</div>}
     </div>
@@ -65,7 +69,9 @@ export function StatCard({
           {hint && <div className="text-xs text-muted-foreground mt-1">{hint}</div>}
         </div>
         {icon && (
-          <div className="h-9 w-9 rounded-md bg-primary-soft text-primary grid place-items-center ring-1 ring-primary/10">{icon}</div>
+          <div className="h-9 w-9 rounded-md bg-primary-soft text-primary grid place-items-center ring-1 ring-primary/10">
+            {icon}
+          </div>
         )}
       </div>
     </div>
@@ -150,8 +156,9 @@ export function StatusPlaceholder({
               <Badge variant="secondary">{sprint}</Badge>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              This page is part of the application foundation. Business workflows, uploads, calculations,
-              rule processing, database logic, and AI integrations are intentionally not enabled yet.
+              This page is part of the application foundation. Business workflows, uploads,
+              calculations, rule processing, database logic, and AI integrations are intentionally
+              not enabled yet.
             </p>
           </div>
         </div>
@@ -205,9 +212,15 @@ export function EmptyState({
 }) {
   return (
     <div className="card-surface p-10 text-center">
-      {icon && <div className="mx-auto h-12 w-12 rounded-full bg-primary-soft text-primary grid place-items-center mb-4 ring-1 ring-primary/10">{icon}</div>}
+      {icon && (
+        <div className="mx-auto h-12 w-12 rounded-full bg-primary-soft text-primary grid place-items-center mb-4 ring-1 ring-primary/10">
+          {icon}
+        </div>
+      )}
       <div className="font-medium text-foreground">{title}</div>
-      {description && <div className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">{description}</div>}
+      {description && (
+        <div className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">{description}</div>
+      )}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

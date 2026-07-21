@@ -84,11 +84,11 @@ Court Orders
 
 ```json
 {
-    "beneficiary": "",
-    "relationship": "",
-    "priority": 0,
-    "eligible": true,
-    "reason": ""
+  "beneficiary": "",
+  "relationship": "",
+  "priority": 0,
+  "eligible": true,
+  "reason": ""
 }
 ```
 
@@ -192,12 +192,12 @@ Court Orders shall override standard priority wherever legally applicable.
 
 # 10. Decision Table
 
-| Condition | Action |
-|-----------|--------|
-| Eligible Spouse Exists | Select Spouse |
-| No Eligible Spouse | Evaluate Children |
-| No Eligible Children | Evaluate Other Eligible Family Members |
-| Court Order Exists | Apply Court Order |
+| Condition              | Action                                 |
+| ---------------------- | -------------------------------------- |
+| Eligible Spouse Exists | Select Spouse                          |
+| No Eligible Spouse     | Evaluate Children                      |
+| No Eligible Children   | Evaluate Other Eligible Family Members |
+| Court Order Exists     | Apply Court Order                      |
 
 ---
 
@@ -287,13 +287,13 @@ Evaluate remaining eligible claimants.
 
 # 14. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| FP-BEN-001 | Identify claimants | identifyClaimants() |
-| FP-BEN-002 | Validate eligibility | validateClaimants() |
-| FP-BEN-003 | Apply priority | applyPriorityRules() |
-| FP-BEN-004 | Select beneficiary | selectBeneficiary() |
-| FP-BEN-005 | Handle succession | determineNextBeneficiary() |
+| Rule ID    | Requirement          | Backend Function           |
+| ---------- | -------------------- | -------------------------- |
+| FP-BEN-001 | Identify claimants   | identifyClaimants()        |
+| FP-BEN-002 | Validate eligibility | validateClaimants()        |
+| FP-BEN-003 | Apply priority       | applyPriorityRules()       |
+| FP-BEN-004 | Select beneficiary   | selectBeneficiary()        |
+| FP-BEN-005 | Handle succession    | determineNextBeneficiary() |
 
 ---
 
@@ -323,11 +323,11 @@ Return Beneficiary
 
 ```json
 {
-    "beneficiary": "Spouse",
-    "relationship": "Wife",
-    "priority": 1,
-    "eligible": true,
-    "status": "Selected"
+  "beneficiary": "Spouse",
+  "relationship": "Wife",
+  "priority": 1,
+  "eligible": true,
+  "status": "Selected"
 }
 ```
 
@@ -335,13 +335,13 @@ Return Beneficiary
 
 # 17. Test Cases
 
-| Test Case | Expected Result |
-|-----------|-----------------|
-| Eligible Spouse | Spouse Selected |
-| No Spouse + Eligible Child | Child Selected |
+| Test Case                  | Expected Result        |
+| -------------------------- | ---------------------- |
+| Eligible Spouse            | Spouse Selected        |
+| No Spouse + Eligible Child | Child Selected         |
 | Multiple Eligible Children | Apply Applicable Rules |
-| Court Order | Court Order Applied |
-| No Eligible Beneficiary | Claim Rejected |
+| Court Order                | Court Order Applied    |
+| No Eligible Beneficiary    | Claim Rejected         |
 
 ---
 

@@ -87,11 +87,11 @@ Court Order (if any)
 
 ```json
 {
-    "revisedFamilyPension": 0,
-    "arrears": 0,
-    "effectiveDate": "",
-    "revisionReason": "",
-    "status": "Success"
+  "revisedFamilyPension": 0,
+  "arrears": 0,
+  "effectiveDate": "",
+  "revisionReason": "",
+  "status": "Success"
 }
 ```
 
@@ -200,24 +200,24 @@ Return Revised Pension Details.
 
 # 10. Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
+| Rule ID       | Description                                                                                                |
+| ------------- | ---------------------------------------------------------------------------------------------------------- |
 | FP-REV-BR-001 | Revision shall only be applied when supported by an applicable Government/Railway order or court decision. |
-| FP-REV-BR-002 | Revised rates shall never be hardcoded. |
-| FP-REV-BR-003 | Arrears shall be calculated from the effective date of revision. |
-| FP-REV-BR-004 | Every revision shall be recorded in the audit history. |
-| FP-REV-BR-005 | Previous revision records shall never be deleted. |
+| FP-REV-BR-002 | Revised rates shall never be hardcoded.                                                                    |
+| FP-REV-BR-003 | Arrears shall be calculated from the effective date of revision.                                           |
+| FP-REV-BR-004 | Every revision shall be recorded in the audit history.                                                     |
+| FP-REV-BR-005 | Previous revision records shall never be deleted.                                                          |
 
 ---
 
 # 11. Decision Table
 
-| Condition | Action |
-|-----------|--------|
-| Government Order Issued | Recalculate Pension |
-| DR Revision | Update DR Component |
-| Court Order | Apply Court Decision |
-| Invalid Revision Request | Reject |
+| Condition                | Action               |
+| ------------------------ | -------------------- |
+| Government Order Issued  | Recalculate Pension  |
+| DR Revision              | Update DR Component  |
+| Court Order              | Apply Court Decision |
+| Invalid Revision Request | Reject               |
 
 ---
 
@@ -271,14 +271,14 @@ Correct records and recompute pension.
 
 # 14. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| FP-REV-001 | Validate Request | validateRevisionRequest() |
-| FP-REV-002 | Identify Trigger | identifyRevisionTrigger() |
-| FP-REV-003 | Load Rules | loadRevisionRules() |
+| Rule ID    | Requirement         | Backend Function           |
+| ---------- | ------------------- | -------------------------- |
+| FP-REV-001 | Validate Request    | validateRevisionRequest()  |
+| FP-REV-002 | Identify Trigger    | identifyRevisionTrigger()  |
+| FP-REV-003 | Load Rules          | loadRevisionRules()        |
 | FP-REV-004 | Recalculate Pension | recalculateFamilyPension() |
-| FP-REV-005 | Calculate Arrears | calculateArrears() |
-| FP-REV-006 | Save History | saveRevisionHistory() |
+| FP-REV-005 | Calculate Arrears   | calculateArrears()         |
+| FP-REV-006 | Save History        | saveRevisionHistory()      |
 
 ---
 
@@ -316,11 +316,11 @@ Return Revised Pension
 
 ```json
 {
-    "revisedFamilyPension": 34500,
-    "arrears": 18500,
-    "effectiveDate": "2026-01-01",
-    "revisionReason": "Government Pension Revision",
-    "status": "Success"
+  "revisedFamilyPension": 34500,
+  "arrears": 18500,
+  "effectiveDate": "2026-01-01",
+  "revisionReason": "Government Pension Revision",
+  "status": "Success"
 }
 ```
 
@@ -328,13 +328,13 @@ Return Revised Pension
 
 # 17. Test Cases
 
-| Test Case | Expected Result |
-|-----------|-----------------|
+| Test Case                   | Expected Result      |
+| --------------------------- | -------------------- |
 | Government Pension Revision | Pension Recalculated |
-| DR Revision | DR Updated |
-| Court Order | Court Order Applied |
-| Retrospective Revision | Arrears Calculated |
-| Invalid Revision Request | Validation Error |
+| DR Revision                 | DR Updated           |
+| Court Order                 | Court Order Applied  |
+| Retrospective Revision      | Arrears Calculated   |
+| Invalid Revision Request    | Validation Error     |
 
 ---
 

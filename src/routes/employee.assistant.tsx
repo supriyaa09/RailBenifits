@@ -92,7 +92,9 @@ function PensionAssistantPage() {
           <Bot className="h-5 w-5 animate-pulse" />
           <div>
             <h1 className="text-sm font-semibold leading-none">Railway Knowledge Assistant</h1>
-            <span className="text-[10px] text-primary-foreground/75 mt-1 block">South Central Railway HQ</span>
+            <span className="text-[10px] text-primary-foreground/75 mt-1 block">
+              South Central Railway HQ
+            </span>
           </div>
         </div>
         <button
@@ -115,7 +117,9 @@ function PensionAssistantPage() {
           >
             <div
               className={`h-8 w-8 rounded-full grid place-items-center shrink-0 ${
-                m.role === "user" ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary border"
+                m.role === "user"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-primary-soft text-primary border"
               }`}
             >
               {m.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}

@@ -67,13 +67,13 @@ Effective Date
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Effective Date | Date | Date from which the rate becomes applicable |
-| Pension Type | String | Normal / Enhanced |
-| Rate | Decimal | Official Family Pension rate |
-| Unit | String | Percentage / Fixed Amount |
-| Authority | String | Government/Railway Order Reference |
+| Column         | Type    | Description                                 |
+| -------------- | ------- | ------------------------------------------- |
+| Effective Date | Date    | Date from which the rate becomes applicable |
+| Pension Type   | String  | Normal / Enhanced                           |
+| Rate           | Decimal | Official Family Pension rate                |
+| Unit           | String  | Percentage / Fixed Amount                   |
+| Authority      | String  | Government/Railway Order Reference          |
 
 ---
 
@@ -91,10 +91,10 @@ Historical records shall never be modified.
 
 # 7. Family Pension Rates Table
 
-| Effective Date | Pension Type | Rate | Unit | Authority |
-|----------------|--------------|-----:|------|-----------|
-| YYYY-MM-DD | Normal Family Pension | TBD | Percentage | Government Order Reference |
-| YYYY-MM-DD | Enhanced Family Pension | TBD | Percentage | Government Order Reference |
+| Effective Date | Pension Type            | Rate | Unit       | Authority                  |
+| -------------- | ----------------------- | ---: | ---------- | -------------------------- |
+| YYYY-MM-DD     | Normal Family Pension   |  TBD | Percentage | Government Order Reference |
+| YYYY-MM-DD     | Enhanced Family Pension |  TBD | Percentage | Government Order Reference |
 
 > **Note:** Populate this table only with verified values from the applicable Government/Railway orders. Do not enter assumed percentages or amounts.
 
@@ -106,7 +106,7 @@ Input
 
 Effective Date
 
-+
+-
 
 Pension Type
 
@@ -153,9 +153,9 @@ Output
 
 ```json
 {
-    "rate": 0,
-    "unit": "Percentage",
-    "authority": "Government Order"
+  "rate": 0,
+  "unit": "Percentage",
+  "authority": "Government Order"
 }
 ```
 

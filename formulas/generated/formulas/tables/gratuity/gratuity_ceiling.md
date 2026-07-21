@@ -67,13 +67,13 @@ Effective Date
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Effective Date | Date | Date from which the ceiling becomes applicable |
-| Maximum Gratuity | Decimal | Maximum admissible gratuity amount |
-| Currency | String | Currency (INR) |
-| Government Order | String | Official Railway Board / Government Order reference |
-| Remarks | String | Additional remarks |
+| Column           | Type    | Description                                         |
+| ---------------- | ------- | --------------------------------------------------- |
+| Effective Date   | Date    | Date from which the ceiling becomes applicable      |
+| Maximum Gratuity | Decimal | Maximum admissible gratuity amount                  |
+| Currency         | String  | Currency (INR)                                      |
+| Government Order | String  | Official Railway Board / Government Order reference |
+| Remarks          | String  | Additional remarks                                  |
 
 ---
 
@@ -93,9 +93,9 @@ Historical records shall never be deleted.
 
 # 7. Gratuity Ceiling Table
 
-| Effective Date | Maximum Gratuity | Currency | Government Order | Remarks |
-|----------------|-----------------:|----------|------------------|---------|
-| YYYY-MM-DD | TBD | INR | GO-XXXX | Initial Entry |
+| Effective Date | Maximum Gratuity | Currency | Government Order | Remarks       |
+| -------------- | ---------------: | -------- | ---------------- | ------------- |
+| YYYY-MM-DD     |              TBD | INR      | GO-XXXX          | Initial Entry |
 
 > **Note:** Populate this table only with officially notified gratuity ceiling values issued by the Government of India or Railway Board. Do not use assumed values.
 
@@ -151,9 +151,9 @@ Output
 
 ```json
 {
-    "maximumGratuity": 0,
-    "currency": "INR",
-    "governmentOrder": "GO-XXXX"
+  "maximumGratuity": 0,
+  "currency": "INR",
+  "governmentOrder": "GO-XXXX"
 }
 ```
 

@@ -57,17 +57,17 @@ Referenced by:
 
 # Table Structure
 
-| Field | Type | Description |
-|--------|------|-------------|
-| Service Code | String | Unique identifier for the service category |
-| Service Category | String | Official service classification |
-| Counts Towards Qualifying Service | Boolean | Indicates whether the service counts |
-| Conditions | String | Applicable conditions or exceptions |
-| Effective From | Date | Date from which the rule becomes applicable |
-| Effective To | Date / Null | End date of applicability |
-| Notification Number | String | Official notification reference |
-| Issuing Authority | String | Authority issuing the notification |
-| Remarks | String | Optional notes |
+| Field                             | Type        | Description                                 |
+| --------------------------------- | ----------- | ------------------------------------------- |
+| Service Code                      | String      | Unique identifier for the service category  |
+| Service Category                  | String      | Official service classification             |
+| Counts Towards Qualifying Service | Boolean     | Indicates whether the service counts        |
+| Conditions                        | String      | Applicable conditions or exceptions         |
+| Effective From                    | Date        | Date from which the rule becomes applicable |
+| Effective To                      | Date / Null | End date of applicability                   |
+| Notification Number               | String      | Official notification reference             |
+| Issuing Authority                 | String      | Authority issuing the notification          |
+| Remarks                           | String      | Optional notes                              |
 
 ---
 
@@ -84,9 +84,9 @@ Referenced by:
 
 # Reference Table
 
-| Service Code | Service Category | Counts Towards Qualifying Service | Conditions | Effective From | Effective To | Notification Number | Issuing Authority | Remarks |
-|--------------|------------------|-----------------------------------|------------|----------------|--------------|---------------------|------------------|---------|
-| TBD | TBD | TBD | TBD | YYYY-MM-DD | NULL | GO-XXXX | Railway Board | Initial placeholder |
+| Service Code | Service Category | Counts Towards Qualifying Service | Conditions | Effective From | Effective To | Notification Number | Issuing Authority | Remarks             |
+| ------------ | ---------------- | --------------------------------- | ---------- | -------------- | ------------ | ------------------- | ----------------- | ------------------- |
+| TBD          | TBD              | TBD                               | TBD        | YYYY-MM-DD     | NULL         | GO-XXXX             | Railway Board     | Initial placeholder |
 
 ---
 
@@ -141,6 +141,6 @@ Populate using official sources such as:
 
 # Revision History
 
-| Version | Date | Description |
-|----------|------|-------------|
-| 1.0.0 | YYYY-MM-DD | Initial version |
+| Version | Date       | Description     |
+| ------- | ---------- | --------------- |
+| 1.0.0   | YYYY-MM-DD | Initial version |

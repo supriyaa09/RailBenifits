@@ -73,13 +73,13 @@ Revision ID
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Revision ID | String | Unique revision identifier |
-| Effective Date | Date | Date from which the revision becomes effective |
-| Revision Type | String | Pension / Family Pension / DR / DA / General |
-| Government Order | String | Official order number |
-| Description | String | Summary of the revision |
+| Column           | Type   | Description                                    |
+| ---------------- | ------ | ---------------------------------------------- |
+| Revision ID      | String | Unique revision identifier                     |
+| Effective Date   | Date   | Date from which the revision becomes effective |
+| Revision Type    | String | Pension / Family Pension / DR / DA / General   |
+| Government Order | String | Official order number                          |
+| Description      | String | Summary of the revision                        |
 
 ---
 
@@ -99,9 +99,9 @@ Revisions shall be stored chronologically.
 
 # 7. Pension Revision History
 
-| Revision ID | Effective Date | Revision Type | Government Order | Description |
-|--------------|----------------|---------------|------------------|-------------|
-| REV-0001 | YYYY-MM-DD | General | GO-XXXX | Initial Revision |
+| Revision ID | Effective Date | Revision Type | Government Order | Description      |
+| ----------- | -------------- | ------------- | ---------------- | ---------------- |
+| REV-0001    | YYYY-MM-DD     | General       | GO-XXXX          | Initial Revision |
 
 > **Note:** Populate this table only with verified Government and Railway Board notifications.
 
@@ -153,9 +153,9 @@ Output
 
 ```json
 {
-    "revisionId": "REV-0001",
-    "governmentOrder": "GO-XXXX",
-    "description": "Initial Revision"
+  "revisionId": "REV-0001",
+  "governmentOrder": "GO-XXXX",
+  "description": "Initial Revision"
 }
 ```
 

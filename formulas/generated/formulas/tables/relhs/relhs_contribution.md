@@ -67,14 +67,14 @@ Effective Date
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Effective Date | Date | Date from which the contribution rule becomes applicable |
+| Column             | Type   | Description                                                                        |
+| ------------------ | ------ | ---------------------------------------------------------------------------------- |
+| Effective Date     | Date   | Date from which the contribution rule becomes applicable                           |
 | Contribution Basis | String | Basis used for calculating RELHS contribution (e.g., Last Basic Pay, Fixed Amount) |
-| Contribution Value | String | Contribution amount or applicable value as prescribed |
-| Unit | String | Currency or descriptive unit |
-| Government Order | String | Official Railway Board / Government notification reference |
-| Remarks | String | Additional remarks |
+| Contribution Value | String | Contribution amount or applicable value as prescribed                              |
+| Unit               | String | Currency or descriptive unit                                                       |
+| Government Order   | String | Official Railway Board / Government notification reference                         |
+| Remarks            | String | Additional remarks                                                                 |
 
 ---
 
@@ -94,9 +94,9 @@ Historical records shall never be deleted.
 
 # 7. RELHS Contribution Table
 
-| Effective Date | Contribution Basis | Contribution Value | Unit | Government Order | Remarks |
-|----------------|-------------------|--------------------|------|------------------|---------|
-| YYYY-MM-DD | TBD | TBD | INR | GO-XXXX | Initial Entry |
+| Effective Date | Contribution Basis | Contribution Value | Unit | Government Order | Remarks       |
+| -------------- | ------------------ | ------------------ | ---- | ---------------- | ------------- |
+| YYYY-MM-DD     | TBD                | TBD                | INR  | GO-XXXX          | Initial Entry |
 
 > **Note:** Populate this table only with officially notified RELHS contribution rules issued by the Railway Board or Government of India. Do not assume contribution values or formulas.
 
@@ -153,10 +153,10 @@ Output
 
 ```json
 {
-    "contributionBasis": "Last Basic Pay",
-    "contributionValue": "TBD",
-    "unit": "INR",
-    "governmentOrder": "GO-XXXX"
+  "contributionBasis": "Last Basic Pay",
+  "contributionValue": "TBD",
+  "unit": "INR",
+  "governmentOrder": "GO-XXXX"
 }
 ```
 

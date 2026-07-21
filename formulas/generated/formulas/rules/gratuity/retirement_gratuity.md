@@ -159,11 +159,11 @@ The gratuity amount shall be rounded as prescribed by the applicable rules. :con
 
 # Variables
 
-| Variable | Description |
-|-----------|-------------|
-| E | Emoluments |
-| CSP | Completed Six-Month Periods |
-| RG | Retirement Gratuity |
+| Variable | Description                 |
+| -------- | --------------------------- |
+| E        | Emoluments                  |
+| CSP      | Completed Six-Month Periods |
+| RG       | Retirement Gratuity         |
 
 Formula
 
@@ -444,14 +444,14 @@ Return Result
 
 # Test Cases
 
-| Case | Expected Result |
-|------|-----------------|
-| 4 Years Service | Not Eligible |
-| 5 Years Service | Eligible |
-| High Salary exceeding ceiling | Ceiling Applied |
-| Promotion in last year | Updated emoluments considered |
-| Invalid Retirement | Rule-specific eligibility checked |
-| Compulsory Retirement | Rule-specific eligibility checked |
+| Case                          | Expected Result                   |
+| ----------------------------- | --------------------------------- |
+| 4 Years Service               | Not Eligible                      |
+| 5 Years Service               | Eligible                          |
+| High Salary exceeding ceiling | Ceiling Applied                   |
+| Promotion in last year        | Updated emoluments considered     |
+| Invalid Retirement            | Rule-specific eligibility checked |
+| Compulsory Retirement         | Rule-specific eligibility checked |
 
 ---
 

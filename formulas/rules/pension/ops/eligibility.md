@@ -86,10 +86,10 @@ Court Orders (if any)
 
 ```json
 {
-    "eligible": true,
-    "scheme": "OPS",
-    "reason": "",
-    "ruleId": ""
+  "eligible": true,
+  "scheme": "OPS",
+  "reason": "",
+  "ruleId": ""
 }
 ```
 
@@ -213,16 +213,16 @@ Employee information shall pass all validation rules before eligibility is deter
 
 # Eligibility Matrix
 
-| Condition | Result |
-|------------|--------|
-| Scheme = OPS | Continue |
-| Scheme ≠ OPS | Not Eligible |
-| Valid Retirement Type | Continue |
-| Invalid Retirement Type | Not Eligible |
-| Qualifying Service Satisfied | Continue |
-| Qualifying Service Not Satisfied | Not Eligible |
-| Dismissal with forfeiture | Not Eligible |
-| Valid Court Override | Follow Court Order |
+| Condition                        | Result             |
+| -------------------------------- | ------------------ |
+| Scheme = OPS                     | Continue           |
+| Scheme ≠ OPS                     | Not Eligible       |
+| Valid Retirement Type            | Continue           |
+| Invalid Retirement Type          | Not Eligible       |
+| Qualifying Service Satisfied     | Continue           |
+| Qualifying Service Not Satisfied | Not Eligible       |
+| Dismissal with forfeiture        | Not Eligible       |
+| Valid Court Override             | Follow Court Order |
 
 ---
 
@@ -414,9 +414,9 @@ Return Eligibility Result
 
 ```json
 {
-    "eligible": true,
-    "ruleId": "OPS-ELG-003",
-    "reason": "Employee satisfies OPS eligibility conditions."
+  "eligible": true,
+  "ruleId": "OPS-ELG-003",
+  "reason": "Employee satisfies OPS eligibility conditions."
 }
 ```
 
@@ -424,15 +424,15 @@ Return Eligibility Result
 
 # Test Cases
 
-| Test Case | Expected Result |
-|------------|-----------------|
-| OPS + Superannuation | Eligible |
+| Test Case                | Expected Result             |
+| ------------------------ | --------------------------- |
+| OPS + Superannuation     | Eligible                    |
 | OPS + Invalid Retirement | Eligible (subject to rules) |
-| NPS Employee | Not Eligible |
-| UPS Employee | Not Eligible |
-| Invalid Retirement Type | Not Eligible |
-| Pension Forfeited | Not Eligible |
-| Court Override | Court Decision Applied |
+| NPS Employee             | Not Eligible                |
+| UPS Employee             | Not Eligible                |
+| Invalid Retirement Type  | Not Eligible                |
+| Pension Forfeited        | Not Eligible                |
+| Court Override           | Court Decision Applied      |
 
 ---
 

@@ -52,7 +52,9 @@ export const Route = createFileRoute("/api/assistant")({
               });
             }
 
-            console.warn(`Primary model ${primaryModel} failed with status ${response.status}. Trying fallback...`);
+            console.warn(
+              `Primary model ${primaryModel} failed with status ${response.status}. Trying fallback...`,
+            );
           } catch (err) {
             console.error("Primary model call error:", err);
           }
@@ -81,21 +83,15 @@ export const Route = createFileRoute("/api/assistant")({
           }
 
           const errText = await fallbackResponse.text();
-          return new Response(
-            JSON.stringify({ error: `Groq API returned an error: ${errText}` }),
-            {
-              status: fallbackResponse.status,
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          return new Response(JSON.stringify({ error: `Groq API returned an error: ${errText}` }), {
+            status: fallbackResponse.status,
+            headers: { "Content-Type": "application/json" },
+          });
         } catch (error: any) {
-          return new Response(
-            JSON.stringify({ error: error.message || "Server Error" }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          return new Response(JSON.stringify({ error: error.message || "Server Error" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
         }
       },
     },

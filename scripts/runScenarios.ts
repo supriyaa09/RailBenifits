@@ -53,7 +53,19 @@ const scenarios: Scenario[] = [
       },
       commutationDetails: { commutationOpted: false, commutationPercentage: 0 },
     } as any,
-    ruleResult: { benefits: { pension: true, familyPension: true, retirementGratuity: true, deathGratuity: false, leaveEncashment: true, commutation: true, relhs: true, cgis: true, ctg: true } } as any,
+    ruleResult: {
+      benefits: {
+        pension: true,
+        familyPension: true,
+        retirementGratuity: true,
+        deathGratuity: false,
+        leaveEncashment: true,
+        commutation: true,
+        relhs: true,
+        cgis: true,
+        ctg: true,
+      },
+    } as any,
   },
   // 2. Voluntary Retirement - 5 years exactly
   {
@@ -98,7 +110,15 @@ const scenarios: Scenario[] = [
       },
       commutationDetails: { commutationOpted: false, commutationPercentage: 0 },
     } as any,
-    ruleResult: { benefits: { pension: true, familyPension: true, retirementGratuity: true, leaveEncashment: true, commutation: true } } as any,
+    ruleResult: {
+      benefits: {
+        pension: true,
+        familyPension: true,
+        retirementGratuity: true,
+        leaveEncashment: true,
+        commutation: true,
+      },
+    } as any,
   },
   // 3. Medical Invalidation - 4y11m service
   {
@@ -143,7 +163,14 @@ const scenarios: Scenario[] = [
       },
       commutationDetails: { commutationOpted: false, commutationPercentage: 0 },
     } as any,
-    ruleResult: { benefits: { pension: true, familyPension: true, retirementGratuity: false, leaveEncashment: true } } as any,
+    ruleResult: {
+      benefits: {
+        pension: true,
+        familyPension: true,
+        retirementGratuity: false,
+        leaveEncashment: true,
+      },
+    } as any,
   },
   // 4. Death in Service - 12 years
   {
@@ -188,7 +215,9 @@ const scenarios: Scenario[] = [
       },
       commutationDetails: { commutationOpted: false, commutationPercentage: 0 },
     } as any,
-    ruleResult: { benefits: { deathGratuity: true, leaveEncashment: true, commutation: true } } as any,
+    ruleResult: {
+      benefits: { deathGratuity: true, leaveEncashment: true, commutation: true },
+    } as any,
   },
   // 5. Death after Retirement - 20 years service
   {
@@ -475,7 +504,7 @@ function main() {
     console.log("---\n");
     logs += "---\n";
   });
-  writeFileSync('output.txt', logs, 'utf8');
+  writeFileSync("output.txt", logs, "utf8");
 }
 
 main();

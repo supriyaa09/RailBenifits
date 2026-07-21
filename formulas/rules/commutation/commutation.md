@@ -94,12 +94,12 @@ Applicable Government Order
 
 ```json
 {
-    "commutedPortion": 0,
-    "commutationFactor": 0,
-    "commutedValue": 0,
-    "reducedPension": 0,
-    "effectiveDate": "",
-    "status": "Success"
+  "commutedPortion": 0,
+  "commutationFactor": 0,
+  "commutedValue": 0,
+  "reducedPension": 0,
+  "effectiveDate": "",
+  "status": "Success"
 }
 ```
 
@@ -107,13 +107,13 @@ Applicable Government Order
 
 # 7. Variables
 
-| Variable | Description |
-|----------|-------------|
-| BP | Basic Pension |
-| CP | Commuted Portion of Pension |
-| CF | Commutation Factor |
-| CV | Commuted Value |
-| RP | Reduced Pension |
+| Variable | Description                 |
+| -------- | --------------------------- |
+| BP       | Basic Pension               |
+| CP       | Commuted Portion of Pension |
+| CF       | Commutation Factor          |
+| CV       | Commuted Value              |
+| RP       | Reduced Pension             |
 
 ---
 
@@ -215,25 +215,25 @@ Return Commutation Details.
 
 # 9. Business Rules
 
-| Rule ID | Description |
-|----------|-------------|
-| COM-CAL-BR-001 | Eligibility shall be verified before calculation. |
-| COM-CAL-BR-002 | Medical examination requirements shall be satisfied before calculation where applicable. |
+| Rule ID        | Description                                                                                          |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| COM-CAL-BR-001 | Eligibility shall be verified before calculation.                                                    |
+| COM-CAL-BR-002 | Medical examination requirements shall be satisfied before calculation where applicable.             |
 | COM-CAL-BR-003 | Commutable portion shall be determined only as permitted under the applicable Railway Pension Rules. |
-| COM-CAL-BR-004 | Commutation factors shall always be obtained from the reference table. |
-| COM-CAL-BR-005 | Commutation factors shall never be hardcoded. |
-| COM-CAL-BR-006 | Reduced pension shall take effect from the date prescribed under the applicable rules. |
+| COM-CAL-BR-004 | Commutation factors shall always be obtained from the reference table.                               |
+| COM-CAL-BR-005 | Commutation factors shall never be hardcoded.                                                        |
+| COM-CAL-BR-006 | Reduced pension shall take effect from the date prescribed under the applicable rules.               |
 
 ---
 
 # 10. Decision Table
 
-| Condition | Action |
-|-----------|--------|
-| Eligible | Continue |
-| Medical Clearance Required | Await Clearance |
-| Factor Available | Calculate |
-| Factor Missing | Validation Error |
+| Condition                  | Action           |
+| -------------------------- | ---------------- |
+| Eligible                   | Continue         |
+| Medical Clearance Required | Await Clearance  |
+| Factor Available           | Calculate        |
+| Factor Missing             | Validation Error |
 
 ---
 
@@ -287,15 +287,15 @@ Reject calculation.
 
 # 13. Rule Traceability Matrix
 
-| Rule ID | Requirement | Backend Function |
-|----------|-------------|------------------|
-| COM-CAL-001 | Validate Eligibility | validateEligibility() |
-| COM-CAL-002 | Validate Medical Status | validateMedicalStatus() |
+| Rule ID     | Requirement                  | Backend Function             |
+| ----------- | ---------------------------- | ---------------------------- |
+| COM-CAL-001 | Validate Eligibility         | validateEligibility()        |
+| COM-CAL-002 | Validate Medical Status      | validateMedicalStatus()      |
 | COM-CAL-003 | Determine Commutable Portion | calculateCommutablePortion() |
-| COM-CAL-004 | Fetch Factor | getCommutationFactor() |
-| COM-CAL-005 | Calculate Value | calculateCommutedValue() |
-| COM-CAL-006 | Calculate Reduced Pension | calculateReducedPension() |
-| COM-CAL-007 | Determine Effective Date | calculateEffectiveDate() |
+| COM-CAL-004 | Fetch Factor                 | getCommutationFactor()       |
+| COM-CAL-005 | Calculate Value              | calculateCommutedValue()     |
+| COM-CAL-006 | Calculate Reduced Pension    | calculateReducedPension()    |
+| COM-CAL-007 | Determine Effective Date     | calculateEffectiveDate()     |
 
 ---
 
@@ -341,12 +341,12 @@ Return Result
 
 ```json
 {
-    "commutedPortion": 12000,
-    "commutationFactor": 8.194,
-    "commutedValue": 1179936,
-    "reducedPension": 28000,
-    "effectiveDate": "2026-08-01",
-    "status": "Success"
+  "commutedPortion": 12000,
+  "commutationFactor": 8.194,
+  "commutedValue": 1179936,
+  "reducedPension": 28000,
+  "effectiveDate": "2026-08-01",
+  "status": "Success"
 }
 ```
 
@@ -354,13 +354,13 @@ Return Result
 
 # 16. Test Cases
 
-| Test Case | Expected Result |
-|-----------|-----------------|
-| Eligible Superannuation Pension | Commutation Calculated |
-| Medical Examination Pending | Await Medical Clearance |
-| Invalid Factor | Validation Error |
-| Court Order | Court Order Applied |
-| Pension Revision Before Commutation | Recalculated |
+| Test Case                           | Expected Result         |
+| ----------------------------------- | ----------------------- |
+| Eligible Superannuation Pension     | Commutation Calculated  |
+| Medical Examination Pending         | Await Medical Clearance |
+| Invalid Factor                      | Validation Error        |
+| Court Order                         | Court Order Applied     |
+| Pension Revision Before Commutation | Recalculated            |
 
 ---
 

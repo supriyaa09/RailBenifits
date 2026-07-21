@@ -72,12 +72,18 @@ export function RailSidebar({ role }: { role: "employee" | "officer" }) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{role === "officer" ? "Administration" : "Employee Services"}</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            {role === "officer" ? "Administration" : "Employee Services"}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.to}>
-                  <SidebarMenuButton asChild isActive={isActive(item.to, item.exact)} tooltip={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive(item.to, item.exact)}
+                    tooltip={item.title}
+                  >
                     <Link to={item.to} className="flex items-center gap-2">
                       <item.icon className="h-4 w-4 shrink-0" />
                       <span>{item.title}</span>

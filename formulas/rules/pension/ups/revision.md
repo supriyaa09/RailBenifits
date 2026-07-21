@@ -115,6 +115,6 @@ generateUPSRevisionSummary(employee)
 
 # Revision History
 
-| Version | Date | Description |
-|----------|------|-------------|
-| 1.0.0 | YYYY-MM-DD | Initial version |
+| Version | Date       | Description     |
+| ------- | ---------- | --------------- |
+| 1.0.0   | YYYY-MM-DD | Initial version |

@@ -65,14 +65,14 @@ Component ID
 
 Columns
 
-| Column | Type | Description |
-|---------|------|-------------|
-| Component ID | String | Unique salary component identifier |
-| Salary Component | String | Official name of the salary component |
+| Column                        | Type    | Description                                                                 |
+| ----------------------------- | ------- | --------------------------------------------------------------------------- |
+| Component ID                  | String  | Unique salary component identifier                                          |
+| Salary Component              | String  | Official name of the salary component                                       |
 | Included for Leave Encashment | Boolean | Indicates whether the component is included in Leave Encashment calculation |
-| Effective Date | Date | Date from which the rule becomes applicable |
-| Government Order | String | Official Railway Board / Government notification reference |
-| Status | String | Active / Superseded |
+| Effective Date                | Date    | Date from which the rule becomes applicable                                 |
+| Government Order              | String  | Official Railway Board / Government notification reference                  |
+| Status                        | String  | Active / Superseded                                                         |
 
 ---
 
@@ -96,8 +96,8 @@ Historical records shall never be deleted.
 # 7. Leave Salary Components Table
 
 | Component ID | Salary Component | Included for Leave Encashment | Effective Date | Government Order | Status |
-|--------------|------------------|-------------------------------|----------------|------------------|--------|
-| CMP-001 | Basic Pay | Yes | YYYY-MM-DD | GO-XXXX | Active |
+| ------------ | ---------------- | ----------------------------- | -------------- | ---------------- | ------ |
+| CMP-001      | Basic Pay        | Yes                           | YYYY-MM-DD     | GO-XXXX          | Active |
 
 > **Note:** Populate this table only with officially prescribed salary components applicable for Leave Encashment calculations. Do not assume component eligibility.
 
@@ -149,9 +149,9 @@ Output
 
 ```json
 {
-    "componentId": "CMP-001",
-    "included": true,
-    "status": "Active"
+  "componentId": "CMP-001",
+  "included": true,
+  "status": "Active"
 }
 ```
 

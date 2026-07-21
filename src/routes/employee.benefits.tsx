@@ -35,6 +35,7 @@ import {
   formatDisplayDate,
   formatCurrency,
   formatQualifyingService,
+  getExitDateLabel,
   type EmployeeGroup,
   type MedicalBenefits,
   type OtherRetirementDetails,
@@ -72,6 +73,7 @@ const assessmentSchema = z
     employeeId: z.string().optional(),
     dateOfBirth: z.string().min(1, "Date of birth is required"),
     dateOfAppointment: z.string().min(1, "Date of appointment is required"),
+    dateOfExit: z.string().min(1, "Exit date is required"),
     employeeGroup: z.enum(employeeGroups),
     payMatrixLevel: z.string().min(1, "Pay Matrix Level is required"),
     designation: z.string().optional(),
@@ -114,7 +116,8 @@ const assessmentSchema = z
   .superRefine((data, ctx) => {
     const today = new Date();
     const dob = new Date(data.dateOfBirth);
-    const retirementDate = calculateRetirementDate(data.dateOfBirth);
+    const appointmentDate = new Date(data.dateOfAppointment);
+    const exitDate = new Date(data.dateOfExit);
 
     if (Number.isNaN(dob.getTime())) {
       ctx.addIssue({
@@ -138,32 +141,32 @@ const assessmentSchema = z
       });
     }
 
-    if (
-      data.retirementCategory === "other" &&
-      data.otherRetirementType === "death" &&
-      !data.dateOfDeath
-    ) {
+    if (Number.isNaN(exitDate.getTime())) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["dateOfDeath"],
-        message: "Date of death is required for death cases",
+        path: ["dateOfExit"],
+        message: "Enter a valid exit date",
       });
-    }
+    } else {
+      if (!Number.isNaN(dob.getTime()) && dob >= exitDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["dateOfExit"],
+          message: "Exit date must be after Date of Birth",
+        });
+      }
 
-    if (retirementDate) {
-      const appointmentDate = new Date(data.dateOfAppointment);
-      const calculatedRetirementDate = new Date(retirementDate);
       if (Number.isNaN(appointmentDate.getTime())) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["dateOfAppointment"],
           message: "Enter a valid appointment date",
         });
-      } else if (appointmentDate >= calculatedRetirementDate) {
+      } else if (appointmentDate >= exitDate) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["dateOfAppointment"],
-          message: "Appointment date must be before retirement date",
+          message: "Appointment date must be before exit date",
         });
       }
     }
@@ -188,6 +191,7 @@ const defaultValues: AssessmentFormValues = {
   employeeId: "",
   dateOfBirth: "",
   dateOfAppointment: "",
+  dateOfExit: "",
   employeeGroup: "C",
   payMatrixLevel: "",
   designation: "",
@@ -268,6 +272,7 @@ function SettlementAssessmentPage() {
     employeeName,
     dateOfBirth,
     dateOfAppointment,
+    dateOfExit,
     pensionScheme,
     retirementCategory,
     otherRetirementType,
@@ -283,7 +288,6 @@ function SettlementAssessmentPage() {
     notionalServiceYears,
     notionalServiceMonths,
     pensionSanctionPercentage,
-    dateOfDeath,
     spouseAvailable,
     familyPensionEligible,
     compassionateAllowanceSanctioned,
@@ -294,6 +298,7 @@ function SettlementAssessmentPage() {
       "employeeName",
       "dateOfBirth",
       "dateOfAppointment",
+      "dateOfExit",
       "pensionScheme",
       "retirementCategory",
       "otherRetirementType",
@@ -309,7 +314,6 @@ function SettlementAssessmentPage() {
       "notionalServiceYears",
       "notionalServiceMonths",
       "pensionSanctionPercentage",
-      "dateOfDeath",
       "spouseAvailable",
       "familyPensionEligible",
       "compassionateAllowanceSanctioned",
@@ -317,11 +321,7 @@ function SettlementAssessmentPage() {
     ],
   });
 
-  const computedNormalRetirementDate = calculateRetirementDate(dateOfBirth);
-  const retirementDate =
-    retirementCategory === "other" && otherRetirementType === "death" && dateOfDeath
-      ? dateOfDeath
-      : computedNormalRetirementDate;
+  const retirementDate = dateOfExit;
   const currentAge = calculateCurrentAge(dateOfBirth);
   const ageNextBirthday = calculateAgeNextBirthday(dateOfBirth);
   const baseQualifyingService = calculateQualifyingService(dateOfAppointment, retirementDate);
@@ -340,14 +340,17 @@ function SettlementAssessmentPage() {
   );
   const fmaSummary = determineFma(fixedMedicalAllowance === "yes");
 
+  useEffect(() => {
+    if (retirementCategory === "normal" && dateOfBirth) {
+      const computed = calculateRetirementDate(dateOfBirth);
+      if (computed && form.getValues("dateOfExit") !== computed) {
+        form.setValue("dateOfExit", computed, { shouldValidate: true });
+      }
+    }
+  }, [dateOfBirth, retirementCategory, form]);
+
   const buildAssessment = (data: AssessmentFormValues): SettlementAssessment => {
-    const computedNormalDate = calculateRetirementDate(data.dateOfBirth);
-    const computedRetirementDate =
-      data.retirementCategory === "other" &&
-      data.otherRetirementType === "death" &&
-      data.dateOfDeath
-        ? data.dateOfDeath
-        : computedNormalDate;
+    const computedRetirementDate = data.dateOfExit;
     const computedService = calculateQualifyingService(
       data.dateOfAppointment,
       computedRetirementDate,
@@ -396,7 +399,6 @@ function SettlementAssessmentPage() {
         days: 0,
       },
       pensionSanctionPercentage: data.pensionSanctionPercentage,
-      dateOfDeath: data.dateOfDeath || undefined,
       spouseAvailable: data.spouseAvailable === "yes",
       familyPensionEligible: data.familyPensionEligible === "yes",
       compassionateAllowanceSanctioned: data.compassionateAllowanceSanctioned === "yes",
@@ -420,7 +422,7 @@ function SettlementAssessmentPage() {
         retirementCategory: data.retirementCategory as RetirementCategory,
         otherRetirementType:
           data.retirementCategory === "other" ? data.otherRetirementType : undefined,
-        retirementDate: computedRetirementDate,
+        dateOfExit: computedRetirementDate,
         qualifyingService: service,
         otherRetirementDetails:
           data.retirementCategory === "other" ? otherRetirementDetails : undefined,
@@ -475,6 +477,12 @@ function SettlementAssessmentPage() {
                 label="Date of Appointment"
                 type="date"
               />
+              <TextField
+                control={form.control}
+                name="dateOfExit"
+                label={getExitDateLabel(retirementCategory, otherRetirementType)}
+                type="date"
+              />
               <ReadOnlyMetric
                 label="Current Age"
                 value={currentAge === null ? "Enter Date of Birth" : String(currentAge)}
@@ -516,8 +524,8 @@ function SettlementAssessmentPage() {
           >
             <div className="grid gap-4 lg:grid-cols-3">
               <ReadOnlyMetric
-                label="Retirement Date"
-                value={retirementDate ? formatDisplayDate(retirementDate) : "Enter Date of Birth"}
+                label={getExitDateLabel(retirementCategory, otherRetirementType)}
+                value={retirementDate ? formatDisplayDate(retirementDate) : "Enter Exit Date"}
                 icon={<CalendarCheck className="h-5 w-5" />}
               />
               <ReadOnlyMetric
@@ -604,13 +612,7 @@ function SettlementAssessmentPage() {
             )}
 
             {retirementCategory === "other" && otherRetirementType === "death" && (
-              <div className="mt-5 grid gap-4 md:grid-cols-3">
-                <TextField
-                  control={form.control}
-                  name="dateOfDeath"
-                  label="Date of Death"
-                  type="date"
-                />
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <RadioField
                   control={form.control}
                   name="spouseAvailable"
@@ -844,7 +846,7 @@ function SettlementAssessmentPage() {
                 }
               />
               <ReviewItem
-                label="Retirement Date"
+                label={getExitDateLabel(retirementCategory, otherRetirementType)}
                 value={retirementDate ? formatDisplayDate(retirementDate) : "Not available"}
               />
               <ReviewItem
@@ -893,10 +895,6 @@ function SettlementAssessmentPage() {
               )}
               {retirementCategory === "other" && otherRetirementType === "death" && (
                 <>
-                  <ReviewItem
-                    label="Date of Death"
-                    value={dateOfDeath ? formatDisplayDate(dateOfDeath) : "Not entered"}
-                  />
                   <ReviewItem
                     label="Spouse Available"
                     value={spouseAvailable === "yes" ? "Yes" : "No"}

@@ -1,7 +1,6 @@
 import type { SettlementAssessment } from "../lib/settlement-assessment.ts";
 import type { SettlementResult } from "../rules/RuleTypes.ts";
 
-
 export type BenefitCalculationKey =
   | "basicPension"
   | "familyPension"
@@ -41,7 +40,8 @@ export interface BenefitCalculation {
     | "Manual Input"
     | "Not Eligible"
     | "Pending Workbook Formula"
-    | "Pending Formula Engine";
+    | "Pending Formula Engine"
+    | "Leave Transferred";
   formula: FormulaMetadata;
   reason: string;
   warnings: string[];
