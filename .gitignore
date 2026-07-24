@@ -7,7 +7,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Build outputs
 dist
 dist-ssr
 .output
@@ -15,6 +21,21 @@ dist-ssr
 .tanstack/**
 .nitro
 *.local
+build
+out
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Testing
+coverage
+.nyc_output
+*.lcov
+
+# Development
+.turbo/
+.cache/
 
 # Wrangler / Cloudflare
 .wrangler/
@@ -31,8 +52,16 @@ dist-ssr
 *.sln
 *.sw?
 .lovable/
+.cursor/
+
 # Environment files
 .env
 .env.local
+.env.production
+.env.test
 .env.*
 !.env.example
+
+# OS specific
+Thumbs.db
+*.pem
