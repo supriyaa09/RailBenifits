@@ -65,3 +65,7 @@ coverage
 # OS specific
 Thumbs.db
 *.pem
+
+# Vercel
+.vercel/
+

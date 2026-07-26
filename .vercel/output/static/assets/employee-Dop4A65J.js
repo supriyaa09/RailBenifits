@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-dev-runtime-DTNX0tzM.js";import{t}from"./shell-CLMZt0m8.js";var n=e(),r=`C:/Users/Abhishek/Downloads/RailwayBenifits/rail-benefits-navigator/src/routes/employee.tsx?tsr-split=component`,i=()=>(0,n.jsxDEV)(t,{role:`employee`},void 0,!1,{fileName:r,lineNumber:2,columnNumber:30},void 0);export{i as component};
