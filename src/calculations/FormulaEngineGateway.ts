@@ -25,6 +25,174 @@ import type {
 } from "./CalculationTypes.ts";
 
 // ---------------------------------------------------------------------------
+// Dynamic Rule Loader & Math Expression Evaluator
+// ---------------------------------------------------------------------------
+
+function findActiveRuleVersion(ruleId: string, retirementDate: string, dbRuleVersions?: any[]): any | null {
+  if (!dbRuleVersions || dbRuleVersions.length === 0) return null;
+  
+  // Find approved rule versions for the ruleId which are effective on or before the retirement date
+  const matches = dbRuleVersions.filter(
+    (v: any) => v.rule_id === ruleId && v.status === "Approved" && v.effective_date <= retirementDate
+  );
+  
+  if (matches.length === 0) return null;
+  
+  // Sort descending by effective_date, then version
+  matches.sort((a: any, b: any) => {
+    if (a.effective_date !== b.effective_date) {
+      return b.effective_date.localeCompare(a.effective_date);
+    }
+    return b.version - a.version;
+  });
+  
+  return matches[0];
+}
+
+function evaluateSimpleArithmetic(expr: string): number {
+  const sanitized = expr.replace(/[^0-9.+\-*/() ]/g, "");
+  try {
+    const fn = new Function(`return (${sanitized});`);
+    return fn();
+  } catch {
+    return 0;
+  }
+}
+
+function resolveMinMax(expr: string): string {
+  let changed = true;
+  let iterations = 0;
+  while (changed && iterations < 50) {
+    iterations++;
+    changed = false;
+
+    // Find first "Min(" or "Max(" case-insensitively
+    const matchMin = expr.match(/Min\(/i);
+    const matchMax = expr.match(/Max\(/i);
+    
+    const indexMin = matchMin && matchMin.index !== undefined ? matchMin.index : -1;
+    const indexMax = matchMax && matchMax.index !== undefined ? matchMax.index : -1;
+    
+    let isMin = false;
+    let startIdx = -1;
+    
+    if (indexMin !== -1 && (indexMax === -1 || indexMin < indexMax)) {
+      isMin = true;
+      startIdx = indexMin;
+    } else if (indexMax !== -1) {
+      isMin = false;
+      startIdx = indexMax;
+    }
+
+    if (startIdx === -1) break;
+
+    // Find the matching closing parenthesis by balancing parentheses
+    let balance = 1;
+    let i = startIdx + 4; // Skip "Min(" or "Max("
+    let endIdx = -1;
+    for (; i < expr.length; i++) {
+      if (expr[i] === "(") balance++;
+      else if (expr[i] === ")") balance--;
+      
+      if (balance === 0) {
+        endIdx = i;
+        break;
+      }
+    }
+
+    if (endIdx === -1) break;
+
+    const inside = expr.slice(startIdx + 4, endIdx);
+    
+    // Split arguments at top-level commas (ignoring commas inside nested parentheses)
+    const args: string[] = [];
+    let currentArg = "";
+    let pBalance = 0;
+    for (let charIdx = 0; charIdx < inside.length; charIdx++) {
+      const char = inside[charIdx];
+      if (char === "(") pBalance++;
+      else if (char === ")") pBalance--;
+      
+      if (char === "," && pBalance === 0) {
+        args.push(currentArg);
+        currentArg = "";
+      } else {
+        currentArg += char;
+      }
+    }
+    args.push(currentArg);
+
+    const evaluatedArgs = args.map((arg) => {
+      const resolvedArg = resolveMinMax(arg);
+      return evaluateSimpleArithmetic(resolvedArg);
+    });
+
+    const val = isMin ? Math.min(...evaluatedArgs) : Math.max(...evaluatedArgs);
+    const toReplace = expr.slice(startIdx, endIdx + 1);
+    expr = expr.replace(toReplace, val.toString());
+    changed = true;
+  }
+  return expr;
+}
+
+export function evaluateMathFormula(formulaStr: string, variables: Record<string, number>): number {
+  try {
+    let expr = formulaStr;
+    
+    // Sort variables by length descending to prevent partial replacements (e.g. AverageEmoluments vs Emoluments)
+    const sortedVarNames = Object.keys(variables).sort((a, b) => b.length - a.length);
+    for (const name of sortedVarNames) {
+      const val = variables[name];
+      const regex = new RegExp(`\\b${name}\\b`, "g");
+      expr = expr.replace(regex, val.toString());
+    }
+
+    // Resolve Min/Max statements
+    expr = resolveMinMax(expr);
+
+    // Sanitize the rest
+    const sanitized = expr.replace(/[^0-9.+\-*/() ]/g, "");
+    if (/[^0-9.+\-*/() ]/.test(sanitized)) {
+      throw new Error("Invalid characters in expression");
+    }
+    
+    const fn = new Function(`return (${sanitized});`);
+    return fn();
+  } catch (e) {
+    console.error("Error evaluating formula string:", formulaStr, e);
+    return 0;
+  }
+}
+
+export function evaluateRuleFormula(
+  version: any,
+  variables: Record<string, number>,
+  fallbackValue: number
+): { amount: number; formulaUsed: string } {
+  if (!version || !version.formula) {
+    return { amount: fallbackValue, formulaUsed: "Fallback Standard Formula" };
+  }
+  
+  const rawAmount = evaluateMathFormula(version.formula, variables);
+  let amount = rawAmount;
+  
+  // Apply minimum limit
+  if (version.minimum_limit !== null && version.minimum_limit !== undefined && amount < version.minimum_limit) {
+    amount = version.minimum_limit;
+  }
+  
+  // Apply maximum limit
+  if (version.maximum_limit !== null && version.maximum_limit !== undefined && version.maximum_limit > 0 && amount > version.maximum_limit) {
+    amount = version.maximum_limit;
+  }
+  
+  return {
+    amount: Math.round(amount),
+    formulaUsed: version.formula
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Formula metadata helpers
 // ---------------------------------------------------------------------------
 
@@ -107,7 +275,7 @@ function calcBasicPension(
   context: CalculationContext,
   decision: RetirementRuleDecision,
 ): BenefitCalculation {
-  const { assessment } = context;
+  const { assessment, dbRuleVersions } = context;
   const scheme = assessment.serviceDetails.pensionScheme;
   const admissible = decision.benefits["pension" as SettlementBenefitKey];
   if (!admissible) {
@@ -115,20 +283,47 @@ function calcBasicPension(
   }
   const emoluments = assessment.promotionDetails.emoluments;
   const sanctionPct = decision.pensionSanctionPercentage / 100;
-  const amount = emoluments * PENSION_RATES.basicPension * sanctionPct;
+
+  // Try DB version lookup for Pension Rule (R203)
+  const exitDate = assessment.serviceDetails.dateOfExit;
+  const version = findActiveRuleVersion("R203", exitDate, dbRuleVersions);
+
+  let amount: number;
+  let formulaKey = `${scheme}_BASIC_PENSION`;
+  let formulaExpl = "Basic Pension = Emoluments × 50% × Sanction Percentage";
+  let explanation = "";
+
+  const variables = {
+    BasicPay: assessment.salaryDetails.currentBasicPay,
+    Emoluments: emoluments,
+    AverageEmoluments: assessment.promotionDetails.averageLastTenMonthsBasicPay || emoluments,
+    DA: assessment.salaryDetails.dearnessAllowance,
+  };
+
+  if (version) {
+    const res = evaluateRuleFormula(version, variables, emoluments * 0.5);
+    amount = res.amount * sanctionPct;
+    formulaExpl = `Formula: ${version.formula} (Version ${version.version}, Effective ${version.effective_date})`;
+    explanation = `Basic Pension = [Extracted Formula Evaluated: ₹${res.amount.toLocaleString("en-IN")}] × ${decision.pensionSanctionPercentage}% sanction (Circular: ${version.rule_number}).`;
+  } else {
+    amount = emoluments * PENSION_RATES.basicPension * sanctionPct;
+    explanation = `Basic Pension = ${PENSION_RATES.basicPension * 100}% of emoluments × ${decision.pensionSanctionPercentage}% sanction.`;
+  }
+
   return benefit(
     "basicPension",
     "Basic Pension",
     amount,
     true,
-    `Basic Pension = ${PENSION_RATES.basicPension * 100}% of emoluments × ${decision.pensionSanctionPercentage}% sanction.`,
-    `${scheme}_BASIC_PENSION`,
-    "Basic Pension = Emoluments × 50% × Sanction Percentage",
+    explanation,
+    formulaKey,
+    formulaExpl,
     {
       emoluments,
-      pensionRate: PENSION_RATES.basicPension,
+      pensionRate: version ? "Dynamic (DB)" : PENSION_RATES.basicPension,
       pensionSanctionPercentage: decision.pensionSanctionPercentage,
       pensionScheme: scheme,
+      ruleReference: version ? version.rule_number : "Railway Pension Rules 2026",
     },
     undefined,
     amount,
@@ -139,30 +334,60 @@ function calcFamilyPension(
   context: CalculationContext,
   decision: RetirementRuleDecision,
 ): BenefitCalculation {
-  const { assessment } = context;
+  const { assessment, dbRuleVersions } = context;
   const admissible = decision.benefits["familyPension" as SettlementBenefitKey];
   if (!admissible) {
     return notEligible("familyPension", "Family Pension", decision.reason, "FAMILY_PENSION");
   }
   const emoluments = assessment.promotionDetails.emoluments;
   const isEnhanced = decision.enhancedFamilyPension === true;
-  const rate = isEnhanced
-    ? PENSION_RATES.familyPension.enhanced
-    : PENSION_RATES.familyPension.ordinary;
-  const amount = emoluments * rate;
-  const enhancedFamilyPension = emoluments * PENSION_RATES.familyPension.enhanced;
+  const exitDate = assessment.serviceDetails.dateOfExit;
+
+  const ruleId = isEnhanced ? "R312" : "R310";
+  const version = findActiveRuleVersion(ruleId, exitDate, dbRuleVersions);
+
+  let amount: number;
+  let formulaExpl = "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced)";
+  let explanation = "";
+
+  const variables = {
+    BasicPay: assessment.salaryDetails.currentBasicPay,
+    Emoluments: emoluments,
+    AverageEmoluments: assessment.promotionDetails.averageLastTenMonthsBasicPay || emoluments,
+    DA: assessment.salaryDetails.dearnessAllowance,
+  };
+
+  if (version) {
+    const res = evaluateRuleFormula(version, variables, isEnhanced ? emoluments * 0.5 : emoluments * 0.3);
+    amount = res.amount;
+    formulaExpl = `Formula: ${version.formula} (Version ${version.version}, Effective ${version.effective_date})`;
+    explanation = `Family Pension = [Extracted Formula Evaluated: ₹${amount.toLocaleString("en-IN")}] (${isEnhanced ? "enhanced" : "ordinary"} rate from Circular: ${version.rule_number}).`;
+  } else {
+    const rate = isEnhanced
+      ? PENSION_RATES.familyPension.enhanced
+      : PENSION_RATES.familyPension.ordinary;
+    amount = emoluments * rate;
+    explanation = isEnhanced
+      ? `Family Pension = ${rate * 100}% of emoluments (enhanced rate).`
+      : `Family Pension = ${rate * 100}% of emoluments (ordinary rate).`;
+  }
+
+  const enhancedFamilyPension = emoluments * 0.5;
 
   return benefit(
     "familyPension",
     "Family Pension",
     amount,
     true,
-    isEnhanced
-      ? `Family Pension = ${rate * 100}% of emoluments (enhanced rate).`
-      : `Family Pension = ${rate * 100}% of emoluments (ordinary rate).`,
+    explanation,
     "FAMILY_PENSION",
-    "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced, first 7 years)",
-    { emoluments, rate, enhancedFamilyPension },
+    formulaExpl,
+    {
+      emoluments,
+      rate: version ? "Dynamic (DB)" : (isEnhanced ? PENSION_RATES.familyPension.enhanced : PENSION_RATES.familyPension.ordinary),
+      enhancedFamilyPension,
+      ruleReference: version ? version.rule_number : "Railway Pension Rules 2026",
+    },
     undefined,
     amount,
   );
@@ -172,7 +397,7 @@ function calcRetirementGratuity(
   context: CalculationContext,
   decision: RetirementRuleDecision,
 ): BenefitCalculation {
-  const { assessment } = context;
+  const { assessment, dbRuleVersions } = context;
   const admissible = decision.benefits["retirementGratuity" as SettlementBenefitKey];
   const isDeath = assessment.serviceDetails.otherRetirementType === "death";
 
@@ -207,31 +432,52 @@ function calcRetirementGratuity(
     );
   }
 
+  const exitDate = assessment.serviceDetails.dateOfExit;
+  const version = findActiveRuleVersion("R405", exitDate, dbRuleVersions);
+
   let amount: number;
   let formula: string;
+  let maxLimit = version ? version.maximum_limit : GRATUITY_RULES.maximumLimit;
+  if (!maxLimit || maxLimit <= 0) maxLimit = 2000000; // safe default
 
-  if (isDeath) {
-    // Death Gratuity: slab-based
-    const slab = findDeathGratuitySlab(effectiveQS.years);
-    if (slab) {
-      const rawAmount = (emoluments + da) * slab.multiplier;
-      amount = Math.min(rawAmount, GRATUITY_RULES.maximumLimit);
-      formula = `Death Gratuity = (Emoluments + DA) × ${slab.multiplier} (slab for ${slab.minYears}–${slab.maxYearsExclusive ?? "+"} yrs), capped at ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
-    } else {
-      // Long service (20+ years): half monthly emoluments per completed 6-month period, capped at 33× and ₹2,000,000
-      const periods = Math.floor(serviceYears * 2);
-      const rawAmount = (emoluments + da) * GRATUITY_RULES.longServiceDeathMultiplier * periods;
-      const thirtyThreeLimit = (emoluments + da) * 33;
-      amount = Math.min(rawAmount, thirtyThreeLimit, GRATUITY_RULES.maximumLimit);
-      formula = `Death Gratuity (long service) = (Emoluments + DA) × 0.5 × completed 6-month periods, capped at 33×Emoluments and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
-    }
+  const variables = {
+    BasicPay: assessment.salaryDetails.currentBasicPay,
+    Emoluments: emoluments,
+    AverageEmoluments: assessment.promotionDetails.averageLastTenMonthsBasicPay || emoluments,
+    DA: da,
+    QualifyingServiceYears: serviceYears,
+  };
+
+  if (version) {
+    // Dynamic rule evaluation from DB
+    const res = evaluateRuleFormula(version, variables, 0);
+    amount = res.amount;
+    formula = `Retirement Gratuity = [Extracted Formula: ${version.formula}] (capped at ₹${maxLimit.toLocaleString("en-IN")}, Circular: ${version.rule_number})`;
   } else {
-    // Retirement Gratuity: (Emoluments + DA) × qualifying service years / 4, capped at 16.5×Emoluments and the gratuity ceiling
-    const completedHalfYears = Math.floor(serviceYears * 2);
-    const rawAmount = (emoluments + da) * 0.25 * completedHalfYears;
-    const sixteenPointFiveLimit = (emoluments + da) * 16.5;
-    amount = Math.min(rawAmount, sixteenPointFiveLimit, GRATUITY_RULES.maximumLimit);
-    formula = `Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}`;
+    // Standard calculation logic
+    if (isDeath) {
+      // Death Gratuity: slab-based
+      const slab = findDeathGratuitySlab(effectiveQS.years);
+      if (slab) {
+        const rawAmount = (emoluments + da) * slab.multiplier;
+        amount = Math.min(rawAmount, maxLimit);
+        formula = `Death Gratuity = (Emoluments + DA) × ${slab.multiplier} (slab for ${slab.minYears}–${slab.maxYearsExclusive ?? "+"} yrs), capped at ₹${maxLimit.toLocaleString("en-IN")}`;
+      } else {
+        // Long service (20+ years): half monthly emoluments per completed 6-month period, capped at 33× and ₹2,000,000
+        const periods = Math.floor(serviceYears * 2);
+        const rawAmount = (emoluments + da) * GRATUITY_RULES.longServiceDeathMultiplier * periods;
+        const thirtyThreeLimit = (emoluments + da) * 33;
+        amount = Math.min(rawAmount, thirtyThreeLimit, maxLimit);
+        formula = `Death Gratuity (long service) = (Emoluments + DA) × 0.5 × completed 6-month periods, capped at 33×Emoluments and ₹${maxLimit.toLocaleString("en-IN")}`;
+      }
+    } else {
+      // Retirement Gratuity: (Emoluments + DA) × qualifying service years / 4, capped at 16.5×Emoluments and the gratuity ceiling
+      const completedHalfYears = Math.floor(serviceYears * 2);
+      const rawAmount = (emoluments + da) * 0.25 * completedHalfYears;
+      const sixteenPointFiveLimit = (emoluments + da) * 16.5;
+      amount = Math.min(rawAmount, sixteenPointFiveLimit, maxLimit);
+      formula = `Retirement Gratuity = (Emoluments + DA) × ¼ × completed 6-month periods, capped at 16.5×(Emoluments + DA) and ₹${maxLimit.toLocaleString("en-IN")}`;
+    }
   }
 
   return benefit(
@@ -247,12 +493,13 @@ function calcRetirementGratuity(
       dearnessAllowance: da,
       qualifyingServiceYears: effectiveQS.years,
       qualifyingServiceMonths: effectiveQS.months,
-      maximumLimit: GRATUITY_RULES.maximumLimit,
+      maximumLimit: maxLimit,
       isDeath,
+      ruleReference: version ? version.rule_number : "Railway Pension Rules 2026",
     },
-    amount >= GRATUITY_RULES.maximumLimit
+    amount >= maxLimit
       ? [
-          `Gratuity capped at the maximum limit of ₹${GRATUITY_RULES.maximumLimit.toLocaleString("en-IN")}.`,
+          `Gratuity capped at the maximum limit of ₹${maxLimit.toLocaleString("en-IN")}.`,
         ]
       : [],
   );
@@ -262,7 +509,7 @@ function calcLeaveEncashment(
   context: CalculationContext,
   decision: RetirementRuleDecision,
 ): BenefitCalculation {
-  const { assessment } = context;
+  const { assessment, dbRuleVersions } = context;
   const admissible = decision.benefits["leaveEncashment" as SettlementBenefitKey];
   if (!admissible) {
     return notEligible(
@@ -280,7 +527,6 @@ function calcLeaveEncashment(
   const lhapDays = assessment.salaryDetails.lhapDays;
 
   // Determine exit type
-  const isSuperannuation = assessment.serviceDetails.retirementCategory === "normal";
   const otherRetirementType = assessment.serviceDetails.otherRetirementType;
   const isVoluntary = otherRetirementType === "voluntary";
   const isCompulsory = otherRetirementType === "compulsory";
@@ -318,57 +564,86 @@ function calcLeaveEncashment(
     };
   }
 
+  const exitDate = assessment.serviceDetails.dateOfExit;
+  const version = findActiveRuleVersion("R502", exitDate, dbRuleVersions);
+
+  let amount: number;
+  let formulaExplanation: string;
   let totalEncashableDays = 0;
   let effectiveLapDays = 0;
   let effectiveLhapDays = 0;
 
-  if (isResignation) {
-    totalEncashableDays = Math.min(Math.floor(lapDays * 0.5), 150);
-    effectiveLapDays = totalEncashableDays;
-    effectiveLhapDays = 0;
-    if (lapDays * 0.5 > 150) {
-      warnings.push(
-        `Resignation Leave Encashment (50% of LAP) is capped at the maximum limit of 150 days.`,
-      );
-    }
-  } else {
-    // Superannuation, VRS, Compulsory, Medical, Death or fallback
-    effectiveLapDays = Math.min(lapDays, LEAVE_RULES.maxLapDays);
-    const remainingDays = Math.max(0, LEAVE_RULES.maxTotalEncashableDays - effectiveLapDays);
-    const convertedLhapDays = Math.floor(lhapDays / LEAVE_RULES.lhapConversionDivisor);
-    effectiveLhapDays = Math.min(
-      convertedLhapDays,
-      remainingDays,
-      LEAVE_RULES.maxEncashableLhapDays,
-    );
+  const maxLap = version && version.maximum_limit !== null ? version.maximum_limit : LEAVE_RULES.maxLapDays; // e.g. 300 days
+
+  const variables = {
+    BasicPay: basic,
+    DA: daPercent,
+    LAPDays: lapDays,
+    LHAPDays: lhapDays,
+  };
+
+  if (version) {
+    // Dynamic rule evaluation from DB
+    const res = evaluateRuleFormula(version, variables, 0);
+    amount = res.amount;
+    formulaExplanation = `Leave Encashment = [Extracted Formula: ${version.formula}] (Circular: ${version.rule_number})`;
+
+    // For breakdown details, calculate days using default logic
+    effectiveLapDays = Math.min(lapDays, maxLap);
+    const remainingDays = Math.max(0, maxLap - effectiveLapDays);
+    const convertedLhapDays = Math.floor(lhapDays / 2);
+    effectiveLhapDays = Math.min(convertedLhapDays, remainingDays, 100);
     totalEncashableDays = effectiveLapDays + effectiveLhapDays;
+  } else {
+    // Default logic
+    if (isResignation) {
+      totalEncashableDays = Math.min(Math.floor(lapDays * 0.5), 150);
+      effectiveLapDays = totalEncashableDays;
+      effectiveLhapDays = 0;
+      if (lapDays * 0.5 > 150) {
+        warnings.push(
+          `Resignation Leave Encashment (50% of LAP) is capped at the maximum limit of 150 days.`,
+        );
+      }
+    } else {
+      effectiveLapDays = Math.min(lapDays, LEAVE_RULES.maxLapDays);
+      const remainingDays = Math.max(0, LEAVE_RULES.maxTotalEncashableDays - effectiveLapDays);
+      const convertedLhapDays = Math.floor(lhapDays / LEAVE_RULES.lhapConversionDivisor);
+      effectiveLhapDays = Math.min(
+        convertedLhapDays,
+        remainingDays,
+        LEAVE_RULES.maxEncashableLhapDays,
+      );
+      totalEncashableDays = effectiveLapDays + effectiveLhapDays;
 
-    if (lapDays > LEAVE_RULES.maxLapDays) {
-      warnings.push(`LAP days exceed the maximum limit of ${LEAVE_RULES.maxLapDays} days.`);
+      if (lapDays > LEAVE_RULES.maxLapDays) {
+        warnings.push(`LAP days exceed the maximum limit of ${LEAVE_RULES.maxLapDays} days.`);
+      }
+      if (
+        lapDays + lhapDays / LEAVE_RULES.lhapConversionDivisor >
+        LEAVE_RULES.maxTotalEncashableDays
+      ) {
+        warnings.push(
+          `Combined LAP and converted LHAP days exceed the maximum limit of ${LEAVE_RULES.maxTotalEncashableDays} encashable days.`,
+        );
+      }
+      if (
+        convertedLhapDays > LEAVE_RULES.maxEncashableLhapDays &&
+        effectiveLhapDays === LEAVE_RULES.maxEncashableLhapDays
+      ) {
+        warnings.push(
+          `Encashable LHAP days are capped at the maximum limit of ${LEAVE_RULES.maxEncashableLhapDays} days.`,
+        );
+      }
     }
-    if (
-      lapDays + lhapDays / LEAVE_RULES.lhapConversionDivisor >
-      LEAVE_RULES.maxTotalEncashableDays
-    ) {
-      warnings.push(
-        `Combined LAP and converted LHAP days exceed the maximum limit of ${LEAVE_RULES.maxTotalEncashableDays} encashable days.`,
-      );
-    }
-    if (
-      convertedLhapDays > LEAVE_RULES.maxEncashableLhapDays &&
-      effectiveLhapDays === LEAVE_RULES.maxEncashableLhapDays
-    ) {
-      warnings.push(
-        `Encashable LHAP days are capped at the maximum limit of ${LEAVE_RULES.maxEncashableLhapDays} days.`,
-      );
-    }
+
+    // Calculate Leave Salary
+    const leaveSalaryPerDay = (basic + daAmount) / 30;
+    amount = totalEncashableDays * leaveSalaryPerDay;
+    formulaExplanation = isResignation
+      ? `Leave Encashment = MIN(50% × LAP, 150) × (Basic Pay + DA) / 30`
+      : `Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30`;
   }
-
-  // Calculate Leave Salary
-  const specialPay = 0;
-  const personalPay = 0;
-  const leaveSalaryPerDay = (basic + specialPay + personalPay + daAmount) / 30;
-  const amount = totalEncashableDays * leaveSalaryPerDay;
 
   let exitLabel = "Superannuation";
   if (isVoluntary) exitLabel = "Voluntary Retirement";
@@ -376,10 +651,6 @@ function calcLeaveEncashment(
   else if (isMedical) exitLabel = "Medical Retirement";
   else if (isDeath) exitLabel = "Death Case";
   else if (isResignation) exitLabel = "Resignation Case";
-
-  const formulaExplanation = isResignation
-    ? `Leave Encashment = MIN(50% × LAP, 150) × (Basic Pay + DA) / 30`
-    : `Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30`;
 
   return benefit(
     "leaveEncashment",
@@ -398,6 +669,7 @@ function calcLeaveEncashment(
       effectiveLhapDays,
       totalEncashableDays,
       exitLabel,
+      ruleReference: version ? version.rule_number : "Railway Pension Rules 2026",
     },
     warnings,
   );

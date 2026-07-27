@@ -50,6 +50,19 @@ export const Route = createFileRoute("/employee/result")({
 function SettlementResultsPage() {
   const [assessment, setAssessment] = useState<SettlementAssessment | null>(null);
   const [savedSnapshot, setSavedSnapshot] = useState<SettlementReportRecord | null>(null);
+  const [dbRuleVersions, setDbRuleVersions] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch latest rule versions from DB API
+    fetch("/api/rules?action=get-data")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.ruleVersions) {
+          setDbRuleVersions(data.ruleVersions);
+        }
+      })
+      .catch((err) => console.error("Failed to load DB rule versions in results page:", err));
+  }, []);
 
   useEffect(() => {
     // Check if there is an active historic report snapshot we should view instead of current calculations
@@ -81,8 +94,8 @@ function SettlementResultsPage() {
         calculation: savedSnapshot.report_snapshot.calculation || savedSnapshot.calculation,
       };
     }
-    return assessment ? processSettlement(assessment) : null;
-  }, [assessment, savedSnapshot]);
+    return assessment ? processSettlement(assessment, undefined, dbRuleVersions) : null;
+  }, [assessment, savedSnapshot, dbRuleVersions]);
 
   if (!assessment || !processed) {
     return (

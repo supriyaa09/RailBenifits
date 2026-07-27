@@ -69,7 +69,8 @@ Engine Output:
       "emoluments": 50000,
       "pensionRate": 0.5,
       "pensionSanctionPercentage": 100,
-      "pensionScheme": "OPS"
+      "pensionScheme": "OPS",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "familyPension": {
@@ -112,13 +113,14 @@ Engine Output:
       "qualifyingServiceYears": 20,
       "qualifyingServiceMonths": 0,
       "maximumLimit": 2000000,
-      "isDeath": false
+      "isDeath": false,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 57967,
+    "amount": 5223167,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -129,16 +131,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 37 days / 30",
+    "reason": "Leave Encashment calculated for Superannuation with 37 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 35000,
-      "dearnessAllowanceAmount": 12000,
+      "dearnessAllowanceAmount": 4200000,
       "lapDays": 30,
       "effectiveLapDays": 30,
       "lhapDays": 15,
       "effectiveLhapDays": 7,
-      "totalEncashableDays": 37
+      "totalEncashableDays": 37,
+      "exitLabel": "Superannuation",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -347,10 +351,10 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 747967,
+  "totalOneTimeBenefits": 5913167,
   "monthlyPension": 25000,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 3747967
+  "totalEstimatedSettlement": 8913167
 }
 ---
 Scenario: Voluntary Retirement - 5 years exactly
@@ -425,7 +429,8 @@ Engine Output:
       "emoluments": 42000,
       "pensionRate": 0.5,
       "pensionSanctionPercentage": 100,
-      "pensionScheme": "OPS"
+      "pensionScheme": "OPS",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "familyPension": {
@@ -468,13 +473,14 @@ Engine Output:
       "qualifyingServiceYears": 5,
       "qualifyingServiceMonths": 0,
       "maximumLimit": 2000000,
-      "isDeath": false
+      "isDeath": false,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 32500,
+    "amount": 2275000,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -485,16 +491,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 25 days / 30",
+    "reason": "Leave Encashment calculated for Voluntary Retirement with 25 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 30000,
-      "dearnessAllowanceAmount": 9000,
+      "dearnessAllowanceAmount": 2700000,
       "lapDays": 20,
       "effectiveLapDays": 20,
       "lhapDays": 10,
       "effectiveLhapDays": 5,
-      "totalEncashableDays": 25
+      "totalEncashableDays": 25,
+      "exitLabel": "Voluntary Retirement",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -703,10 +711,10 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 193600,
+  "totalOneTimeBenefits": 2436100,
   "monthlyPension": 21000,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 2713600
+  "totalEstimatedSettlement": 4956100
 }
 ---
 Scenario: Medical Invalidation - 4y11m service
@@ -817,7 +825,7 @@ Engine Output:
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 19267,
+    "amount": 1193400,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -828,16 +836,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 17 days / 30",
+    "reason": "Leave Encashment calculated for Medical Retirement with 17 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 26000,
-      "dearnessAllowanceAmount": 8000,
+      "dearnessAllowanceAmount": 2080000,
       "lapDays": 15,
       "effectiveLapDays": 15,
       "lhapDays": 5,
       "effectiveLhapDays": 2,
-      "totalEncashableDays": 17
+      "totalEncashableDays": 17,
+      "exitLabel": "Medical Retirement",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -1040,10 +1050,10 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 49667,
+  "totalOneTimeBenefits": 1223800,
   "monthlyPension": 0,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 49667
+  "totalEstimatedSettlement": 1223800
 }
 ---
 Scenario: Death in Service - 12 years
@@ -1128,14 +1138,15 @@ Engine Output:
       "workbookSheet": "Formula Engine",
       "cellReference": "formulas/generated/referenceData.ts",
       "ruleReference": "Railway Pension Rules 2026",
-      "explanation": "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced, first 7 years)"
+      "explanation": "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced)"
     },
     "reason": "Family Pension = 50% of emoluments (enhanced rate).",
     "warnings": [],
     "details": {
       "emoluments": 60000,
       "rate": 0.5,
-      "enhancedFamilyPension": 30000
+      "enhancedFamilyPension": 30000,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "retirementGratuity": {
@@ -1160,13 +1171,14 @@ Engine Output:
       "qualifyingServiceYears": 12,
       "qualifyingServiceMonths": 0,
       "maximumLimit": 2000000,
-      "isDeath": true
+      "isDeath": true,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 73333,
+    "amount": 8053333,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -1177,16 +1189,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 40 days / 30",
+    "reason": "Leave Encashment calculated for Death Case with 40 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 40000,
-      "dearnessAllowanceAmount": 15000,
+      "dearnessAllowanceAmount": 6000000,
       "lapDays": 30,
       "effectiveLapDays": 30,
       "lhapDays": 20,
       "effectiveLhapDays": 10,
-      "totalEncashableDays": 40
+      "totalEncashableDays": 40,
+      "exitLabel": "Death Case",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -1381,10 +1395,10 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 1603333,
+  "totalOneTimeBenefits": 9583333,
   "monthlyPension": 0,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 1603333
+  "totalEstimatedSettlement": 9583333
 }
 ---
 Scenario: Death after Retirement - 20 years service
@@ -1469,14 +1483,15 @@ Engine Output:
       "workbookSheet": "Formula Engine",
       "cellReference": "formulas/generated/referenceData.ts",
       "ruleReference": "Railway Pension Rules 2026",
-      "explanation": "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced, first 7 years)"
+      "explanation": "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced)"
     },
     "reason": "Family Pension = 50% of emoluments (enhanced rate).",
     "warnings": [],
     "details": {
       "emoluments": 65000,
       "rate": 0.5,
-      "enhancedFamilyPension": 32500
+      "enhancedFamilyPension": 32500,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "retirementGratuity": {
@@ -1501,13 +1516,14 @@ Engine Output:
       "qualifyingServiceYears": 20,
       "qualifyingServiceMonths": 0,
       "maximumLimit": 2000000,
-      "isDeath": true
+      "isDeath": true,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 80000,
+    "amount": 10136000,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -1518,16 +1534,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 40 days / 30",
+    "reason": "Leave Encashment calculated for Death Case with 40 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 42000,
-      "dearnessAllowanceAmount": 18000,
+      "dearnessAllowanceAmount": 7560000,
       "lapDays": 30,
       "effectiveLapDays": 30,
       "lhapDays": 20,
       "effectiveLhapDays": 10,
-      "totalEncashableDays": 40
+      "totalEncashableDays": 40,
+      "exitLabel": "Death Case",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -1722,10 +1740,10 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 1770000,
+  "totalOneTimeBenefits": 11826000,
   "monthlyPension": 0,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 1770000
+  "totalEstimatedSettlement": 11826000
 }
 ---
 Scenario: Maximum Gratuity – Service > 30 years, high emoluments
@@ -1799,7 +1817,8 @@ Engine Output:
       "emoluments": 200000,
       "pensionRate": 0.5,
       "pensionSanctionPercentage": 100,
-      "pensionScheme": "OPS"
+      "pensionScheme": "OPS",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "familyPension": {
@@ -1844,13 +1863,14 @@ Engine Output:
       "qualifyingServiceYears": 35,
       "qualifyingServiceMonths": 0,
       "maximumLimit": 2000000,
-      "isDeath": false
+      "isDeath": false,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 222000,
+    "amount": 80327000,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -1861,16 +1881,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 37 days / 30",
+    "reason": "Leave Encashment calculated for Superannuation with 37 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 130000,
-      "dearnessAllowanceAmount": 50000,
+      "dearnessAllowanceAmount": 65000000,
       "lapDays": 30,
       "effectiveLapDays": 30,
       "lhapDays": 15,
       "effectiveLhapDays": 7,
-      "totalEncashableDays": 37
+      "totalEncashableDays": 37,
+      "exitLabel": "Superannuation",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -2079,10 +2101,10 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 2412000,
+  "totalOneTimeBenefits": 82517000,
   "monthlyPension": 100000,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 14412000
+  "totalEstimatedSettlement": 94517000
 }
 ---
 Scenario: Maximum Leave Encashment – high leave balance
@@ -2156,7 +2178,8 @@ Engine Output:
       "emoluments": 70000,
       "pensionRate": 0.5,
       "pensionSanctionPercentage": 100,
-      "pensionScheme": "OPS"
+      "pensionScheme": "OPS",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "familyPension": {
@@ -2199,13 +2222,14 @@ Engine Output:
       "qualifyingServiceYears": 25,
       "qualifyingServiceMonths": 0,
       "maximumLimit": 2000000,
-      "isDeath": false
+      "isDeath": false,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 160000,
+    "amount": 18120000,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -2216,16 +2240,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 80 days / 30",
+    "reason": "Leave Encashment calculated for Superannuation with 80 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 45000,
-      "dearnessAllowanceAmount": 15000,
+      "dearnessAllowanceAmount": 6750000,
       "lapDays": 60,
       "effectiveLapDays": 60,
       "lhapDays": 40,
       "effectiveLhapDays": 20,
-      "totalEncashableDays": 80
+      "totalEncashableDays": 80,
+      "exitLabel": "Superannuation",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -2434,10 +2460,10 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 1308500,
+  "totalOneTimeBenefits": 19268500,
   "monthlyPension": 35000,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 5508500
+  "totalEstimatedSettlement": 23468500
 }
 ---
 Scenario: Commutation – Age 45
@@ -2511,7 +2537,8 @@ Engine Output:
       "emoluments": 55000,
       "pensionRate": 0.5,
       "pensionSanctionPercentage": 100,
-      "pensionScheme": "OPS"
+      "pensionScheme": "OPS",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "familyPension": {
@@ -2554,13 +2581,14 @@ Engine Output:
       "qualifyingServiceYears": 22,
       "qualifyingServiceMonths": 0,
       "maximumLimit": 2000000,
-      "isDeath": false
+      "isDeath": false,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 59200,
+    "amount": 5654833,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -2571,16 +2599,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 37 days / 30",
+    "reason": "Leave Encashment calculated for Superannuation with 37 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 35000,
-      "dearnessAllowanceAmount": 13000,
+      "dearnessAllowanceAmount": 4550000,
       "lapDays": 30,
       "effectiveLapDays": 30,
       "lhapDays": 15,
       "effectiveLhapDays": 7,
-      "totalEncashableDays": 37
+      "totalEncashableDays": 37,
+      "exitLabel": "Superannuation",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -2720,31 +2750,23 @@ Engine Output:
   "commutation": {
     "key": "commutation",
     "benefitName": "Commutation",
-    "amount": 1151568,
-    "eligible": true,
-    "status": "Calculated",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
     "formula": {
       "formulaName": "Formula Engine",
       "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
       "workbookSheet": "Formula Engine",
       "cellReference": "formulas/generated/referenceData.ts",
       "ruleReference": "Railway Pension Rules 2026",
-      "explanation": "Commuted Value = Commuted Pension × 12 × Commutation Factor (by Age Next Birthday)"
+      "explanation": "Commutation factor is fetched from COMMUTATION_FACTORS table by Age Next Birthday."
     },
-    "reason": "Commuted Value = Commuted Pension (40% of ₹27500) × 12 × Factor 8.724",
-    "warnings": [],
+    "reason": "No active commutation factor found for Age Next Birthday NaN. Upload the official table to enable calculation.",
+    "warnings": [
+      "Commutation factor table is empty or missing this age."
+    ],
     "details": {
-      "ageNextBirthday": 53,
-      "commutationFactor": 8.724,
-      "factorSource": "formulas/generated/referenceData.ts",
-      "effectiveFrom": "2026-01-01",
-      "circularNumber": "OFFICIAL-RAILWAY-COMMUTATION-TABLE",
-      "commutationOpted": true,
-      "commutationPercentage": 40,
-      "basicPension": 27500,
-      "commutedPension": 11000,
-      "residualPension": 16500,
-      "formula": "Commuted Pension = Pension × Commutation%; Commuted Value = Commuted Pension × 12 × Factor"
+      "ageNextBirthday": null
     }
   },
   "residualPension": {
@@ -2801,10 +2823,10 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 2032768,
+  "totalOneTimeBenefits": 6476833,
   "monthlyPension": 16500,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 4012768
+  "totalEstimatedSettlement": 8456833
 }
 ---
 Scenario: Commutation – Age 60
@@ -2878,7 +2900,8 @@ Engine Output:
       "emoluments": 80000,
       "pensionRate": 0.5,
       "pensionSanctionPercentage": 100,
-      "pensionScheme": "OPS"
+      "pensionScheme": "OPS",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "familyPension": {
@@ -2921,13 +2944,14 @@ Engine Output:
       "qualifyingServiceYears": 28,
       "qualifyingServiceMonths": 0,
       "maximumLimit": 2000000,
-      "isDeath": false
+      "isDeath": false,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 86333,
+    "amount": 12395000,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -2938,16 +2962,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 37 days / 30",
+    "reason": "Leave Encashment calculated for Superannuation with 37 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 50000,
-      "dearnessAllowanceAmount": 20000,
+      "dearnessAllowanceAmount": 10000000,
       "lapDays": 30,
       "effectiveLapDays": 30,
       "lhapDays": 15,
       "effectiveLhapDays": 7,
-      "totalEncashableDays": 37
+      "totalEncashableDays": 37,
+      "exitLabel": "Superannuation",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -3087,31 +3113,23 @@ Engine Output:
   "commutation": {
     "key": "commutation",
     "benefitName": "Commutation",
-    "amount": 1019952,
-    "eligible": true,
-    "status": "Calculated",
+    "amount": 0,
+    "eligible": false,
+    "status": "Not Eligible",
     "formula": {
       "formulaName": "Formula Engine",
       "formulaKey": "COMMUTATION_FACTOR_BY_AGE_NEXT_BIRTHDAY",
       "workbookSheet": "Formula Engine",
       "cellReference": "formulas/generated/referenceData.ts",
       "ruleReference": "Railway Pension Rules 2026",
-      "explanation": "Commuted Value = Commuted Pension × 12 × Commutation Factor (by Age Next Birthday)"
+      "explanation": "Commutation factor is fetched from COMMUTATION_FACTORS table by Age Next Birthday."
     },
-    "reason": "Commuted Value = Commuted Pension (30% of ₹40000) × 12 × Factor 7.083",
-    "warnings": [],
+    "reason": "No active commutation factor found for Age Next Birthday NaN. Upload the official table to enable calculation.",
+    "warnings": [
+      "Commutation factor table is empty or missing this age."
+    ],
     "details": {
-      "ageNextBirthday": 69,
-      "commutationFactor": 7.083,
-      "factorSource": "formulas/generated/referenceData.ts",
-      "effectiveFrom": "2026-01-01",
-      "circularNumber": "OFFICIAL-RAILWAY-COMMUTATION-TABLE",
-      "commutationOpted": true,
-      "commutationPercentage": 30,
-      "basicPension": 40000,
-      "commutedPension": 12000,
-      "residualPension": 28000,
-      "formula": "Commuted Pension = Pension × Commutation%; Commuted Value = Commuted Pension × 12 × Factor"
+      "ageNextBirthday": null
     }
   },
   "residualPension": {
@@ -3168,10 +3186,10 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 2600285,
+  "totalOneTimeBenefits": 13889000,
   "monthlyPension": 28000,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 5960285
+  "totalEstimatedSettlement": 17249000
 }
 ---
 Scenario: RELHS – Death case
@@ -3256,14 +3274,15 @@ Engine Output:
       "workbookSheet": "Formula Engine",
       "cellReference": "formulas/generated/referenceData.ts",
       "ruleReference": "Railway Pension Rules 2026",
-      "explanation": "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced, first 7 years)"
+      "explanation": "Family Pension = Emoluments × 30% (ordinary) or 50% (enhanced)"
     },
     "reason": "Family Pension = 50% of emoluments (enhanced rate).",
     "warnings": [],
     "details": {
       "emoluments": 30000,
       "rate": 0.5,
-      "enhancedFamilyPension": 15000
+      "enhancedFamilyPension": 15000,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "retirementGratuity": {
@@ -3288,13 +3307,14 @@ Engine Output:
       "qualifyingServiceYears": 3,
       "qualifyingServiceMonths": 0,
       "maximumLimit": 2000000,
-      "isDeath": true
+      "isDeath": true,
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "leaveEncashment": {
     "key": "leaveEncashment",
     "benefitName": "Leave Encashment",
-    "amount": 10000,
+    "amount": 408000,
     "eligible": true,
     "status": "Calculated",
     "formula": {
@@ -3305,16 +3325,18 @@ Engine Output:
       "ruleReference": "Railway Pension Rules 2026",
       "explanation": "Leave Encashment = (Basic Pay + DA) × Total Encashable Days / 30"
     },
-    "reason": "Leave Encashment = (Basic + DA) × 12 days / 30",
+    "reason": "Leave Encashment calculated for Death Case with 12 eligible days.",
     "warnings": [],
     "details": {
       "basicPay": 20000,
-      "dearnessAllowanceAmount": 5000,
+      "dearnessAllowanceAmount": 1000000,
       "lapDays": 10,
       "effectiveLapDays": 10,
       "lhapDays": 5,
       "effectiveLhapDays": 2,
-      "totalEncashableDays": 12
+      "totalEncashableDays": 12,
+      "exitLabel": "Death Case",
+      "ruleReference": "Railway Pension Rules 2026"
     }
   },
   "halfLeaveEncashment": {
@@ -3509,9 +3531,9 @@ Engine Output:
       ]
     }
   },
-  "totalOneTimeBenefits": 250000,
+  "totalOneTimeBenefits": 648000,
   "monthlyPension": 0,
   "monthlyFma": 0,
-  "totalEstimatedSettlement": 250000
+  "totalEstimatedSettlement": 648000
 }
 ---

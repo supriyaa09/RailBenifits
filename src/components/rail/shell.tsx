@@ -41,12 +41,11 @@ const employeeNav = [
 
 const officerNav = [
   { title: "Dashboard", to: "/officer", icon: LayoutDashboard, exact: true },
-  { title: "Pension Rules", to: "/officer/rules", icon: ShieldCheck },
-  { title: "Formula Library", to: "/officer/formulas", icon: FileCog },
-  { title: "Settlement Benefits", to: "/officer/benefits", icon: Wallet },
-  { title: "Document Repository", to: "/officer/documents", icon: ScrollText },
-  { title: "Railway Knowledge Base", to: "/officer/knowledge", icon: Database },
-  { title: "System Configuration", to: "/officer/configuration", icon: Settings },
+  { title: "Rules", to: "/officer/rules", icon: ShieldCheck },
+  { title: "Documents", to: "/officer/documents", icon: ScrollText },
+  { title: "AI Review", to: "/officer/rule-management", icon: Bot },
+  { title: "Knowledge", to: "/officer/knowledge", icon: Database },
+  { title: "Settings", to: "/officer/configuration", icon: Settings },
 ];
 
 export function RailShell({ role }: { role: "employee" | "officer" }) {

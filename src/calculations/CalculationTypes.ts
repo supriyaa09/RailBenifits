@@ -72,6 +72,7 @@ export interface CalculationContext {
   assessment: SettlementAssessment;
   ruleResult: SettlementResult;
   workbookData?: WorkbookData;
+  dbRuleVersions?: any[];
 }
 
 export interface BenefitCalculator {

@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as OfficerIndexRouteImport } from './routes/officer.index'
 import { Route as EmployeeIndexRouteImport } from './routes/employee.index'
 import { Route as OfficerRulesRouteImport } from './routes/officer.rules'
+import { Route as OfficerRuleManagementRouteImport } from './routes/officer.rule-management'
 import { Route as OfficerKnowledgeRouteImport } from './routes/officer.knowledge'
 import { Route as OfficerFormulasRouteImport } from './routes/officer.formulas'
 import { Route as OfficerDocumentsRouteImport } from './routes/officer.documents'
@@ -27,6 +28,7 @@ import { Route as EmployeeFaqsRouteImport } from './routes/employee.faqs'
 import { Route as EmployeeCircularsRouteImport } from './routes/employee.circulars'
 import { Route as EmployeeBenefitsRouteImport } from './routes/employee.benefits'
 import { Route as EmployeeAssistantRouteImport } from './routes/employee.assistant'
+import { Route as ApiRulesRouteImport } from './routes/api.rules'
 import { Route as ApiAssistantRouteImport } from './routes/api.assistant'
 
 const OfficerRoute = OfficerRouteImport.update({
@@ -57,6 +59,11 @@ const EmployeeIndexRoute = EmployeeIndexRouteImport.update({
 const OfficerRulesRoute = OfficerRulesRouteImport.update({
   id: '/rules',
   path: '/rules',
+  getParentRoute: () => OfficerRoute,
+} as any)
+const OfficerRuleManagementRoute = OfficerRuleManagementRouteImport.update({
+  id: '/rule-management',
+  path: '/rule-management',
   getParentRoute: () => OfficerRoute,
 } as any)
 const OfficerKnowledgeRoute = OfficerKnowledgeRouteImport.update({
@@ -119,6 +126,11 @@ const EmployeeAssistantRoute = EmployeeAssistantRouteImport.update({
   path: '/assistant',
   getParentRoute: () => EmployeeRoute,
 } as any)
+const ApiRulesRoute = ApiRulesRouteImport.update({
+  id: '/api/rules',
+  path: '/api/rules',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAssistantRoute = ApiAssistantRouteImport.update({
   id: '/api/assistant',
   path: '/api/assistant',
@@ -130,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/employee': typeof EmployeeRouteWithChildren
   '/officer': typeof OfficerRouteWithChildren
   '/api/assistant': typeof ApiAssistantRoute
+  '/api/rules': typeof ApiRulesRoute
   '/employee/assistant': typeof EmployeeAssistantRoute
   '/employee/benefits': typeof EmployeeBenefitsRoute
   '/employee/circulars': typeof EmployeeCircularsRoute
@@ -142,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/officer/documents': typeof OfficerDocumentsRoute
   '/officer/formulas': typeof OfficerFormulasRoute
   '/officer/knowledge': typeof OfficerKnowledgeRoute
+  '/officer/rule-management': typeof OfficerRuleManagementRoute
   '/officer/rules': typeof OfficerRulesRoute
   '/employee/': typeof EmployeeIndexRoute
   '/officer/': typeof OfficerIndexRoute
@@ -149,6 +163,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/api/rules': typeof ApiRulesRoute
   '/employee/assistant': typeof EmployeeAssistantRoute
   '/employee/benefits': typeof EmployeeBenefitsRoute
   '/employee/circulars': typeof EmployeeCircularsRoute
@@ -161,6 +176,7 @@ export interface FileRoutesByTo {
   '/officer/documents': typeof OfficerDocumentsRoute
   '/officer/formulas': typeof OfficerFormulasRoute
   '/officer/knowledge': typeof OfficerKnowledgeRoute
+  '/officer/rule-management': typeof OfficerRuleManagementRoute
   '/officer/rules': typeof OfficerRulesRoute
   '/employee': typeof EmployeeIndexRoute
   '/officer': typeof OfficerIndexRoute
@@ -171,6 +187,7 @@ export interface FileRoutesById {
   '/employee': typeof EmployeeRouteWithChildren
   '/officer': typeof OfficerRouteWithChildren
   '/api/assistant': typeof ApiAssistantRoute
+  '/api/rules': typeof ApiRulesRoute
   '/employee/assistant': typeof EmployeeAssistantRoute
   '/employee/benefits': typeof EmployeeBenefitsRoute
   '/employee/circulars': typeof EmployeeCircularsRoute
@@ -183,6 +200,7 @@ export interface FileRoutesById {
   '/officer/documents': typeof OfficerDocumentsRoute
   '/officer/formulas': typeof OfficerFormulasRoute
   '/officer/knowledge': typeof OfficerKnowledgeRoute
+  '/officer/rule-management': typeof OfficerRuleManagementRoute
   '/officer/rules': typeof OfficerRulesRoute
   '/employee/': typeof EmployeeIndexRoute
   '/officer/': typeof OfficerIndexRoute
@@ -194,6 +212,7 @@ export interface FileRouteTypes {
     | '/employee'
     | '/officer'
     | '/api/assistant'
+    | '/api/rules'
     | '/employee/assistant'
     | '/employee/benefits'
     | '/employee/circulars'
@@ -206,6 +225,7 @@ export interface FileRouteTypes {
     | '/officer/documents'
     | '/officer/formulas'
     | '/officer/knowledge'
+    | '/officer/rule-management'
     | '/officer/rules'
     | '/employee/'
     | '/officer/'
@@ -213,6 +233,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/api/assistant'
+    | '/api/rules'
     | '/employee/assistant'
     | '/employee/benefits'
     | '/employee/circulars'
@@ -225,6 +246,7 @@ export interface FileRouteTypes {
     | '/officer/documents'
     | '/officer/formulas'
     | '/officer/knowledge'
+    | '/officer/rule-management'
     | '/officer/rules'
     | '/employee'
     | '/officer'
@@ -234,6 +256,7 @@ export interface FileRouteTypes {
     | '/employee'
     | '/officer'
     | '/api/assistant'
+    | '/api/rules'
     | '/employee/assistant'
     | '/employee/benefits'
     | '/employee/circulars'
@@ -246,6 +269,7 @@ export interface FileRouteTypes {
     | '/officer/documents'
     | '/officer/formulas'
     | '/officer/knowledge'
+    | '/officer/rule-management'
     | '/officer/rules'
     | '/employee/'
     | '/officer/'
@@ -256,6 +280,7 @@ export interface RootRouteChildren {
   EmployeeRoute: typeof EmployeeRouteWithChildren
   OfficerRoute: typeof OfficerRouteWithChildren
   ApiAssistantRoute: typeof ApiAssistantRoute
+  ApiRulesRoute: typeof ApiRulesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -300,6 +325,13 @@ declare module '@tanstack/react-router' {
       path: '/rules'
       fullPath: '/officer/rules'
       preLoaderRoute: typeof OfficerRulesRouteImport
+      parentRoute: typeof OfficerRoute
+    }
+    '/officer/rule-management': {
+      id: '/officer/rule-management'
+      path: '/rule-management'
+      fullPath: '/officer/rule-management'
+      preLoaderRoute: typeof OfficerRuleManagementRouteImport
       parentRoute: typeof OfficerRoute
     }
     '/officer/knowledge': {
@@ -386,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmployeeAssistantRouteImport
       parentRoute: typeof EmployeeRoute
     }
+    '/api/rules': {
+      id: '/api/rules'
+      path: '/api/rules'
+      fullPath: '/api/rules'
+      preLoaderRoute: typeof ApiRulesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/assistant': {
       id: '/api/assistant'
       path: '/api/assistant'
@@ -428,6 +467,7 @@ interface OfficerRouteChildren {
   OfficerDocumentsRoute: typeof OfficerDocumentsRoute
   OfficerFormulasRoute: typeof OfficerFormulasRoute
   OfficerKnowledgeRoute: typeof OfficerKnowledgeRoute
+  OfficerRuleManagementRoute: typeof OfficerRuleManagementRoute
   OfficerRulesRoute: typeof OfficerRulesRoute
   OfficerIndexRoute: typeof OfficerIndexRoute
 }
@@ -438,6 +478,7 @@ const OfficerRouteChildren: OfficerRouteChildren = {
   OfficerDocumentsRoute: OfficerDocumentsRoute,
   OfficerFormulasRoute: OfficerFormulasRoute,
   OfficerKnowledgeRoute: OfficerKnowledgeRoute,
+  OfficerRuleManagementRoute: OfficerRuleManagementRoute,
   OfficerRulesRoute: OfficerRulesRoute,
   OfficerIndexRoute: OfficerIndexRoute,
 }
@@ -450,6 +491,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmployeeRoute: EmployeeRouteWithChildren,
   OfficerRoute: OfficerRouteWithChildren,
   ApiAssistantRoute: ApiAssistantRoute,
+  ApiRulesRoute: ApiRulesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

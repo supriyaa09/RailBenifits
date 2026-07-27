@@ -4,10 +4,12 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Plus } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { reportAppError } from "../lib/error-reporting";
@@ -137,12 +139,25 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const routerState = useRouterState();
+  const pathname = routerState.location.pathname;
+  const isOfficerRoute = pathname.startsWith("/officer");
 
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <AccessibilityWidget />
+      {isOfficerRoute && (
+        <Link
+          to="/officer/rule-management"
+          className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 h-12 px-5 rounded-full bg-primary hover:bg-primary/95 text-primary-foreground font-semibold shadow-soft hover:shadow-lg transition-all hover:scale-105 active:scale-95 group print:hidden cursor-pointer border border-primary/20"
+          title="Upload circular document and trigger AI rule extraction stepper workflow"
+        >
+          <Plus className="h-5 w-5 group-hover:rotate-90 transition-transform duration-200" />
+          <span className="text-sm">Upload Circular</span>
+        </Link>
+      )}
     </QueryClientProvider>
   );
 }

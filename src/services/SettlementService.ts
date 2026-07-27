@@ -12,9 +12,10 @@ export interface ProcessedSettlement {
 export function processSettlement(
   assessment: SettlementAssessment,
   workbookData?: WorkbookData,
+  dbRuleVersions?: any[],
 ): ProcessedSettlement {
   const ruleResult = runRuleEngine(assessment);
-  const calculation = runCalculationEngine(assessment, ruleResult, workbookData);
+  const calculation = runCalculationEngine(assessment, ruleResult, workbookData, dbRuleVersions);
 
   return {
     ruleResult,

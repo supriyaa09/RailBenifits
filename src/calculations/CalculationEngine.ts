@@ -8,8 +8,9 @@ export class CalculationEngine {
     assessment: SettlementAssessment,
     ruleResult: SettlementResult,
     workbookData?: WorkbookData,
+    dbRuleVersions?: any[],
   ): SettlementCalculation {
-    return calculateWithFormulaEngine(assessment, ruleResult, workbookData);
+    return calculateWithFormulaEngine(assessment, ruleResult, workbookData, dbRuleVersions);
   }
 }
 
@@ -17,6 +18,7 @@ export function runCalculationEngine(
   assessment: SettlementAssessment,
   ruleResult: SettlementResult,
   workbookData?: WorkbookData,
+  dbRuleVersions?: any[],
 ): SettlementCalculation {
-  return new CalculationEngine().calculate(assessment, ruleResult, workbookData);
+  return new CalculationEngine().calculate(assessment, ruleResult, workbookData, dbRuleVersions);
 }
