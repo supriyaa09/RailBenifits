@@ -1,33 +1,104 @@
 import { DatabaseSync } from "node:sqlite";
 import path from "node:path";
-import fs from "node:fs";
 
 // Locate or create db file in workspace root
 const DB_PATH = path.resolve(process.cwd(), "db.sqlite");
 
-export const db = new DatabaseSync(DB_PATH);
+let dbInstance: DatabaseSync | null = null;
+let isInitialized = false;
+
+/**
+ * Lazy initialization for SQLite database connection.
+ * - In local development: attempts to open/create `db.sqlite`. Fallback to `:memory:` if disk write fails.
+ * - In Vercel or production: uses `:memory:` database to prevent filesystem crashes.
+ * - Top-level module execution is completely avoided so server initialization/bundling never fails.
+ */
+export function getDb(): DatabaseSync | null {
+  if (dbInstance) {
+    return dbInstance;
+  }
+
+  const isVercel = Boolean(process.env.VERCEL || process.env.VERCEL_ENV);
+  const isProduction = process.env.NODE_ENV === "production";
+
+  if (isVercel || isProduction) {
+    try {
+      dbInstance = new DatabaseSync(":memory:");
+    } catch (err) {
+      console.warn("Failed to initialize in-memory SQLite database in production/Vercel environment:", err);
+      return null;
+    }
+  } else {
+    try {
+      dbInstance = new DatabaseSync(DB_PATH);
+    } catch (err) {
+      console.warn(`Failed to open SQLite database at ${DB_PATH}. Falling back to in-memory database:`, err);
+      try {
+        dbInstance = new DatabaseSync(":memory:");
+      } catch (memErr) {
+        console.error("Failed to initialize fallback in-memory SQLite database:", memErr);
+        return null;
+      }
+    }
+  }
+
+  if (dbInstance && !isInitialized) {
+    isInitialized = true;
+    try {
+      initDatabaseSchema(dbInstance);
+    } catch (schemaErr) {
+      console.error("Failed to initialize SQLite database schema:", schemaErr);
+    }
+  }
+
+  return dbInstance;
+}
 
 // Helper to run query without returning results
 export function runSql(sql: string, params: any[] = []) {
-  const stmt = db.prepare(sql);
-  stmt.run(...params);
+  try {
+    const db = getDb();
+    if (!db) return;
+    const stmt = db.prepare(sql);
+    stmt.run(...params);
+  } catch (err) {
+    console.error("Error executing runSql:", err, sql);
+  }
 }
 
 // Helper to execute all rows
 export function allSql(sql: string, params: any[] = []): any[] {
-  const stmt = db.prepare(sql);
-  return stmt.all(...params);
+  try {
+    const db = getDb();
+    if (!db) return [];
+    const stmt = db.prepare(sql);
+    return stmt.all(...params);
+  } catch (err) {
+    console.error("Error executing allSql:", err, sql);
+    return [];
+  }
 }
 
 // Helper to execute single row
 export function getSql(sql: string, params: any[] = []): any {
-  const stmt = db.prepare(sql);
-  const results = stmt.all(...params);
-  return results.length > 0 ? results[0] : null;
+  try {
+    const db = getDb();
+    if (!db) return null;
+    const stmt = db.prepare(sql);
+    const results = stmt.all(...params);
+    return results.length > 0 ? results[0] : null;
+  } catch (err) {
+    console.error("Error executing getSql:", err, sql);
+    return null;
+  }
 }
 
-// Define database schemas
+// Define database schemas & seed initial dataset
 export function initDatabase() {
+  getDb();
+}
+
+function initDatabaseSchema(db: DatabaseSync) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS circulars (
       id TEXT PRIMARY KEY,
@@ -114,15 +185,15 @@ export function initDatabase() {
     );
   `);
 
-  // Seed default data if rules are empty
+  // Seed default data if rules table is empty
   const countStmt = db.prepare("SELECT COUNT(*) as count FROM rules");
   const countRes = countStmt.all() as { count: number }[];
-  if (countRes[0].count === 0) {
-    seedDatabase();
+  if (countRes[0] && countRes[0].count === 0) {
+    seedDatabase(db);
   }
 }
 
-function seedDatabase() {
+function seedDatabase(db: DatabaseSync) {
   console.log("Seeding baseline database rules and versions...");
 
   // Seed rules
@@ -201,11 +272,11 @@ function seedDatabase() {
     }
   ];
 
+  const ruleStmt = db.prepare(
+    "INSERT INTO rules (id, name, category, scheme, benefit_type, description, applicable_retirement_types) VALUES (?, ?, ?, ?, ?, ?, ?)"
+  );
   for (const r of seedRules) {
-    runSql(
-      "INSERT INTO rules (id, name, category, scheme, benefit_type, description, applicable_retirement_types) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [r.id, r.name, r.category, r.scheme, r.benefit_type, r.description, r.applicable_retirement_types]
-    );
+    ruleStmt.run(r.id, r.name, r.category, r.scheme, r.benefit_type, r.description, r.applicable_retirement_types);
   }
 
   // Seed default versions (Version 1)
@@ -286,7 +357,7 @@ function seedDatabase() {
       id: "RV-R810-V1",
       rule_id: "R810",
       version: 1,
-      formula: "RELHSSubscriptionFee", // Special flag
+      formula: "RELHSSubscriptionFee",
       minimum_limit: 20,
       maximum_limit: 0,
       effective_date: "2017-01-01",
@@ -298,7 +369,7 @@ function seedDatabase() {
       id: "RV-R905-V1",
       rule_id: "R905",
       version: 1,
-      formula: "PostRetirementPassEntitlement", // Special flag
+      formula: "PostRetirementPassEntitlement",
       minimum_limit: 20,
       maximum_limit: 0,
       effective_date: "2022-01-01",
@@ -308,24 +379,25 @@ function seedDatabase() {
     }
   ];
 
+  const versionStmt = db.prepare(
+    "INSERT INTO rule_versions (id, rule_id, version, formula, minimum_limit, maximum_limit, effective_date, rule_number, approved_by, approved_at, status, conditions, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  );
+  const now = new Date().toISOString();
   for (const v of seedVersions) {
-    runSql(
-      "INSERT INTO rule_versions (id, rule_id, version, formula, minimum_limit, maximum_limit, effective_date, rule_number, approved_by, approved_at, status, conditions, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [
-        v.id,
-        v.rule_id,
-        v.version,
-        v.formula,
-        v.minimum_limit,
-        v.maximum_limit,
-        v.effective_date,
-        v.rule_number,
-        "System Initializer",
-        new Date().toISOString(),
-        "Approved",
-        v.conditions,
-        v.notes,
-      ]
+    versionStmt.run(
+      v.id,
+      v.rule_id,
+      v.version,
+      v.formula,
+      v.minimum_limit,
+      v.maximum_limit,
+      v.effective_date,
+      v.rule_number,
+      "System Initializer",
+      now,
+      "Approved",
+      v.conditions,
+      v.notes
     );
   }
 
@@ -355,6 +427,3 @@ export function logAudit(params: {
     [id, timestamp, params.officer, params.action, params.circular_number ?? null, params.rule_name ?? null, params.version ?? null, params.changes]
   );
 }
-
-// Call Database Init on startup
-initDatabase();
