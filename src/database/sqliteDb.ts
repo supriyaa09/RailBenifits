@@ -183,6 +183,16 @@ function initDatabaseSchema(db: DatabaseSync) {
       rule_version_id TEXT,
       FOREIGN KEY (rule_version_id) REFERENCES rule_versions(id)
     );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      user_id TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL CHECK (role IN ('employee', 'officer')),
+      department TEXT,
+      created_at TEXT NOT NULL
+    );
   `);
 
   // Seed default data if rules table is empty
@@ -357,7 +367,7 @@ function seedDatabase(db: DatabaseSync) {
       id: "RV-R810-V1",
       rule_id: "R810",
       version: 1,
-      formula: "RELHSSubscriptionFee",
+      formula: "Subscription rates of RELHS shall be equal to the last month's Basic Pay drawn or the subscription rate indicated at different levels as per 7th CPC, whichever is lower.",
       minimum_limit: 20,
       maximum_limit: 0,
       effective_date: "2017-01-01",
@@ -369,7 +379,7 @@ function seedDatabase(db: DatabaseSync) {
       id: "RV-R905-V1",
       rule_id: "R905",
       version: 1,
-      formula: "PostRetirementPassEntitlement",
+      formula: "Post-Retirement Complimentary Passes (PRCP) sets per year: Group A/B: 3 sets (25+ yrs service) or 2 sets (20-24 yrs); Group C: 2 sets (25+ yrs) or 1 set (20-24 yrs).",
       minimum_limit: 20,
       maximum_limit: 0,
       effective_date: "2022-01-01",

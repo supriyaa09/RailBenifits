@@ -18,7 +18,7 @@ export function Brand({ subtitle }: { subtitle?: string }) {
       <div className="leading-tight">
         <div className="font-semibold tracking-tight text-foreground">RailAssist</div>
         <div className="text-[11px] text-muted-foreground">
-          {subtitle ?? "South Central Railway HQ"}
+          {subtitle ?? "South Central Railway"}
         </div>
       </div>
     </Link>

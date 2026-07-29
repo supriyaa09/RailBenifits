@@ -1,5 +1,22 @@
 export type RuleType = "Formula" | "Eligibility" | "Policy" | "Procedure" | "Benefit" | "Definition" | "Other";
 
+export interface RuleThreshold {
+  name: string;
+  value: number | string;
+  condition?: string;
+}
+
+export interface StructuredFormula {
+  variables: string[];
+  operators: string[];
+  decisionLogic: string;
+  thresholds: RuleThreshold[];
+  limits: {
+    minimum: number | null;
+    maximum: number | null;
+  };
+}
+
 export interface ExtractedRule {
   ruleType: RuleType;
   rule_number: string;
@@ -8,8 +25,10 @@ export interface ExtractedRule {
   category: string;
   scheme: string;
   benefit: string;
-  /** Mathematical expression only when ruleType === "Formula". null for all other rule types. */
+  /** Primary calculation rule or formula string (preserves original wording for Type B textual rules) */
   formula: string | null;
+  /** Machine-readable structured representation for backend engine execution */
+  structuredFormula?: StructuredFormula;
   eligibility: string;
   minimum: number | null;
   maximum: number | null;

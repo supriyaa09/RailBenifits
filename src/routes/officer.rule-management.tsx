@@ -641,7 +641,7 @@ function RuleManagementPage() {
 
                 <div className="flex gap-2 justify-end pt-2">
                   <Button variant="outline" size="sm" onClick={() => setCurrentStep(1)}>Back</Button>
-                  <Button size="sm" className="gap-1.5" onClick={triggerAIExtraction}>
+                  <Button size="sm" className="gap-1.5 font-semibold" onClick={triggerAIExtraction}>
                     <Bot className="h-4 w-4" />
                     Extract Rules with AI
                   </Button>
@@ -653,7 +653,7 @@ function RuleManagementPage() {
 
         {/* Step 3: AI Processing Loader & Error Handling */}
         {currentStep === 3 && (
-          <div className="animate-in fade-in duration-200">
+          <SectionCard title="Step 3: Vision AI Extraction & Analysis" description="Processing uploaded PDF circular using Qwen 3.6-27B Vision Model via Groq.">
             {extractionError ? (
               <div className="card-surface p-8 bg-card border border-rose-500/20 rounded-xl space-y-6 max-w-2xl mx-auto shadow-md">
                 <div className="flex items-center gap-3 border-b border-border/30 pb-4 text-rose-600">
@@ -705,7 +705,7 @@ function RuleManagementPage() {
                   <Bot className="h-6 w-6 text-primary absolute animate-pulse" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-sm font-bold text-foreground">Intelligent PDF Circular Processing</h3>
+                  <h3 className="text-sm font-bold text-foreground">Intelligent PDF Circular Vision Processing (Qwen 3.6-27B)</h3>
                   <p className="text-xs text-muted-foreground font-semibold max-w-sm">{stages[aiProgressStage]}</p>
                 </div>
                 {/* Visual stage highlights */}
@@ -717,7 +717,7 @@ function RuleManagementPage() {
                 </div>
               </div>
             )}
-          </div>
+          </SectionCard>
         )}
 
         {/* Step 4: Rule Comparison Screen */}
@@ -810,7 +810,7 @@ function RuleManagementPage() {
                                 changed: comp && comp.version.benefit_type !== pendingChange.benefit
                               },
                               {
-                                label: "Formula string",
+                                label: "Formula / Calculation Rule",
                                 current: comp ? comp.version.formula : "N/A",
                                 proposed: pendingChange.formula,
                                 changed: hasFormulaChange,
@@ -1067,10 +1067,10 @@ function RuleManagementPage() {
                               <div className="border border-border/40 rounded-lg divide-y divide-border/20 text-xs">
                                 {hasFormulaChange && (
                                   <div className="p-3 bg-amber-500/[0.03] grid grid-cols-12 gap-3 items-center">
-                                    <div className="col-span-3 font-bold text-muted-foreground uppercase text-[9px]">Formula string</div>
-                                    <div className="col-span-4 line-through text-muted-foreground font-mono bg-muted/30 px-1 rounded truncate">{comp.version.formula}</div>
+                                    <div className="col-span-3 font-bold text-muted-foreground uppercase text-[9px]">Formula / Calculation Rule</div>
+                                    <div className="col-span-4 line-through text-muted-foreground bg-muted/30 px-1 rounded text-[11px] break-words">{comp.version.formula}</div>
                                     <div className="col-span-1 flex justify-center text-muted-foreground">→</div>
-                                    <div className="col-span-4 font-mono font-bold text-amber-700 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded truncate">{pendingChange.formula}</div>
+                                    <div className="col-span-4 font-bold text-amber-700 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded text-[11px] break-words">{pendingChange.formula}</div>
                                   </div>
                                 )}
                                 

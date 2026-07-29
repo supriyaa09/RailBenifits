@@ -93,7 +93,7 @@ function PensionAssistantPage() {
           <div>
             <h1 className="text-sm font-semibold leading-none">Railway Knowledge Assistant</h1>
             <span className="text-[10px] text-primary-foreground/75 mt-1 block">
-              South Central Railway HQ
+              South Central Railway
             </span>
           </div>
         </div>

@@ -105,6 +105,7 @@ export function parseDateInput(value: string): Date | null {
   if (!value) return null;
   const [year, month, day] = value.split("-").map(Number);
   if (!year || !month || !day) return null;
+  if (year < 1900 || year > 2100) return null;
   const date = new Date(year, month - 1, day);
   if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
     return null;
@@ -191,7 +192,7 @@ export function calculateQualifyingService(
 }
 
 export function formatQualifyingService(service: QualifyingService | null): string {
-  if (!service) return "Not available";
+  if (!service) return "Enter valid service dates";
   return `${service.years} years, ${service.months} months, ${service.days} days`;
 }
 

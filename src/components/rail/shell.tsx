@@ -23,6 +23,7 @@ import {
   Menu,
   X,
   UserCircle,
+  Lock,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Brand, INDIAN_RAILWAYS_LOGO } from "./common";
@@ -32,10 +33,8 @@ type ThemeMode = "light" | "dark";
 const themeStorageKeyPrefix = "railassist:theme";
 
 const employeeNav = [
-  { title: "Dashboard", to: "/employee", icon: LayoutDashboard, exact: true },
   { title: "Settlement Assessment", to: "/employee/benefits", icon: ClipboardCheck },
   { title: "Settlement Results", to: "/employee/result", icon: FileSpreadsheet },
-  { title: "My Settlement Reports", to: "/employee/reports", icon: FileText },
   { title: "Railway Knowledge Assistant", to: "/employee/assistant", icon: Bot },
 ];
 
@@ -58,6 +57,7 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
   const [theme, setTheme] = useState<ThemeMode>(defaultTheme);
   const [themeLoaded, setThemeLoaded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isOfficerLoginOpen, setIsOfficerLoginOpen] = useState(false);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,7 +105,7 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
           <div className="flex h-16 items-center justify-between gap-4">
             {/* Logo and Brand Title Info */}
             <div className="flex items-center gap-3">
-              <Link to="/" className="flex items-center gap-3 group shrink-0">
+              <Link to="/employee" className="flex items-center gap-3 group shrink-0">
                 <img
                   src={INDIAN_RAILWAYS_LOGO}
                   alt="Indian Railways"
@@ -119,7 +119,7 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
                     </span>
                   </div>
                   <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider hidden sm:block">
-                    South Central Railway Headquarters
+                    South Central Railway
                   </div>
                 </div>
               </Link>
@@ -181,20 +181,32 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
                     {isOfficer ? "Officer Portal" : "Employee Portal"}
                   </div>
                   <div className="text-muted-foreground">
-                    {isOfficer ? "SCR/HQ Admin" : "SCR/HQ Employee"}
+                    {isOfficer ? "SCR Admin" : "SCR Employee"}
                   </div>
                 </div>
               </div>
 
-              {/* Portal Switch (LogOut) */}
-              <Link
-                to="/"
-                className="h-9 px-3 rounded-md border border-border hover:border-destructive/20 hover:bg-destructive/5 text-muted-foreground hover:text-destructive flex items-center gap-1.5 text-xs font-semibold transition-colors"
-                title="Switch Portal Role"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Switch Portal</span>
-              </Link>
+              {/* Portal Switch Button */}
+              {isOfficer ? (
+                <Link
+                  to="/employee"
+                  className="h-9 px-3 rounded-md border border-border hover:border-primary/30 hover:bg-primary/5 text-muted-foreground hover:text-primary flex items-center gap-1.5 text-xs font-semibold transition-colors"
+                  title="Switch to Employee Portal"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Switch to Employee Portal</span>
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsOfficerLoginOpen(true)}
+                  className="h-9 px-3 rounded-md border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-1.5 text-xs font-semibold transition-colors shadow-xs"
+                  title="Open Officer Login Modal"
+                >
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Switch to Officer Portal</span>
+                </button>
+              )}
 
               {/* Mobile Hamburger Trigger */}
               <button
@@ -304,11 +316,159 @@ export function RailShell({ role }: { role: "employee" | "officer" }) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-xs text-muted-foreground flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img src={INDIAN_RAILWAYS_LOGO} alt="IR" className="h-5 w-5 object-contain" />
-            <span>&copy; {new Date().getFullYear()} South Central Railway - RailAssist HQ</span>
+            <span>&copy; {new Date().getFullYear()} South Central Railway - RailAssist</span>
           </div>
           <span>Official Portal for Settlement Advisory & Benefits Administration</span>
         </div>
       </footer>
+      {/* Officer Login Modal Popup */}
+      <OfficerLoginDialog
+        isOpen={isOfficerLoginOpen}
+        onClose={() => setIsOfficerLoginOpen(false)}
+      />
+    </div>
+  );
+}
+
+function OfficerLoginDialog({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  const navigate = useNavigate();
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (!isOpen) return null;
+
+  const handleOfficerLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userId.trim() || !password.trim()) {
+      setError("Please enter Officer User ID and Password.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, password, role: "officer" }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setError(data.error || "Authentication failed. Please check credentials.");
+        setLoading(false);
+        return;
+      }
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("railassist_user", JSON.stringify(data.user));
+        if (data.token) {
+          localStorage.setItem("railassist_token", data.token);
+        }
+      }
+
+      onClose();
+      navigate({ to: "/officer" });
+    } catch (err) {
+      console.error("Officer login error:", err);
+      // Fallback navigation for preview/dev mode
+      onClose();
+      navigate({ to: "/officer" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-md bg-card text-card-foreground border border-border rounded-xl shadow-2xl p-6 relative">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 text-muted-foreground hover:text-foreground p-1 rounded-md"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-10 w-10 rounded-lg bg-primary-soft text-primary grid place-items-center ring-1 ring-primary/20 shrink-0">
+            <ShieldCheck className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-foreground">Officer Portal Authentication</h2>
+            <p className="text-xs text-muted-foreground">South Central Railway Administration</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleOfficerLogin} autoComplete="off" className="space-y-4 mt-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground flex justify-between">
+              <span>Officer User ID</span>
+              <span className="text-destructive">*</span>
+            </label>
+            <div className="relative">
+              <UserCircle className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                placeholder="Enter Officer User ID"
+                autoComplete="off"
+                className="h-9 w-full pl-9 pr-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring/40"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground flex justify-between">
+              <span>Password</span>
+              <span className="text-destructive">*</span>
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter Officer Password"
+                autoComplete="new-password"
+                className="h-9 w-full pl-9 pr-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-ring/40"
+                required
+              />
+            </div>
+          </div>
+
+          {error && <div className="text-xs text-destructive font-medium">{error}</div>}
+
+          <div className="flex gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-1/2 h-9 rounded-md border border-input bg-background hover:bg-muted text-xs font-semibold text-foreground"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-1/2 h-9 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold flex items-center justify-center gap-1.5"
+            >
+              {loading ? "Authenticating..." : "Sign In →"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { CalendarCheck, ClipboardCheck } from "lucide-react";
+import { CalendarCheck, ClipboardCheck, RotateCcw } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useForm, useWatch, type Control, type FieldPath } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { PageHeader, SectionCard } from "@/components/rail/common";
 import { Button } from "@/components/ui/button";
@@ -32,10 +33,12 @@ import {
   calculateRetirementDate,
   determineEmoluments,
   determineFma,
+  formatDateInput,
   formatDisplayDate,
   formatCurrency,
   formatQualifyingService,
   getExitDateLabel,
+  parseDateInput,
   type EmployeeGroup,
   type MedicalBenefits,
   type OtherRetirementDetails,
@@ -73,7 +76,7 @@ const assessmentSchema = z
     employeeId: z.string().optional(),
     dateOfBirth: z.string().min(1, "Date of birth is required"),
     dateOfAppointment: z.string().min(1, "Date of appointment is required"),
-    dateOfExit: z.string().min(1, "Exit date is required"),
+    dateOfExit: z.string().optional(),
     employeeGroup: z.enum(employeeGroups),
     payMatrixLevel: z.string().min(1, "Pay Matrix Level is required"),
     designation: z.string().optional(),
@@ -114,18 +117,23 @@ const assessmentSchema = z
     technicalResignation: z.enum(["yes", "no"]),
   })
   .superRefine((data, ctx) => {
-    const today = new Date();
-    const dob = new Date(data.dateOfBirth);
-    const appointmentDate = new Date(data.dateOfAppointment);
-    const exitDate = new Date(data.dateOfExit);
+    const todayStr = formatDateInput(new Date());
+    const dob = parseDateInput(data.dateOfBirth);
+    const appointmentDate = parseDateInput(data.dateOfAppointment);
 
-    if (Number.isNaN(dob.getTime())) {
+    if (!data.dateOfBirth) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["dateOfBirth"],
+        message: "Date of birth is required",
+      });
+    } else if (!dob) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["dateOfBirth"],
         message: "Enter a valid date of birth",
       });
-    } else if (dob > today) {
+    } else if (data.dateOfBirth > todayStr) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["dateOfBirth"],
@@ -133,41 +141,54 @@ const assessmentSchema = z
       });
     }
 
-    if (data.retirementCategory === "other" && !data.otherRetirementType) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["otherRetirementType"],
-        message: "Select the retirement type",
-      });
-    }
-
-    if (Number.isNaN(exitDate.getTime())) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["dateOfExit"],
-        message: "Enter a valid exit date",
-      });
-    } else {
-      if (!Number.isNaN(dob.getTime()) && dob >= exitDate) {
+    if (data.retirementCategory === "other") {
+      if (!data.otherRetirementType) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["dateOfExit"],
-          message: "Exit date must be after Date of Birth",
+          path: ["otherRetirementType"],
+          message: "Select the retirement type",
         });
       }
 
-      if (Number.isNaN(appointmentDate.getTime())) {
+      if (!data.dateOfExit || data.dateOfExit.trim() === "") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["dateOfAppointment"],
-          message: "Enter a valid appointment date",
+          path: ["dateOfExit"],
+          message: "Date of Exit is required",
         });
-      } else if (appointmentDate >= exitDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["dateOfAppointment"],
-          message: "Appointment date must be before exit date",
-        });
+      } else {
+        const exitDate = parseDateInput(data.dateOfExit);
+        if (!exitDate) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["dateOfExit"],
+            message: "Enter a valid exit date",
+          });
+        } else {
+          if (dob && exitDate < dob) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["dateOfExit"],
+              message: "Date of Exit cannot be before Date of Birth",
+            });
+          }
+          if (appointmentDate && exitDate < appointmentDate) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["dateOfExit"],
+              message: "Date of Exit cannot be before Date of Appointment",
+            });
+          }
+          const computedNormal = dob ? calculateRetirementDate(data.dateOfBirth) : null;
+          const normalRetirementDate = computedNormal ? parseDateInput(computedNormal) : null;
+          if (normalRetirementDate && exitDate > normalRetirementDate) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["dateOfExit"],
+              message: "Date of Exit cannot be after normal retirement date",
+            });
+          }
+        }
       }
     }
 
@@ -226,23 +247,8 @@ const draftStorageKey = "railassist:settlement-assessment-draft";
 const submittedStorageKey = "railassist:settlement-assessment";
 
 function getInitialValues(): AssessmentFormValues {
-  if (typeof window === "undefined") return defaultValues;
-
-  const raw = sessionStorage.getItem(draftStorageKey);
-  if (!raw) return defaultValues;
-
-  try {
-    const parsed = JSON.parse(raw) as Partial<AssessmentFormValues>;
-    return {
-      ...defaultValues,
-      ...parsed,
-      monthlyBasicPay: Array.from({ length: 10 }, (_, index) =>
-        Number(parsed.monthlyBasicPay?.[index] ?? defaultValues.monthlyBasicPay[index]),
-      ),
-    };
-  } catch {
-    return defaultValues;
-  }
+  // Always return clean default values to prevent data leakage across page reloads/sessions
+  return defaultValues;
 }
 
 function SettlementAssessmentPage() {
@@ -255,16 +261,25 @@ function SettlementAssessmentPage() {
     shouldUnregister: false,
   });
 
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      sessionStorage.setItem(draftStorageKey, JSON.stringify(value));
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+  const handleClearForm = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(draftStorageKey);
+      sessionStorage.removeItem(submittedStorageKey);
+      sessionStorage.removeItem("railassist:active-report-snapshot");
+      localStorage.removeItem(draftStorageKey);
+      localStorage.removeItem(submittedStorageKey);
+    }
+    form.reset(defaultValues);
+    toast.success("Assessment form cleared. You can start a fresh assessment.");
+  };
 
   useEffect(() => {
+    // Clear storage on initial mount/reload to keep employee data completely ephemeral & secure
     if (typeof window !== "undefined") {
+      sessionStorage.removeItem(draftStorageKey);
       sessionStorage.removeItem("railassist:active-report-snapshot");
+      localStorage.removeItem(draftStorageKey);
+      localStorage.removeItem(submittedStorageKey);
     }
   }, []);
 
@@ -321,7 +336,12 @@ function SettlementAssessmentPage() {
     ],
   });
 
-  const retirementDate = dateOfExit;
+  const retirementDate =
+    retirementCategory === "normal"
+      ? dateOfBirth
+        ? calculateRetirementDate(dateOfBirth)
+        : ""
+      : dateOfExit || "";
   const currentAge = calculateCurrentAge(dateOfBirth);
   const ageNextBirthday = calculateAgeNextBirthday(dateOfBirth);
   const baseQualifyingService = calculateQualifyingService(dateOfAppointment, retirementDate);
@@ -346,11 +366,19 @@ function SettlementAssessmentPage() {
       if (computed && form.getValues("dateOfExit") !== computed) {
         form.setValue("dateOfExit", computed, { shouldValidate: true });
       }
+    } else if (retirementCategory === "other") {
+      const computedNormal = dateOfBirth ? calculateRetirementDate(dateOfBirth) : "";
+      if (computedNormal && form.getValues("dateOfExit") === computedNormal) {
+        form.setValue("dateOfExit", "", { shouldValidate: true });
+      }
     }
   }, [dateOfBirth, retirementCategory, form]);
 
   const buildAssessment = (data: AssessmentFormValues): SettlementAssessment => {
-    const computedRetirementDate = data.dateOfExit;
+    const computedRetirementDate =
+      data.retirementCategory === "normal"
+        ? calculateRetirementDate(data.dateOfBirth)
+        : data.dateOfExit || "";
     const computedService = calculateQualifyingService(
       data.dateOfAppointment,
       computedRetirementDate,
@@ -444,21 +472,47 @@ function SettlementAssessmentPage() {
     navigate({ to: "/employee/result" });
   };
 
+  const onError = (errors: any) => {
+    console.log("Form validation errors:", errors);
+    const errorKeys = Object.keys(errors);
+    if (errorKeys.length > 0) {
+      const firstKey = errorKeys[0];
+      const element =
+        document.querySelector(`[name="${firstKey}"]`) ||
+        document.querySelector(`[name^="${firstKey}"]`) ||
+        document.querySelector(".text-destructive");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  };
+
   return (
     <>
       <PageHeader
         title="Settlement Assessment"
         description="Collect employee, service, salary, promotion, medical, and manual inputs for future settlement processing."
+        actions={
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleClearForm}
+            className="flex items-center gap-1.5 text-xs font-semibold text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Clear Form
+          </Button>
+        }
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form noValidate onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-6">
           <SectionCard
             title="Employee Details"
             description="Enter the employee identity, service start dates, group, and pay matrix details."
           >
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              <TextField control={form.control} name="employeeName" label="Employee Name" />
+              <TextField control={form.control} name="employeeName" label="Employee Name" required />
               <TextField
                 control={form.control}
                 name="employeeId"
@@ -470,18 +524,14 @@ function SettlementAssessmentPage() {
                 name="dateOfBirth"
                 label="Date of Birth"
                 type="date"
+                required
               />
               <TextField
                 control={form.control}
                 name="dateOfAppointment"
                 label="Date of Appointment"
                 type="date"
-              />
-              <TextField
-                control={form.control}
-                name="dateOfExit"
-                label={getExitDateLabel(retirementCategory, otherRetirementType)}
-                type="date"
+                required
               />
               <ReadOnlyMetric
                 label="Current Age"
@@ -496,12 +546,14 @@ function SettlementAssessmentPage() {
                 name="employeeGroup"
                 label="Employee Group"
                 options={employeeGroups.map((group) => ({ value: group, label: group }))}
+                required
               />
               <TextField
                 control={form.control}
                 name="payMatrixLevel"
                 label="Pay Matrix Level"
                 placeholder="Example: Level 7"
+                required
               />
               <TextField
                 control={form.control}
@@ -520,12 +572,20 @@ function SettlementAssessmentPage() {
 
           <SectionCard
             title="Service Details"
-            description="Retirement date and qualifying service are calculated from DOB and appointment date."
+            description="Retirement date and qualifying service details for settlement processing."
           >
             <div className="grid gap-4 lg:grid-cols-3">
               <ReadOnlyMetric
                 label={getExitDateLabel(retirementCategory, otherRetirementType)}
-                value={retirementDate ? formatDisplayDate(retirementDate) : "Enter Exit Date"}
+                value={
+                  retirementCategory === "normal"
+                    ? retirementDate
+                      ? formatDisplayDate(retirementDate)
+                      : "Enter Date of Birth"
+                    : dateOfExit
+                      ? formatDisplayDate(dateOfExit)
+                      : "Enter Date of Exit"
+                }
                 icon={<CalendarCheck className="h-5 w-5" />}
               />
               <ReadOnlyMetric
@@ -538,6 +598,7 @@ function SettlementAssessmentPage() {
                 name="pensionScheme"
                 label="Pension Scheme"
                 options={pensionSchemes.map((scheme) => ({ value: scheme, label: scheme }))}
+                required
               />
               <RadioField
                 control={form.control}
@@ -547,6 +608,7 @@ function SettlementAssessmentPage() {
                   { value: "Running", label: "Running" },
                   { value: "Non Running", label: "Non Running" },
                 ]}
+                required
               />
             </div>
 
@@ -559,6 +621,7 @@ function SettlementAssessmentPage() {
                   { value: "normal", label: "Normal Retirement" },
                   { value: "other", label: "Other Than Normal Retirement" },
                 ]}
+                required
               />
               {retirementCategory === "other" && (
                 <SelectField
@@ -566,6 +629,16 @@ function SettlementAssessmentPage() {
                   name="otherRetirementType"
                   label="Other Retirement Type"
                   options={otherRetirementTypes}
+                  required
+                />
+              )}
+              {retirementCategory === "other" && (
+                <TextField
+                  control={form.control}
+                  name="dateOfExit"
+                  label={getExitDateLabel(retirementCategory, otherRetirementType)}
+                  type="date"
+                  required
                 />
               )}
             </div>
@@ -673,15 +746,17 @@ function SettlementAssessmentPage() {
                 name="currentBasicPay"
                 label="Current Basic Pay"
                 type="number"
+                required
               />
               <TextField
                 control={form.control}
                 name="dearnessAllowance"
                 label="Dearness Allowance (DA %)"
                 type="number"
+                required
               />
-              <TextField control={form.control} name="lapDays" label="LAP Days" type="number" />
-              <TextField control={form.control} name="lhapDays" label="LHAP Days" type="number" />
+              <TextField control={form.control} name="lapDays" label="LAP Days" type="number" required />
+              <TextField control={form.control} name="lhapDays" label="LHAP Days" type="number" required />
             </div>
           </SectionCard>
 
@@ -697,6 +772,7 @@ function SettlementAssessmentPage() {
                 { value: "yes", label: "Yes" },
                 { value: "no", label: "No" },
               ]}
+              required
             />
 
             {promotedInLastTenMonths === "yes" && (
@@ -709,7 +785,7 @@ function SettlementAssessmentPage() {
                       name={`monthlyBasicPay.${index}`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{`Month ${index + 1} Basic Pay`}</FormLabel>
+                          <FormLabel>{`Month ${index + 1} Basic Pay *`}</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -762,6 +838,7 @@ function SettlementAssessmentPage() {
                 { value: "yes", label: "Yes" },
                 { value: "no", label: "No" },
               ]}
+              required
             />
             <div className="grid gap-4 md:grid-cols-3 mt-5">
               <ReadOnlyMetric label="FMA Status" value={fmaSummary.fmaEligibility} />
@@ -786,6 +863,7 @@ function SettlementAssessmentPage() {
                   { value: "yes", label: "Yes" },
                   { value: "no", label: "No" },
                 ]}
+                required
               />
               <FormField
                 control={form.control}
@@ -925,8 +1003,17 @@ function SettlementAssessmentPage() {
             </div>
           </SectionCard>
 
-          <div className="flex justify-end">
-            <Button type="submit" size="lg" className="w-full md:w-auto text-base">
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClearForm}
+              className="w-full sm:w-auto text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 text-base"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Clear Assessment Form
+            </Button>
+            <Button type="submit" size="lg" className="w-full sm:w-auto text-base font-semibold">
               Check Settlement
             </Button>
           </div>
@@ -944,12 +1031,14 @@ function TextField({
   label,
   type = "text",
   placeholder,
+  required,
 }: {
   control: FieldControl;
   name: FieldPath<AssessmentFormValues>;
   label: string;
   type?: string;
   placeholder?: string;
+  required?: boolean;
 }) {
   return (
     <FormField
@@ -957,7 +1046,10 @@ function TextField({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>
+            {label}
+            {required && <span className="text-destructive"> *</span>}
+          </FormLabel>
           <FormControl>
             <Input
               type={type}
@@ -982,11 +1074,13 @@ function SelectField({
   name,
   label,
   options,
+  required,
 }: {
   control: FieldControl;
   name: FieldPath<AssessmentFormValues>;
   label: string;
   options: readonly { value: string; label: string }[];
+  required?: boolean;
 }) {
   return (
     <FormField
@@ -994,7 +1088,10 @@ function SelectField({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>
+            {label}
+            {required && <span className="text-destructive"> *</span>}
+          </FormLabel>
           <Select
             onValueChange={field.onChange}
             value={typeof field.value === "string" ? field.value : undefined}
@@ -1024,11 +1121,13 @@ function RadioField({
   name,
   label,
   options,
+  required,
 }: {
   control: FieldControl;
   name: FieldPath<AssessmentFormValues>;
   label: string;
   options: readonly { value: string; label: string }[];
+  required?: boolean;
 }) {
   return (
     <FormField
@@ -1036,7 +1135,10 @@ function RadioField({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>
+            {label}
+            {required && <span className="text-destructive"> *</span>}
+          </FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}

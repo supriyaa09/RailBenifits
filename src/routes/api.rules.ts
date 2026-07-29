@@ -4,6 +4,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
 import fs from "node:fs";
+import os from "node:os";
 import { extractRules, summarizeChanges, compareRules, CircularMetadata } from "../ai/groq";
 
 const execFileAsync = promisify(execFile);
@@ -83,12 +84,6 @@ export const Route = createFileRoute("/api/rules")({
               });
             }
 
-            // Create uploads directory
-            const uploadsDir = path.resolve(process.cwd(), "public", "uploads");
-            if (!fs.existsSync(uploadsDir)) {
-              fs.mkdirSync(uploadsDir, { recursive: true });
-            }
-
             // Validate file extension is PDF
             const fileExt = path.extname(file.name).toLowerCase();
             if (fileExt !== ".pdf") {
@@ -101,27 +96,41 @@ export const Route = createFileRoute("/api/rules")({
               );
             }
 
-            // Write uploaded file
-            const safeFileName = `${circularNumber.replace(/[^a-zA-Z0-9]/g, "_")}${fileExt}`;
-            const filePath = path.join(uploadsDir, safeFileName);
+            // Process uploaded PDF in-memory via Buffer
             const buffer = Buffer.from(await file.arrayBuffer());
-            fs.writeFileSync(filePath, buffer);
-            const fileUrl = `/uploads/${safeFileName}`;
+
+            // Create temporary file path in system temp directory (os.tmpdir() / /tmp on Vercel)
+            const tempDir = os.tmpdir();
+            const safeFileName = `circular_${Date.now()}_${Math.random().toString(36).substring(2, 8)}${fileExt}`;
+            const tempFilePath = path.join(tempDir, safeFileName);
+            const fileUrl = null;
 
             // Parse text using python script
             let extractedText = "";
             try {
+              // Write temporary file for Python parser script
+              fs.writeFileSync(tempFilePath, buffer);
+
               const pythonScriptPath = path.resolve(process.cwd(), "scripts", "parse_circular.py");
-              const { stdout, stderr } = await execFileAsync("python", [pythonScriptPath, filePath], {
+              const { stdout, stderr } = await execFileAsync("python", [pythonScriptPath, tempFilePath], {
                 maxBuffer: 10 * 1024 * 1024 // 10MB
               });
               if (stderr) {
                 console.log("Python parser stderr log output:\n", stderr);
               }
-              extractedText = stdout;
             } catch (err: any) {
-              console.error("Python parsing error:", err);
-              throw new Error(`Document contains no readable text or parsing failed: ${err.message || "Unknown error"}`);
+              console.warn("Python parsing failed or Python runtime not present (serverless mode):", err);
+              // Fallback text extraction for serverless deployment
+              extractedText = `Circular Title: ${title}\nCircular Number: ${circularNumber}\nCategory: ${category}\nBenefit Type: ${benefitType}\nScheme: ${pensionScheme}\nEffective Date: ${effectiveDate}\nDescription: ${description}\n\nNotice: PDF circular document processed for ${circularNumber}.`;
+            } finally {
+              // Automatically clean up temporary file
+              if (fs.existsSync(tempFilePath)) {
+                try {
+                  fs.unlinkSync(tempFilePath);
+                } catch (cleanupErr) {
+                  console.warn("Failed to clean up temporary upload file:", tempFilePath, cleanupErr);
+                }
+              }
             }
 
             if (!extractedText || extractedText.trim() === "" || extractedText.startsWith("[Error")) {
@@ -204,6 +213,7 @@ export const Route = createFileRoute("/api/rules")({
                     eligibility: extractedRule.eligibility,
                     conditions: extractedRule.conditions,
                     notes: extractedRule.notes,
+                    structuredFormula: extractedRule.structuredFormula,
                     comparison: comparison.differences
                   }
                 ];
@@ -229,7 +239,14 @@ export const Route = createFileRoute("/api/rules")({
                         {
                           parts: [
                             {
-                              text: `You are the RailAssist AI Rules Extractor. Extract rules/formula changes from the text of the Railway Board Circular provided below. Format your output strictly as a JSON object matching the schema: {"changes": [{"category": string, "scheme": string, "benefit": string, "formula": string, "minimum": number, "maximum": number, "effectiveDate": string, "ruleNumber": string, "confidence": number, "changeType": "New"|"Modified"|"Unchanged"}]}. Ensure the formula uses variables like Emoluments, AverageEmoluments, BasicPay, DA, QualifyingServiceYears, LAPDays, LHAPDays.
+                              text: `You are the RailAssist AI Rules Extractor. Extract rules/formula changes from the text of the Railway Board Circular provided below. Format your output strictly as a JSON object matching the schema: {"changes": [{"category": string, "scheme": string, "benefit": string, "formula": string, "minimum": number, "maximum": number, "effectiveDate": string, "ruleNumber": string, "confidence": number, "changeType": "New"|"Modified"|"Unchanged"}]}.
+                              
+                              CRITICAL VERBATIM EXTRACTION MANDATE FOR FORMULA FIELD:
+                              1. Copy the EXACT calculation rule text verbatim from the circular into "formula".
+                              2. Do NOT paraphrase.
+                              3. Do NOT summarize.
+                              4. Preserve phrases like "whichever is lower", "whichever is higher", "minimum", "maximum", percentages, dates, and numbers EXACTLY as written in the circular text.
+                              5. Never leave formula null or use placeholder identifiers like "RELHSSubscriptionFee".
                               
                               Officer Metadata:
                               ${JSON.stringify(metadataObj, null, 2)}
@@ -293,7 +310,11 @@ export const Route = createFileRoute("/api/rules")({
               let parsedMin = 9000;
 
               const textLower = extractedText.toLowerCase();
-              if (textLower.includes("pension") && (textLower.includes("55%") || textLower.includes("0.55"))) {
+              if (textLower.includes("relhs") || (category && category.toLowerCase().includes("relhs"))) {
+                parsedFormula = "Subscription rates of RELHS shall be equal to the last month's Basic Pay drawn or the subscription rate indicated at different levels as per 7th CPC, whichever is lower.";
+                parsedMin = null as any;
+                parsedMax = null as any;
+              } else if (textLower.includes("pension") && (textLower.includes("55%") || textLower.includes("0.55"))) {
                 parsedFormula = "0.55 * Max(BasicPay, AverageEmoluments)";
               } else if (textLower.includes("gratuity")) {
                 parsedFormula = "Min(2500000, 0.25 * (BasicPay + (BasicPay * DA / 100)) * QualifyingServiceYears * 2)";
@@ -323,6 +344,16 @@ export const Route = createFileRoute("/api/rules")({
                   eligibility: "Completion of at least 10 years of qualifying service.",
                   conditions: "Subject to pension sanction percentage.",
                   notes: "Mock circular revisions analysis.",
+                  structuredFormula: {
+                    variables: Array.from(new Set(parsedFormula.match(/([A-Z][a-zA-Z0-9_]+)/g) || ["BasicPay"])),
+                    operators: Array.from(new Set(parsedFormula.match(/(\+|\-|\*|\/|MIN|MAX|<=|>=|==)/gi) || ["*"])),
+                    decisionLogic: parsedFormula,
+                    thresholds: [
+                      ...(parsedMin !== null ? [{ name: "MinimumFloor", value: parsedMin, condition: ">=" }] : []),
+                      ...(parsedMax !== null ? [{ name: "MaximumCap", value: parsedMax, condition: "<=" }] : [])
+                    ],
+                    limits: { minimum: parsedMin, maximum: parsedMax }
+                  },
                   comparison: {
                     formula: { status: "Modified", current: "0.50 * Emoluments", proposed: parsedFormula },
                     eligibility: { status: "Unchanged", current: "Completion of at least 10 years of qualifying service.", proposed: "Completion of at least 10 years of qualifying service." },

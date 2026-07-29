@@ -18,15 +18,14 @@ export function validateExtractedRuleJson(rawResponse: string): ExtractedRule {
   // --- ruleType ---
   const ruleType: RuleType = VALID_RULE_TYPES.includes(parsed.ruleType) ? parsed.ruleType : "Other";
 
-  // --- formula: only allowed for Formula ruleType, must be null otherwise ---
+  // --- formula: support Type A (mathematical) and Type B (textual calculation rule) across all rule types ---
   let formula: string | null = null;
-  if (ruleType === "Formula") {
-    if (typeof parsed.formula === "string" && parsed.formula.trim().length > 0) {
-      formula = parsed.formula.trim();
-    }
-    // If ruleType is Formula but no formula string provided, leave it null — validation will decide
+  if (typeof parsed.formula === "string" && parsed.formula.trim().length > 0) {
+    formula = parsed.formula.trim();
+  } else if (typeof parsed.notes === "string" && (parsed.notes.toLowerCase().includes("equal to") || parsed.notes.toLowerCase().includes("computed") || parsed.notes.toLowerCase().includes("calculated") || parsed.notes.toLowerCase().includes("subscription"))) {
+    // If AI erroneously put calculation rule into notes, extract it into formula
+    formula = parsed.notes.trim();
   }
-  // For all other ruleTypes: formula stays null regardless of what AI returned
 
   const category = typeof parsed.category === "string" ? parsed.category : "Other";
   const benefit = typeof parsed.benefit === "string" ? parsed.benefit : "Other";
@@ -46,6 +45,34 @@ export function validateExtractedRuleJson(rawResponse: string): ExtractedRule {
   const confidence = typeof parsed.confidence === "number" ? parsed.confidence : 75;
   const notes = typeof parsed.notes === "string" ? parsed.notes : "";
 
+  // Build or validate structured representation for backend engine execution
+  const rawSf = parsed.structuredFormula || {};
+  const formulaText = formula || "";
+  
+  // Extract variables automatically if missing
+  const detectedVariables = Array.isArray(rawSf.variables) && rawSf.variables.length > 0
+    ? rawSf.variables
+    : Array.from(new Set(formulaText.match(/([A-Z][a-zA-Z0-9_]+)/g) || ["BasicPay"]));
+
+  // Extract operators automatically if missing
+  const detectedOperators = Array.isArray(rawSf.operators) && rawSf.operators.length > 0
+    ? rawSf.operators
+    : Array.from(new Set(formulaText.match(/(\+|\-|\*|\/|MIN|MAX|<=|>=|==)/gi) || ["*"]));
+
+  const structuredFormula = {
+    variables: detectedVariables,
+    operators: detectedOperators,
+    decisionLogic: typeof rawSf.decisionLogic === "string" && rawSf.decisionLogic.length > 0 ? rawSf.decisionLogic : formulaText,
+    thresholds: Array.isArray(rawSf.thresholds) ? rawSf.thresholds : [
+      ...(minimum !== null ? [{ name: "MinimumFloor", value: minimum, condition: ">=" }] : []),
+      ...(maximum !== null ? [{ name: "MaximumCap", value: maximum, condition: "<=" }] : [])
+    ],
+    limits: {
+      minimum: typeof rawSf.limits?.minimum === "number" ? rawSf.limits.minimum : minimum,
+      maximum: typeof rawSf.limits?.maximum === "number" ? rawSf.limits.maximum : maximum,
+    }
+  };
+
   return {
     ruleType,
     rule_number,
@@ -55,6 +82,7 @@ export function validateExtractedRuleJson(rawResponse: string): ExtractedRule {
     scheme,
     benefit,
     formula,
+    structuredFormula,
     eligibility,
     minimum,
     maximum,

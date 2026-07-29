@@ -65,6 +65,18 @@ function SettlementResultsPage() {
   }, []);
 
   useEffect(() => {
+    // If page is reloaded/refreshed, clear session assessment to protect employee data privacy
+    if (typeof window !== "undefined") {
+      const navEntries = performance.getEntriesByType("navigation");
+      if (navEntries.length > 0 && (navEntries[0] as PerformanceNavigationTiming).type === "reload") {
+        sessionStorage.removeItem("railassist:settlement-assessment");
+        sessionStorage.removeItem("railassist:active-report-snapshot");
+        setAssessment(null);
+        setSavedSnapshot(null);
+        return;
+      }
+    }
+
     // Check if there is an active historic report snapshot we should view instead of current calculations
     const rawSnapshot = sessionStorage.getItem("railassist:active-report-snapshot");
     if (rawSnapshot) {
@@ -691,34 +703,18 @@ function OfficialReport({
     );
   };
 
-  const triggerPrint = () => {
-    if (typeof window === "undefined") return;
-    document.body.classList.add("printing");
-    const onAfterPrint = () => {
-      document.body.classList.remove("printing");
-      window.removeEventListener("afterprint", onAfterPrint);
-    };
-    window.addEventListener("afterprint", onAfterPrint);
-    window.print();
-  };
-
-  const handlePrint = () => {
-    triggerPrint();
-  };
-
-  const handleDownloadPdf = async () => {
-    if (typeof window === "undefined" || !assessment) return;
+  const generatePdfDocument = async (): Promise<jsPDF | null> => {
+    if (typeof window === "undefined" || !assessment) return null;
 
     const page1El = document.getElementById("certificate-page-1");
-
     if (!page1El) {
       console.error("Page element not found for PDF download");
-      return;
+      return null;
     }
 
     try {
-      const canvas1 = await html2canvas(page1El, {
-        scale: 2, // High resolution
+      const canvas = await html2canvas(page1El, {
+        scale: 2, // High resolution rendering
         useCORS: true, // Support logo image loading
         logging: false,
         backgroundColor: "#ffffff",
@@ -728,19 +724,67 @@ function OfficialReport({
       const pdfWidth = 210;
       const pdfHeight = 297;
 
-      const imgHeight1 = (canvas1.height * pdfWidth) / canvas1.width;
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+      const imgData = canvas.toDataURL("image/png");
 
-      const imgData1 = canvas1.toDataURL("image/png");
-      pdf.addImage(imgData1, "PNG", 0, 0, pdfWidth, imgHeight1);
+      // Fit content on exactly 1 A4 page with clean top & bottom margins
+      const maxAllowedHeight = 282; // mm
+      const scaleFactor = Math.min(1, maxAllowedHeight / imgHeight);
 
-      const empId =
-        assessment.employeeDetails.employeeId?.replace(/[^a-zA-Z0-9]/g, "") || "Employee";
-      const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, "");
-      const fileName = `Settlement_Report_${empId}_${dateStr}.pdf`;
-      pdf.save(fileName);
+      const finalWidth = pdfWidth * scaleFactor;
+      const finalHeight = imgHeight * scaleFactor;
+
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = (pdfHeight - finalHeight) / 2;
+
+      pdf.addImage(imgData, "PNG", xOffset, yOffset, finalWidth, finalHeight);
+
+      return pdf;
     } catch (error) {
       console.error("Failed to generate PDF:", error);
+      return null;
     }
+  };
+
+  const handleDownloadPdf = async () => {
+    const pdf = await generatePdfDocument();
+    if (!pdf) return;
+
+    const empId =
+      assessment.employeeDetails.employeeId?.replace(/[^a-zA-Z0-9]/g, "") || "Employee";
+    const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, "");
+    const fileName = `Settlement_Report_${empId}_${dateStr}.pdf`;
+    pdf.save(fileName);
+  };
+
+  const handlePrint = async () => {
+    const pdf = await generatePdfDocument();
+    if (!pdf) return;
+
+    // Create a blob URL for the generated PDF and trigger PDF print stream
+    const pdfBlob = pdf.output("blob");
+    const blobUrl = URL.createObjectURL(pdfBlob);
+
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    iframe.src = blobUrl;
+    document.body.appendChild(iframe);
+
+    iframe.onload = () => {
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      }, 300);
+    };
+  };
+
+  const triggerPrint = () => {
+    handlePrint();
   };
 
   // Handle ?print=true / ?download=true params (triggered from reports page).
@@ -926,7 +970,7 @@ function OfficialReport({
         className="settlement-certificate mx-auto max-w-[210mm] bg-white text-slate-950 shadow-sm ring-1 ring-slate-300 print:max-w-none print:shadow-none print:ring-0"
       >
         <div className="px-5 py-5 text-[12px] leading-snug sm:px-8 print:px-8 print:py-6">
-          <div id="certificate-page-1" className="bg-white px-8 py-6 print:p-0">
+          <div id="certificate-page-1" className="bg-white px-6 py-4 print:p-0">
             <header className="border-b-2 border-slate-900 pb-3">
               <div className="grid grid-cols-[72px_1fr_72px] items-center gap-3">
                 <img
@@ -1041,12 +1085,12 @@ function OfficialReport({
                       const { status, amount } = getBenefitRowData(rowName);
                       return (
                         <tr key={rowName} className="border-b border-slate-300 last:border-b-0">
-                          <td className="border-r border-slate-300 px-3 py-1.5 align-top font-medium">
+                          <td className="border-r border-slate-300 px-3 py-1 align-top font-medium">
                             {rowName}
                           </td>
-                          <td className="border-r border-slate-300 px-3 py-1.5 align-top text-center">
+                          <td className="border-r border-slate-300 px-3 py-1 align-top text-center">
                             <span
-                              className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              className={`inline-block px-1.5 py-0.5 rounded-full text-[9px] font-bold ${
                                 status === "Eligible"
                                   ? "bg-green-100 text-green-800"
                                   : status === "Not Applicable"
@@ -1057,7 +1101,7 @@ function OfficialReport({
                               {status}
                             </span>
                           </td>
-                          <td className="px-3 py-1.5 text-right align-top font-bold text-slate-900">
+                          <td className="px-3 py-1 text-right align-top font-bold text-slate-900">
                             {amount}
                           </td>
                         </tr>
@@ -1068,22 +1112,22 @@ function OfficialReport({
               </div>
 
               {/* Totals Section */}
-              <div className="mt-4 border border-slate-500 bg-slate-50 p-4 select-none print:bg-slate-50">
+              <div className="mt-2.5 border border-slate-500 bg-slate-50 p-2.5 select-none print:bg-slate-50">
                 <table className="w-full text-xs font-bold">
                   <tbody>
                     <tr className="border-b border-slate-300">
-                      <td className="py-2 text-left uppercase tracking-wide text-slate-700">
+                      <td className="py-1 text-left uppercase tracking-wide text-slate-700">
                         Total One-Time Benefits
                       </td>
-                      <td className="py-2 text-right text-slate-900 text-sm font-black">
+                      <td className="py-1 text-right text-slate-900 text-sm font-black">
                         {formatCurrency(calculation.totalOneTimeBenefits)}
                       </td>
                     </tr>
                     <tr>
-                      <td className="py-2 text-left uppercase tracking-wide text-slate-700">
+                      <td className="py-1 text-left uppercase tracking-wide text-slate-700">
                         Total Monthly Benefits
                       </td>
-                      <td className="py-2 text-right text-slate-900 text-sm font-black">
+                      <td className="py-1 text-right text-slate-900 text-sm font-black">
                         {formatCurrency(totalMonthlyBenefits)}{" "}
                         <span className="text-[10px] font-normal lowercase">per month</span>
                       </td>
@@ -1093,7 +1137,7 @@ function OfficialReport({
               </div>
             </CertificateSection>
 
-            <footer className="mt-8 border-t border-slate-500 pt-3 text-[10px] text-slate-600">
+            <footer className="mt-2.5 border-t border-slate-500 pt-1.5 text-[9px] text-slate-600">
               <div className="grid gap-1 sm:grid-cols-2">
                 <div>Prepared by: RailAssist Settlement Engine</div>
                 <div>
@@ -1107,7 +1151,7 @@ function OfficialReport({
                     : generatedTimestamp}
                 </div>
               </div>
-              <p className="mt-2 leading-relaxed">
+              <p className="mt-1 leading-relaxed">
                 Disclaimer: This report is generated based on Railway pension and settlement rules.
                 Final settlement is subject to verification and approval by the competent Railway
                 authority.
@@ -1162,8 +1206,8 @@ function certificateTextRow(
 
 function CertificateSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-5 break-inside-avoid">
-      <h3 className="mb-2 text-sm font-bold">{title}</h3>
+    <section className="mt-3.5 break-inside-avoid">
+      <h3 className="mb-1.5 text-xs font-bold">{title}</h3>
       {children}
     </section>
   );
@@ -1172,10 +1216,10 @@ function CertificateSection({ title, children }: { title: string; children: Reac
 function CertificateMeta({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid grid-cols-[130px_1fr] border-b border-slate-300 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0 sm:[&:nth-child(odd)]:border-r print:[&:nth-last-child(-n+2)]:border-b-0 print:[&:nth-child(odd)]:border-r">
-      <div className="bg-slate-100 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide">
+      <div className="bg-slate-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide">
         {label}
       </div>
-      <div className="px-2 py-1.5 font-medium">{value}</div>
+      <div className="px-2 py-1 text-[10px] font-medium">{value}</div>
     </div>
   );
 }

@@ -56,10 +56,8 @@ export function compareRules(
 
   // --- Route comparison by ruleType ---
 
-  // Formula rules: compare mathematical expressions
-  const formulaDiff = (ruleType === "Formula" || currentRuleType === "Formula")
-    ? compareField(currentFormula, proposed.formula)
-    : { status: "Unchanged" as const, current: null, proposed: null };
+  // Compare calculation rule / formula (Type A mathematical or Type B textual)
+  const formulaDiff = compareField(currentFormula, proposed.formula);
 
   // Eligibility rules: focus on eligibility conditions
   const eligibilityDiff = compareField(currentEligibility, proposed.eligibility);
